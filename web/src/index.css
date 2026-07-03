@@ -424,3 +424,7 @@ footer.credit a { color: inherit; }
   font-size: 15px;
 }
 .menu-panel a:hover { background: #f5f3f0; color: var(--accent); }
+
+td.cell.diagonal { cursor: default; }
+td.cell.diagonal:hover { outline: none; }
+td.cell:not(.diagonal) { cursor: pointer; }

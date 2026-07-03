@@ -18,6 +18,13 @@ function Logo({ party, size = 26 }) {
 
 function Tooltip({ tip }) {
   if (!tip) return null;
+  if (tip.self) {
+    return (
+      <div className="tooltip" style={{ left: Math.min(tip.x + 14, window.innerWidth - 300), top: tip.y + 16 }}>
+        <div>{tip.self.navn} stemmer per definisjon likt med seg selv.</div>
+      </div>
+    );
+  }
   const { x, y, a, b, agree, total, label } = tip;
   const pct = (100 * agree) / total;
   return (
@@ -41,12 +48,14 @@ export default function Matrix({ matrix, label, onSelect }) {
   // order, unknown ids (a future new party) are appended rather than dropped.
   const ids = new Set();
   for (const key of matrix.keys()) key.split("|").forEach((id) => ids.add(id));
+  // Full symmetric matrix: every party on both axes, values mirrored, and a
+  // 100 % diagonal (a party always agrees with itself) as a reading anchor.
   const present = [
     ...PARTIES.filter((p) => ids.has(p.id)),
     ...[...ids].filter((id) => !PARTY_BY_ID[id]).sort().map(partyOrFallback),
   ];
-  const rows = present.slice(1);
-  const cols = present.slice(0, -1);
+  const rows = present;
+  const cols = present;
 
   return (
     <>
@@ -75,7 +84,21 @@ export default function Matrix({ matrix, label, onSelect }) {
                   </span>
                 </th>
                 {cols.map((colP, ci) => {
-                  if (ci > ri) return <td key={colP.id} className="blank" />;
+                  if (ci === ri) {
+                    return (
+                      <td
+                        key={colP.id}
+                        className="cell diagonal"
+                        style={{ background: cellColor(100), color: cellText(100) }}
+                        onMouseMove={(e) =>
+                          setTip({ x: e.clientX, y: e.clientY, self: rowP })
+                        }
+                        onMouseLeave={() => setTip(null)}
+                      >
+                        100
+                      </td>
+                    );
+                  }
                   const cell = matrix.get(pairKey(rowP.id, colP.id));
                   if (!cell || !cell.total) return <td key={colP.id} className="blank" />;
                   const pct = (100 * cell.agree) / cell.total;
