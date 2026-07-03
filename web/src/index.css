@@ -428,3 +428,43 @@ footer.credit a { color: inherit; }
 td.cell.diagonal { cursor: default; }
 td.cell.diagonal:hover { outline: none; }
 td.cell:not(.diagonal) { cursor: pointer; }
+
+/* Party ranking view */
+a.party-key { text-decoration: none; }
+a.party-key:hover { color: var(--accent); }
+.ranking { list-style: none; max-width: 660px; margin: 0 auto; }
+.rank-row {
+  display: grid;
+  grid-template-columns: 86px 1fr 56px;
+  gap: 14px;
+  align-items: center;
+  padding: 7px 0;
+  text-decoration: none;
+  color: var(--ink);
+}
+.rank-row:hover .rank-label { color: var(--accent); }
+.rank-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.rank-track {
+  display: block;
+  height: 22px;
+  background: #f4f2ef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.rank-bar {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+}
+.rank-pct {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

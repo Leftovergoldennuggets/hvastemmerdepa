@@ -1,20 +1,26 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Matrix from "./Matrix.jsx";
 import PairView from "./PairView.jsx";
+import PartyView from "./PartyView.jsx";
 import MethodPage from "./MethodPage.jsx";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
+import PeriodPicker from "./PeriodPicker.jsx";
 import { partyOrFallback } from "./parties.js";
-import { sessionsIndex, siteMeta, groupPeriods, aggregateMatrix, formatN, formatDate } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, formatN, formatDate } from "./lib.js";
+import { useTimeSelection } from "./useTimeSelection.js";
 
-// Hash routing keeps every view shareable: #/par/R/FrP is a permalink.
+// Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
 function parseHash() {
-  if (window.location.hash.startsWith("#/metodikk")) return { view: "method" };
-  if (window.location.hash.startsWith("#/forsta")) return { view: "forsta" };
-  if (window.location.hash.startsWith("#/om")) return { view: "om" };
-  const m = window.location.hash.match(/^#\/par\/([\wÆØÅæøå]+)\/([\wÆØÅæøå]+)/);
-  if (m && m[1] !== m[2]) {
-    return { view: "pair", a: partyOrFallback(m[1]), b: partyOrFallback(m[2]) };
+  const h = window.location.hash;
+  if (h.startsWith("#/metodikk")) return { view: "method" };
+  if (h.startsWith("#/forsta")) return { view: "forsta" };
+  if (h.startsWith("#/om")) return { view: "om" };
+  const party = h.match(/^#\/parti\/([\wÆØÅæøå]+)/);
+  if (party) return { view: "party", party: partyOrFallback(party[1]) };
+  const pair = h.match(/^#\/par\/([\wÆØÅæøå]+)\/([\wÆØÅæøå]+)/);
+  if (pair && pair[1] !== pair[2]) {
+    return { view: "pair", a: partyOrFallback(pair[1]), b: partyOrFallback(pair[2]) };
   }
   return { view: "matrix" };
 }
@@ -43,13 +49,28 @@ function Menu() {
   );
 }
 
+function Credit({ meta, full }) {
+  return (
+    <footer className="credit">
+      <span>
+        Kilde: <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a> (NLOD).
+        {full && " Datagrunnlaget kan lastes ned og etterprøves."}
+      </span>
+      {meta && <span>Sist oppdatert {formatDate(meta.generated)}</span>}
+    </footer>
+  );
+}
+
 export default function App() {
   const [index, setIndex] = useState(null);
-  const [selection, setSelection] = useState(null); // {kind:'period'|'sesjon', id}
-  const [matrix, setMatrix] = useState(null);
   const [route, setRoute] = useState(parseHash);
   const [meta, setMeta] = useState(null);
+  const { periods, selection, setSelection, selectedSessions, label, totalVotes } =
+    useTimeSelection(index);
+  const [matrix, setMatrix] = useState(null);
+  const [loadError, setLoadError] = useState(false);
 
+  useEffect(() => { sessionsIndex().then(setIndex); }, []);
   useEffect(() => { siteMeta().then(setMeta).catch(() => {}); }, []);
 
   useEffect(() => {
@@ -58,25 +79,6 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
-  useEffect(() => {
-    sessionsIndex().then((idx) => {
-      setIndex(idx);
-      const periods = [...groupPeriods(idx).keys()];
-      setSelection({ kind: "period", id: periods[periods.length - 1] });
-    });
-  }, []);
-
-  const periods = useMemo(() => (index ? groupPeriods(index) : new Map()), [index]);
-
-  const selectedSessions = useMemo(() => {
-    if (!index || !selection) return [];
-    if (selection.kind === "sesjon") {
-      return index.filter((s) => s.sesjon === selection.id);
-    }
-    return periods.get(selection.id) || [];
-  }, [index, selection, periods]);
-
-  const [loadError, setLoadError] = useState(false);
   useEffect(() => {
     if (!selectedSessions.length) return;
     let live = true;
@@ -87,12 +89,6 @@ export default function App() {
       .catch(() => { if (live) setLoadError(true); });
     return () => { live = false; };
   }, [selectedSessions]);
-
-  const totalVotes = selectedSessions.reduce((n, s) => n + s.recorded, 0);
-  const label =
-    selection?.kind === "period"
-      ? `i stortingsperioden ${selection.id}`
-      : `i sesjonen ${selection?.id}`;
 
   return (
     <div className="shell">
@@ -110,49 +106,21 @@ export default function App() {
       ) : ["method", "forsta", "om"].includes(route.view) ? (
         <main>
           {route.view === "method" ? <MethodPage /> : route.view === "forsta" ? <ForstaPage /> : <OmPage />}
-          <footer className="credit">
-            <span>
-              Kilde: <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a> (NLOD).
-            </span>
-            {meta && <span>Sist oppdatert {formatDate(meta.generated)}</span>}
-          </footer>
+          <Credit meta={meta} />
+        </main>
+      ) : route.view === "party" ? (
+        <main>
+          <PartyView index={index} party={route.party} />
+          <Credit meta={meta} />
         </main>
       ) : route.view === "pair" ? (
         <main>
           <PairView index={index} a={route.a} b={route.b} />
-          <footer className="credit">
-            <span>
-              Kilde: <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a> (NLOD).
-            </span>
-          </footer>
+          <Credit meta={meta} />
         </main>
       ) : (
         <main>
-          <nav className="controls" aria-label="Velg tidsrom">
-            {[...periods.keys()].map((p) => (
-              <button
-                key={p}
-                className={`tab${selection.kind === "period" && selection.id === p ? " active" : ""}`}
-                onClick={() => setSelection({ kind: "period", id: p })}
-              >
-                {p}
-              </button>
-            ))}
-            <select
-              value={selection.kind === "sesjon" ? selection.id : ""}
-              onChange={(e) =>
-                e.target.value && setSelection({ kind: "sesjon", id: e.target.value })
-              }
-              aria-label="Velg enkeltsesjon"
-            >
-              <option value="">Enkeltsesjon</option>
-              {index.map((s) => (
-                <option key={s.sesjon} value={s.sesjon}>
-                  {s.sesjon}
-                </option>
-              ))}
-            </select>
-          </nav>
+          <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
 
           {matrix ? (
             <Matrix
@@ -173,16 +141,11 @@ export default function App() {
 
           <p className="count-note">
             Hver rute: andel av <strong>{formatN(totalVotes)}</strong> voteringer{" "}
-            {label} der de to partiene stemte likt.
+            {label} der de to partiene stemte likt. Trykk på et partinavn for
+            partiets egen side.
           </p>
 
-          <footer className="credit">
-            <span>
-              Kilde: <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a> (NLOD).
-              Datagrunnlaget kan lastes ned og etterprøves.
-            </span>
-            {meta && <span>Sist oppdatert {formatDate(meta.generated)}</span>}
-          </footer>
+          <Credit meta={meta} full />
         </main>
       )}
     </div>
