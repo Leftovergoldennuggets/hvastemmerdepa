@@ -468,3 +468,30 @@ a.party-key:hover { color: var(--accent); }
   font-variant-numeric: tabular-nums;
   text-align: right;
 }
+
+/* Persistent top bar on subpages + tap affordances */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+  border-bottom: 1px solid var(--hairline);
+  margin: 0 -24px;
+  padding: 11px 24px;
+}
+.topbar a {
+  color: var(--ink-secondary);
+  text-decoration: none;
+  font-size: 14px;
+}
+.topbar a:hover { color: var(--accent); }
+.tap-hint {
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin: -22px 0 22px;
+}
+.rank-row { grid-template-columns: 86px 1fr 56px 14px; }
+.rank-arrow { color: var(--ink-muted); font-size: 17px; }
+.rank-row:hover .rank-arrow { color: var(--accent); }

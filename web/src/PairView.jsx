@@ -255,7 +255,6 @@ export default function PairView({ index, a, b }) {
 
   return (
     <div>
-      <a className="back-link" href="#/">← Alle partier</a>
       <div className="pair-head">
         <Logo party={a} /> <Logo party={b} />
         <h2>{a.navn} og {b.navn}</h2>

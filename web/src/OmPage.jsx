@@ -1,7 +1,6 @@
 export default function OmPage() {
   return (
     <div className="method">
-      <a className="back-link" href="#/">← Til oversikten</a>
       <h2>Om prosjektet</h2>
       <p className="lede">
         Hva stemmer de på? er et uavhengig, ikke-kommersielt samfunnsprosjekt

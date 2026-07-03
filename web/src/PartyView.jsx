@@ -46,7 +46,6 @@ export default function PartyView({ index, party }) {
 
   return (
     <div>
-      <a className="back-link" href="#/">← Alle partier</a>
       <div className="pair-head">
         <Logo party={party} />
         <h2>Hvem stemmer {party.navn} med?</h2>
@@ -81,6 +80,7 @@ export default function PartyView({ index, party }) {
                   />
                 </span>
                 <span className="rank-pct">{Math.round(r.pct)} %</span>
+                <span className="rank-arrow" aria-hidden="true">›</span>
               </a>
             </li>
           ))}

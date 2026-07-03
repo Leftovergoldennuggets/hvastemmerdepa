@@ -7,7 +7,6 @@ export default function MethodPage() {
 
   return (
     <div className="method">
-      <a className="back-link" href="#/">← Til oversikten</a>
       <h2>Metode</h2>
       <p className="lede">
         Alt på dette nettstedet er beregnet fra Stortingets egne rådata og kan

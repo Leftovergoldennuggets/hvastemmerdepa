@@ -92,6 +92,11 @@ export default function App() {
 
   return (
     <div className="shell">
+      {route.view !== "matrix" && (
+        <div className="topbar">
+          <a href="#/">← Til forsiden</a>
+        </div>
+      )}
       <Menu />
       <header className="masthead">
         <h1><a href="#/">Hva stemmer de på?</a></h1>
@@ -122,6 +127,11 @@ export default function App() {
         <main>
           <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
 
+          <p className="tap-hint">
+            Trykk på en rute for to partiers historie – eller på et partinavn
+            for partiets egen side.
+          </p>
+
           {matrix ? (
             <Matrix
               matrix={matrix}
@@ -141,8 +151,7 @@ export default function App() {
 
           <p className="count-note">
             Hver rute: andel av <strong>{formatN(totalVotes)}</strong> voteringer{" "}
-            {label} der de to partiene stemte likt. Trykk på et partinavn for
-            partiets egen side.
+            {label} der de to partiene stemte likt.
           </p>
 
           <Credit meta={meta} full />

@@ -1,7 +1,6 @@
 export default function ForstaPage() {
   return (
     <div className="method">
-      <a className="back-link" href="#/">← Til oversikten</a>
       <h2>Hvordan forstå tallene</h2>
       <p className="lede">
         Kort veiledning til matrisen, fargene og partisidene.
