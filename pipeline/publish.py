@@ -9,13 +9,18 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "data" / "computed"
 DST = ROOT / "web" / "public" / "data"
 
-if DST.exists():
-    shutil.rmtree(DST)
-DST.mkdir(parents=True)
+# Overwrite in place — never delete the live directory. A rmtree while the
+# dev server is running leaves it with stale file handles, and it starts
+# serving index.html instead of JSON for random files.
+DST.mkdir(parents=True, exist_ok=True)
 shutil.copy(SRC / "sessions.json", DST / "sessions.json")
 shutil.copy(SRC / "eras.json", DST / "eras.json")
-shutil.copytree(SRC / "matrix", DST / "matrix")
-shutil.copytree(SRC / "positions", DST / "positions")
+shutil.copytree(SRC / "matrix", DST / "matrix", dirs_exist_ok=True)
+shutil.copytree(SRC / "positions", DST / "positions", dirs_exist_ok=True)
+for old in DST.rglob("*.json"):
+    rel = old.relative_to(DST)
+    if str(rel) not in ("sessions.json", "eras.json", "meta.json") and not (SRC / rel).exists():
+        old.unlink()
 
 # Build metadata so the site never hardcodes dates or totals.
 import datetime
