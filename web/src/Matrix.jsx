@@ -80,7 +80,7 @@ export default function Matrix({ matrix, label, onSelect }) {
                 <th scope="row">
                   <span className="party-key">
                     <Logo party={rowP} />
-                    <span className="party-name">{rowP.navn}</span>
+                    <span className="party-name">{rowP.kort}</span>
                   </span>
                 </th>
                 {cols.map((colP, ci) => {
