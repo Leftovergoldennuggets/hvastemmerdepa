@@ -1,0 +1,715 @@
+[
+ {
+  "sesjon": "2011-2012",
+  "saker": 596,
+  "voteringer": 1032,
+  "recorded": 705,
+  "enstemmig": 327,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   }
+  ]
+ },
+ {
+  "sesjon": "2012-2013",
+  "saker": 667,
+  "voteringer": 1451,
+  "recorded": 1024,
+  "enstemmig": 426,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   }
+  ]
+ },
+ {
+  "sesjon": "2013-2014",
+  "saker": 500,
+  "voteringer": 659,
+  "recorded": 284,
+  "enstemmig": 372,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   }
+  ]
+ },
+ {
+  "sesjon": "2014-2015",
+  "saker": 572,
+  "voteringer": 1199,
+  "recorded": 712,
+  "enstemmig": 486,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   }
+  ]
+ },
+ {
+  "sesjon": "2015-2016",
+  "saker": 631,
+  "voteringer": 1433,
+  "recorded": 885,
+  "enstemmig": 542,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   }
+  ]
+ },
+ {
+  "sesjon": "2016-2017",
+  "saker": 633,
+  "voteringer": 1898,
+  "recorded": 1229,
+  "enstemmig": 666,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2017-2018",
+  "saker": 606,
+  "voteringer": 1549,
+  "recorded": 1182,
+  "enstemmig": 365,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   }
+  ]
+ },
+ {
+  "sesjon": "2018-2019",
+  "saker": 592,
+  "voteringer": 1546,
+  "recorded": 1225,
+  "enstemmig": 317,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2019-2020",
+  "saker": 615,
+  "voteringer": 1523,
+  "recorded": 1109,
+  "enstemmig": 360,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2020-2021",
+  "saker": 900,
+  "voteringer": 2892,
+  "recorded": 2363,
+  "enstemmig": 529,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2021-2022",
+  "saker": 691,
+  "voteringer": 1721,
+  "recorded": 1361,
+  "enstemmig": 357,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "PF",
+    "navn": "Pasientfokus"
+   }
+  ]
+ },
+ {
+  "sesjon": "2022-2023",
+  "saker": 683,
+  "voteringer": 1971,
+  "recorded": 1661,
+  "enstemmig": 309,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "PF",
+    "navn": "Pasientfokus"
+   }
+  ]
+ },
+ {
+  "sesjon": "2023-2024",
+  "saker": 637,
+  "voteringer": 1963,
+  "recorded": 1655,
+  "enstemmig": 308,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "PF",
+    "navn": "Pasientfokus"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2024-2025",
+  "saker": 727,
+  "voteringer": 2800,
+  "recorded": 2429,
+  "enstemmig": 369,
+  "pending_backfill": 0,
+  "verify_mismatches": 3,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "PF",
+    "navn": "Pasientfokus"
+   },
+   {
+    "id": "Uav",
+    "navn": "Uavhengig representant"
+   }
+  ]
+ },
+ {
+  "sesjon": "2025-2026",
+  "saker": 650,
+  "voteringer": 2073,
+  "recorded": 1796,
+  "enstemmig": 276,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   }
+  ]
+ }
+]

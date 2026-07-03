@@ -1,0 +1,6 @@
+# Raw API data (~1-2 GB, thousands of files). Regenerate with: python3 pipeline/fetch.py
+data/raw/
+__pycache__/
+node_modules/
+dist/
+.DS_Store
