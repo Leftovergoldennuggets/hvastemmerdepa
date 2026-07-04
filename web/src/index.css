@@ -495,3 +495,29 @@ a.party-key:hover { color: var(--accent); }
 .rank-row { grid-template-columns: 86px 1fr 56px 14px; }
 .rank-arrow { color: var(--ink-muted); font-size: 17px; }
 .rank-row:hover .rank-arrow { color: var(--accent); }
+
+/* Tema selector */
+.tema-row {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+  margin: -26px 0 28px;
+  font-size: 14px;
+}
+.tema-row label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.tema-row select {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  max-width: 320px;
+}

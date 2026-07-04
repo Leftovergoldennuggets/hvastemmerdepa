@@ -142,6 +142,7 @@ def fetch_session(sesjon: str):
 
 
 def main():
+    fetch_to(RAW / "allekomiteer.json.gz", f"{BASE}/allekomiteer?format=json")
     sessions = sys.argv[1:] or active_sessions()
     print(f"Fetching {len(sessions)} sessions: {sessions[0]} .. {sessions[-1]}", flush=True)
     for sesjon in sessions:

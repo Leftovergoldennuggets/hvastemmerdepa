@@ -89,6 +89,29 @@ export const loadPositions = (sesjon) => fetchJSON(`/data/positions/${sesjon}.js
 
 export const erasData = () => fetchJSON("/data/eras.json");
 
+export const komiteerData = () => fetchJSON("/data/komiteer.json");
+
+// Per-committee ("tema") agreement, summed over the given sessions.
+export async function aggregateKomite(sesjonIds) {
+  const counts = new Map();
+  const byKomite = new Map();
+  for (const id of sesjonIds) {
+    const d = await fetchJSON(`/data/matrix_komite/${id}.json`);
+    for (const [k, n] of Object.entries(d.counts)) {
+      counts.set(k, (counts.get(k) || 0) + n);
+    }
+    for (const { komite, pair, agree, total } of d.pairs) {
+      if (!byKomite.has(komite)) byKomite.set(komite, new Map());
+      const m = byKomite.get(komite);
+      const acc = m.get(pair) || { agree: 0, total: 0 };
+      acc.agree += agree;
+      acc.total += total;
+      m.set(pair, acc);
+    }
+  }
+  return { counts, byKomite };
+}
+
 // A pair's agreement per government constellation, with the pair's role.
 export function pairEras(eras, aId, bId) {
   const key = pairKey(aId, bId);

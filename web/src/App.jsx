@@ -7,7 +7,7 @@ import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
 import { partyOrFallback } from "./parties.js";
-import { sessionsIndex, siteMeta, aggregateMatrix, formatN, formatDate } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
 // Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
@@ -69,9 +69,13 @@ export default function App() {
     useTimeSelection(index);
   const [matrix, setMatrix] = useState(null);
   const [loadError, setLoadError] = useState(false);
+  const [tema, setTema] = useState("");
+  const [komiteAgg, setKomiteAgg] = useState(null);
+  const [komiteNavn, setKomiteNavn] = useState({});
 
   useEffect(() => { sessionsIndex().then(setIndex); }, []);
   useEffect(() => { siteMeta().then(setMeta).catch(() => {}); }, []);
+  useEffect(() => { komiteerData().then(setKomiteNavn).catch(() => {}); }, []);
 
   useEffect(() => {
     const onHash = () => { setRoute(parseHash()); window.scrollTo(0, 0); };
@@ -83,12 +87,22 @@ export default function App() {
     if (!selectedSessions.length) return;
     let live = true;
     setMatrix(null);
+    setKomiteAgg(null);
     setLoadError(false);
-    aggregateMatrix(selectedSessions.map((s) => s.sesjon))
-      .then((m) => { if (live) setMatrix(m); })
+    const ids = selectedSessions.map((s) => s.sesjon);
+    Promise.all([aggregateMatrix(ids), aggregateKomite(ids)])
+      .then(([m, k]) => {
+        if (!live) return;
+        setMatrix(m);
+        setKomiteAgg(k);
+        setTema((t) => (t && !k.byKomite.has(t) ? "" : t));
+      })
       .catch(() => { if (live) setLoadError(true); });
     return () => { live = false; };
   }, [selectedSessions]);
+
+  const shownMatrix = tema && komiteAgg ? komiteAgg.byKomite.get(tema) : matrix;
+  const temaVotes = tema && komiteAgg ? komiteAgg.counts.get(tema) : null;
 
   return (
     <div className="shell">
@@ -127,15 +141,31 @@ export default function App() {
         <main>
           <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
 
+          {komiteAgg && (
+            <div className="tema-row">
+              <label htmlFor="tema">Tema</label>
+              <select id="tema" value={tema} onChange={(e) => setTema(e.target.value)}>
+                <option value="">Alle temaer</option>
+                {[...komiteAgg.counts.entries()]
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([kid]) => (
+                    <option key={kid} value={kid}>
+                      {komiteNavn[kid] || kid}
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
+
           <p className="tap-hint">
             Trykk på en rute for to partiers historie – eller på et partinavn
             for partiets egen side.
           </p>
 
-          {matrix ? (
+          {shownMatrix ? (
             <Matrix
-              matrix={matrix}
-              label={label}
+              matrix={shownMatrix}
+              label={tema ? `${label} (${komiteNavn[tema] || tema})` : label}
               onSelect={(a, b) => { window.location.hash = `/par/${a.id}/${b.id}`; }}
             />
           ) : loadError ? (
@@ -150,8 +180,18 @@ export default function App() {
           )}
 
           <p className="count-note">
-            Hver rute: andel av <strong>{formatN(totalVotes)}</strong> voteringer{" "}
-            {label} der de to partiene stemte likt.
+            {tema ? (
+              <>
+                Hver rute: andel av <strong>{formatN(temaVotes || 0)}</strong>{" "}
+                voteringer behandlet i {komiteNavn[tema] || tema} {label} der de
+                to partiene stemte likt.
+              </>
+            ) : (
+              <>
+                Hver rute: andel av <strong>{formatN(totalVotes)}</strong>{" "}
+                voteringer {label} der de to partiene stemte likt.
+              </>
+            )}
           </p>
 
           <Credit meta={meta} full />

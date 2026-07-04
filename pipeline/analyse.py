@@ -25,7 +25,7 @@ import gzip
 import json
 import re
 import sys
-from collections import Counter
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent / "data"
@@ -175,6 +175,22 @@ def analyse_session(sesjon: str):
 
     agree, total = pairwise(positions)
 
+    # Agreement per committee ("tema"): Stortinget's own guidance says the
+    # committee handling a case is the reliable subject-area signal (sak-level
+    # topic tags are not, especially for budgets).
+    by_komite = defaultdict(list)
+    for row in positions:
+        if row["komite"] and not row["excluded"]:
+            by_komite[row["komite"]].append(row)
+    komite_data = {"counts": {}, "pairs": []}
+    for kid, rows in sorted(by_komite.items()):
+        komite_data["counts"][kid] = len(rows)
+        k_agree, k_total = pairwise(rows)
+        komite_data["pairs"] += [
+            {"komite": kid, "pair": k, "agree": k_agree[k], "total": t}
+            for k, t in sorted(k_total.items())
+        ]
+
     summary = {
         "sesjon": sesjon,
         "saker": len(saker),
@@ -186,31 +202,41 @@ def analyse_session(sesjon: str):
         "partier": [{"id": p["id"], "navn": p["navn"]} for p in partier],
     }
     matrix = [{"pair": k, "agree": agree[k], "total": t} for k, t in sorted(total.items())]
-    return summary, positions, matrix
+    return summary, positions, matrix, komite_data
 
 
 def main():
     (OUT / "positions").mkdir(parents=True, exist_ok=True)
     (OUT / "matrix").mkdir(parents=True, exist_ok=True)
+    (OUT / "matrix_komite").mkdir(parents=True, exist_ok=True)
     sessions = sys.argv[1:] or sorted(p.stem.replace(".json", "")
                                       for p in (RAW / "saker").glob("*.json.gz"))
     index = []
     all_positions = []
+    used_komiteer = set()
     for sesjon in sessions:
         result = analyse_session(sesjon)
         if result is None:
             continue
-        summary, positions, matrix = result
+        summary, positions, matrix, komite_data = result
         (OUT / "positions" / f"{sesjon}.json").write_text(
             json.dumps(positions, ensure_ascii=False))
         (OUT / "matrix" / f"{sesjon}.json").write_text(
             json.dumps(matrix, ensure_ascii=False))
+        (OUT / "matrix_komite" / f"{sesjon}.json").write_text(
+            json.dumps(komite_data, ensure_ascii=False))
+        used_komiteer.update(komite_data["counts"])
         index.append(summary)
         all_positions.extend(positions)
         print(f"[{sesjon}] {summary['recorded']} recorded votes, "
               f"{summary['verify_mismatches']} verify mismatches, "
               f"{summary['pending_backfill']} pending backfill")
     (OUT / "sessions.json").write_text(json.dumps(index, ensure_ascii=False, indent=1))
+
+    # Committee id -> official name, for the ids that actually occur.
+    alle = read(RAW / "allekomiteer.json.gz")["komiteer_liste"]
+    komiteer = {k["id"]: k["navn"] for k in alle if k["id"] in used_komiteer}
+    (OUT / "komiteer.json").write_text(json.dumps(komiteer, ensure_ascii=False))
 
     # Agreement per government constellation (era), from the same positions.
     eras = []

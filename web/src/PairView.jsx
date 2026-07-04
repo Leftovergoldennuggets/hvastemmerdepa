@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { pairSeries, loadPositions, erasData, pairEras, stance, formatN, formatDate, sakUrl } from "./lib.js";
+import { pairSeries, loadPositions, erasData, pairEras, aggregateKomite, komiteerData, pairKey, stance, formatN, formatDate, sakUrl } from "./lib.js";
 import { cellColor, cellText, partyOrFallback } from "./parties.js";
 
 function Logo({ party, size = 34 }) {
@@ -145,6 +145,53 @@ function EraTable({ a, b }) {
   );
 }
 
+function KomiteTable({ index, a, b }) {
+  const [rows, setRows] = useState(null);
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const [agg, navn] = await Promise.all([
+        aggregateKomite(index.map((s) => s.sesjon)),
+        komiteerData(),
+      ]);
+      const key = pairKey(a.id, b.id);
+      const out = [];
+      for (const [kid, m] of agg.byKomite) {
+        const c = m.get(key);
+        if (c && c.total >= 30) {
+          out.push({ kid, navn: navn[kid] || kid, ...c, pct: (100 * c.agree) / c.total });
+        }
+      }
+      out.sort((x, y) => y.pct - x.pct);
+      if (live) setRows(out);
+    })().catch(() => live && setRows([]));
+    return () => { live = false; };
+  }, [index, a.id, b.id]);
+
+  if (!rows || rows.length < 2) return null;
+  return (
+    <section className="era-table">
+      <h3>Tema for tema</h3>
+      <ol>
+        {rows.map((r) => (
+          <li key={r.kid}>
+            <span className="era-name">{r.navn}</span>
+            <span className="era-role">{formatN(r.total)} voteringer</span>
+            <span className="era-pct" style={{ background: cellColor(r.pct), color: cellText(r.pct) }}>
+              {r.pct.toFixed(1).replace(".", ",")} %
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="empty-note">
+        Tema følger fagkomiteen som behandlet saken, alle år samlet. Temaer med
+        under 30 felles voteringer vises ikke.
+      </p>
+    </section>
+  );
+}
+
 function VoteList({ index, a, b }) {
   const newestFirst = useMemo(
     () => [...index].map((s) => s.sesjon).reverse(),
@@ -267,6 +314,7 @@ export default function PairView({ index, a, b }) {
       </div>
       {series ? <TimeSeries series={series} a={a} b={b} /> : <div className="loading">Laster …</div>}
       <EraTable a={a} b={b} />
+      <KomiteTable index={index} a={a} b={b} />
       <VoteList index={index} a={a} b={b} />
     </div>
   );
