@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { PARTIES, partyOrFallback, cellColor, cellText } from "./parties.js";
 import { aggregateMatrix, pairKey, formatN } from "./lib.js";
+import { downloadCsv } from "./csv.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 import PeriodPicker from "./PeriodPicker.jsx";
 
@@ -90,6 +91,26 @@ export default function PartyView({ index, party }) {
       <p className="count-note">
         Andel av {formatN(totalVotes)} voteringer {label} der partiene stemte
         likt. Trykk på et parti for detaljene.
+        {ranking.length > 0 && (
+          <>
+            {" · "}
+            <button
+              className="dl"
+              onClick={() =>
+                downloadCsv(
+                  `${party.kort.toLowerCase()}-enighet-${selection.id}.csv`,
+                  ["parti", "enige", "felles_voteringer", "enighet_prosent", "tidsrom"],
+                  ranking.map((r) => [
+                    r.other.kort, r.agree, r.total,
+                    r.pct.toFixed(1).replace(".", ","), selection.id,
+                  ])
+                )
+              }
+            >
+              Last ned som CSV
+            </button>
+          </>
+        )}
       </p>
 
       {tip && (

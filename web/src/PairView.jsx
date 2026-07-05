@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { pairSeries, loadPositions, erasData, pairEras, aggregateKomite, komiteerData, pairKey, stance, formatN, formatDate, sakUrl } from "./lib.js";
 import { cellColor, cellText, partyOrFallback } from "./parties.js";
+import { downloadCsv } from "./csv.js";
 
 function Logo({ party, size = 34 }) {
   return (
@@ -237,6 +238,37 @@ function VoteList({ index, a, b }) {
 
   const shown = rows.filter((r) => r.match[filter]).slice(0, visible);
   const exhausted = loaded >= newestFirst.length;
+  const [exporting, setExporting] = useState(false);
+
+  const exportAll = async () => {
+    setExporting(true);
+    try {
+      const out = [];
+      for (const sesjon of newestFirst) {
+        const positions = await loadPositions(sesjon);
+        for (const r of positions) {
+          if (r.excluded) continue;
+          const sa = stance(r, a.id);
+          const sb = stance(r, b.id);
+          if (sa === null || sb === null) continue;
+          out.push([
+            r.dato || "", sesjon, r.sak, r.tittel || "", r.vid, r.tema || "",
+            sa ? "for" : "mot", sb ? "for" : "mot",
+            sa === sb ? "enige" : "uenige", sakUrl(r.sak),
+          ]);
+        }
+      }
+      out.sort((x, y) => String(y[0]).localeCompare(String(x[0])));
+      downloadCsv(
+        `voteringer-${a.kort}-${b.kort}.csv`.toLowerCase(),
+        ["dato", "sesjon", "sak_id", "sak", "votering_id", "votering_tema",
+         a.kort.toLowerCase(), b.kort.toLowerCase(), "resultat", "lenke"],
+        out
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <section className="votelist">
@@ -246,6 +278,9 @@ function VoteList({ index, a, b }) {
         </button>
         <button className={`tab${filter === "enige" ? " active" : ""}`} onClick={() => setFilter("enige")}>
           Der de stemte likt
+        </button>
+        <button className="dl right" onClick={exportAll} disabled={exporting}>
+          {exporting ? "Henter alle voteringer …" : "Last ned alle som CSV"}
         </button>
       </div>
       <ol>
@@ -311,6 +346,11 @@ export default function PairView({ index, a, b }) {
             av {formatN(overall.total)} felles voteringer siden {firstYear}.
           </p>
         )}
+        <p className="see-also">
+          <a href={`#/parti/${a.id}`}>Hvem stemmer {a.kort} med? →</a>
+          {" · "}
+          <a href={`#/parti/${b.id}`}>Hvem stemmer {b.kort} med? →</a>
+        </p>
       </div>
       {series ? <TimeSeries series={series} a={a} b={b} /> : <div className="loading">Laster …</div>}
       <EraTable a={a} b={b} />

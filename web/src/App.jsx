@@ -6,7 +6,8 @@ import MethodPage from "./MethodPage.jsx";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
-import { partyOrFallback } from "./parties.js";
+import { PARTIES, partyOrFallback } from "./parties.js";
+import { downloadCsv } from "./csv.js";
 import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
@@ -158,8 +159,9 @@ export default function App() {
           )}
 
           <p className="tap-hint">
-            Trykk på en rute for to partiers historie – eller på et partinavn
-            for partiets egen side.
+            Trykk på en rute for å sammenligne to partier – prøv f.eks.{" "}
+            <a href="#/par/R/FrP">Rødt × FrP</a> eller{" "}
+            <a href="#/par/A/H">Ap × Høyre</a>.
           </p>
 
           {shownMatrix ? (
@@ -192,7 +194,49 @@ export default function App() {
                 voteringer {label} der de to partiene stemte likt.
               </>
             )}
+            {shownMatrix && (
+              <>
+                {" · "}
+                <button
+                  className="dl"
+                  onClick={() => {
+                    const rows = [...shownMatrix.entries()].map(([key, c]) => {
+                      const [pa, pb] = key.split("|");
+                      return [
+                        partyOrFallback(pa).kort, partyOrFallback(pb).kort,
+                        c.agree, c.total, ((100 * c.agree) / c.total).toFixed(1).replace(".", ","),
+                        selection.id, tema ? (komiteNavn[tema] || tema) : "alle",
+                      ];
+                    });
+                    downloadCsv(
+                      `enighet-${selection.id}${tema ? "-" + tema : ""}.csv`,
+                      ["parti_a", "parti_b", "enige", "felles_voteringer", "enighet_prosent", "tidsrom", "tema"],
+                      rows
+                    );
+                  }}
+                >
+                  Last ned som CSV
+                </button>
+              </>
+            )}
           </p>
+
+          <section className="party-chips">
+            <h2>Utforsk ett parti</h2>
+            <p>Se hvem hvert parti stemmer mest – og minst – sammen med.</p>
+            <div className="chips-row">
+              {PARTIES.filter((p) =>
+                matrix && [...matrix.keys()].some((k) => k.split("|").includes(p.id))
+              ).map((p) => (
+                <a key={p.id} className="party-chip" href={`#/parti/${p.id}`}>
+                  <span className="logo-tile" style={{ width: 24, height: 24 }}>
+                    <img src={p.logo} alt="" loading="lazy" />
+                  </span>
+                  {p.navn}
+                </a>
+              ))}
+            </div>
+          </section>
 
           <Credit meta={meta} full />
         </main>
