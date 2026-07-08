@@ -752,14 +752,62 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
 .rep-tile span { display: block; }
 .rep-tile .rep-komite { margin-top: 3px; color: var(--ink-secondary); }
 
-/* Geography table */
-.geo-table { margin-top: 24px; min-width: 520px; text-align: left; }
-.geo-dots { display: inline-flex; flex-wrap: wrap; gap: 3px; max-width: 340px; }
-.geo-dots i {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+/* Norway map */
+.kart-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 470px) minmax(230px, 290px);
+  gap: 12px 36px;
+  justify-content: center;
+  align-items: start;
+  margin-top: 26px;
+  text-align: left;
+}
+@media (max-width: 640px) {
+  .kart-layout { grid-template-columns: 1fr; justify-items: center; }
+  .kart-panel { width: 100%; max-width: 360px; }
+}
+.norgeskart { width: 100%; height: auto; display: block; }
+.kart-flate {
+  fill: #efedea;
+  stroke: #fff;
+  stroke-width: 1.6;
+  cursor: pointer;
+}
+.kart-flate:hover { fill: #e4e1db; }
+.kart-flate.valgt { fill: #e9d2d3; }
+.kart-merke { cursor: pointer; }
+.kart-merke circle {
+  fill: var(--ink);
+  fill-opacity: 0.82;
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.kart-merke.valgt circle { fill: var(--accent); fill-opacity: 1; }
+.kart-merke:hover circle { fill-opacity: 1; }
+.kart-merke text {
+  fill: #fff;
+  font-size: 16.5px;
+  font-weight: 600;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+.kart-panel { font-size: 14px; padding-top: 8px; }
+.kart-panel h3 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 21px;
+}
+.kart-panel-sub { color: var(--ink-muted); font-size: 13px; margin-bottom: 10px; }
+.kart-panel ul { list-style: none; columns: 1; }
+.kart-panel li { padding: 2.5px 0; }
+.kart-panel li span { color: var(--ink-muted); }
+.kart-panel li i {
   display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
 }
 button.party-chip { font: inherit; background: none; cursor: pointer; }
 .party-chip.active { border-color: var(--ink); color: var(--ink); font-weight: 600; }

@@ -19,6 +19,12 @@ export const PARTIES = [
 
 export const PARTY_BY_ID = Object.fromEntries(PARTIES.map((p) => [p.id, p]));
 
+// Left-to-right index for sorting; unknown parties sort last.
+export function politicalOrder(id) {
+  const i = PARTIES.findIndex((p) => p.id === id);
+  return i === -1 ? PARTIES.length : i;
+}
+
 // Safety net: a party id in the data that we have no metadata for (e.g. a new
 // party after a future election) still renders — gray, abbreviation as name —
 // instead of silently disappearing from the matrix.

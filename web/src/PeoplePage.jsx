@@ -3,6 +3,7 @@ import { partyOrFallback } from "./parties.js";
 import { personerData, personPhoto } from "./lib.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
+import NorgesKart from "./NorgesKart.jsx";
 
 function Logo({ party, size = 24 }) {
   return (
@@ -146,47 +147,14 @@ export default function PeoplePage() {
       <section className="party-chips">
         <h2>Hvor kommer de fra?</h2>
         <p>
-          Stortinget velges fra 19 valgdistrikter. Hver prikk er en
-          representant, farget etter parti – hold pekeren over for navnet.
+          Stortinget velges fra 19 valgdistrikter. Sirkelen viser hvor mange
+          seter distriktet har – trykk for å se hvem som er valgt derfra.
         </p>
-        <div className="matrix-scroll">
-          <table className="people-table geo-table">
-            <thead>
-              <tr>
-                <th>Valgdistrikt</th>
-                <th>Seter</th>
-                <th>Representanter</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(
-                representanter.reduce((acc, r) => {
-                  const f = r.fylke || "Ukjent";
-                  (acc[f] = acc[f] || []).push(r);
-                  return acc;
-                }, {})
-              )
-                .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "nb"))
-                .map(([fylke, reps]) => (
-                  <tr key={fylke}>
-                    <td>{fylke}</td>
-                    <td className="num">{reps.length}</td>
-                    <td>
-                      <span className="geo-dots">
-                        {reps.map((r) => (
-                          <i
-                            key={r.id}
-                            style={{ background: partyOrFallback(r.parti).farge }}
-                            title={`${r.navn} (${partyOrFallback(r.parti).kort})`}
-                          />
-                        ))}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
+        <NorgesKart key={periode} representanter={representanter} />
+        <p className="count-note">
+          Kart: <a href="https://kartverket.no">Kartverket</a> (valgdistriktene,
+          forenklet og med havområder).
+        </p>
       </section>
 
       <section className="party-chips">

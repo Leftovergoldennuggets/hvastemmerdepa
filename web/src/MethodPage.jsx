@@ -103,7 +103,10 @@ export default function MethodPage() {
         Landsdelene er de vanlige grupperingene av de 19 valgdistriktene
         (Nord-Norge, Trøndelag, Vestlandet, Sørlandet, Østlandet og Oslo).
         Fotografiene er Stortingets offisielle portretter, lastet ned fra den
-        åpne datatjenesten og vist med kreditering.
+        åpne datatjenesten og vist med kreditering. Norgeskartet bygger på{" "}
+        <a href="https://kartverket.no">Kartverkets</a> offisielle geometri for
+        valgdistriktene (åpne data), forenklet for visning og med havområdene
+        inkludert.
       </p>
 
       <h3>Verifisering</h3>

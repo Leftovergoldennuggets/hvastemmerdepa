@@ -4,8 +4,8 @@ import { personPhoto } from "./lib.js";
 
 // Hemicycle seat chart: one dot per elected representative. Seats are laid
 // out geometrically and filled left-to-right in the conventional political
-// order, so each party forms a wedge. Color modes recolor the same dots by
-// gender, age or parliamentary experience.
+// order (Sp and MDG in the centre, as in the chamber), so each party forms
+// a wedge. Color modes recolor the same dots by gender, age or experience.
 
 const LEFT_TO_RIGHT = ["R", "SV", "A", "Sp", "MDG", "KrF", "V", "H", "FrP", "PF"];
 const partyOrder = (id) => {
