@@ -53,17 +53,29 @@ def main():
 
         per_parti = defaultdict(lambda: {"seter": 0, "kvinner": 0,
                                          "aldre": [], "fartstid": []})
+        personer = []
         for r in reps:
             parti = (r.get("parti") or {}).get("id") or "Uav"
             g = per_parti[parti]
             g["seter"] += 1
             g["kvinner"] += (r.get("kjoenn") == 1)
             born = ms_date(r.get("foedselsdato"))
-            if born:
-                g["aldre"].append((start - born).days / 365.25)
+            alder = round((start - born).days / 365.25, 1) if born else None
+            if alder is not None:
+                g["aldre"].append(alder)
             first = first_elected(r["id"])
-            if first:
-                g["fartstid"].append(max(0.0, (start - first).days / 365.25))
+            fartstid = round(max(0.0, (start - first).days / 365.25), 1) if first else None
+            if fartstid is not None:
+                g["fartstid"].append(fartstid)
+            personer.append({
+                "id": r["id"],
+                "navn": f"{r.get('fornavn', '')} {r.get('etternavn', '')}".strip(),
+                "parti": parti,
+                "kjoenn": r.get("kjoenn"),
+                "alder": alder,
+                "fartstid": fartstid,
+                "fylke": (r.get("fylke") or {}).get("navn"),
+            })
 
         out = {}
         for parti, g in per_parti.items():
@@ -74,7 +86,10 @@ def main():
                 "snitt_fartstid": round(sum(g["fartstid"]) / len(g["fartstid"]), 1) if g["fartstid"] else None,
                 "fartstid_n": len(g["fartstid"]),
             }
-        result[periode] = dict(sorted(out.items(), key=lambda kv: -kv[1]["seter"]))
+        result[periode] = {
+            "partier": dict(sorted(out.items(), key=lambda kv: -kv[1]["seter"])),
+            "representanter": sorted(personer, key=lambda x: x["navn"]),
+        }
         total = sum(v["seter"] for v in out.values())
         print(f"[{periode}] {total} representanter, {len(out)} partier")
 

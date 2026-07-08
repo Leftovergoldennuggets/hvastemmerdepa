@@ -137,6 +137,28 @@ export function pairEras(eras, aId, bId) {
     .filter(Boolean);
 }
 
+export const personerData = () => fetchJSON("/data/personer.json");
+
+export const gjennomslagData = () => fetchJSON("/data/gjennomslag.json");
+
+// Sum per-party proposal counts (fremmet/vedtatt) over a set of sessions.
+export function aggregateGjennomslag(data, sesjonIds) {
+  const out = new Map();
+  for (const id of sesjonIds) {
+    for (const [parti, v] of Object.entries(data[id] || {})) {
+      const acc = out.get(parti) || { fremmet: 0, vedtatt: 0 };
+      acc.fremmet += v.fremmet;
+      acc.vedtatt += v.vedtatt;
+      out.set(parti, acc);
+    }
+  }
+  return out;
+}
+
+// Official portrait, served directly by Stortinget's open data service.
+export const personPhoto = (personId) =>
+  `https://data.stortinget.no/eksport/personbilde?personid=${encodeURIComponent(personId)}&storrelse=middels`;
+
 // A party's stance on one vote: true = for, false = mot, null = no position
 // (absent, tied, or not in parliament).
 export function stance(row, partyId) {

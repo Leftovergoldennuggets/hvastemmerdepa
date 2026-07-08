@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback } from "./parties.js";
-import { fetchJSON, formatN } from "./lib.js";
+import { personerData, personPhoto } from "./lib.js";
 import { downloadCsv } from "./csv.js";
+import Salkart from "./Salkart.jsx";
 
 function Logo({ party, size = 24 }) {
   return (
@@ -18,9 +19,10 @@ function Logo({ party, size = 24 }) {
 export default function PeoplePage() {
   const [data, setData] = useState(null);
   const [periode, setPeriode] = useState(null);
+  const [grid, setGrid] = useState(null); // party id shown in the photo browser
 
   useEffect(() => {
-    fetchJSON("/data/personer.json").then((d) => {
+    personerData().then((d) => {
       setData(d);
       setPeriode(Object.keys(d).sort().pop());
     }).catch(() => setData({}));
@@ -28,7 +30,8 @@ export default function PeoplePage() {
 
   if (!data || !periode) return <div className="loading">Laster …</div>;
 
-  const partier = data[periode] || {};
+  const partier = data[periode]?.partier || {};
+  const representanter = data[periode]?.representanter || [];
   const rows = Object.entries(partier).filter(([id]) => id !== "Uav");
   const total = Object.values(partier).reduce(
     (acc, v) => ({
@@ -40,14 +43,16 @@ export default function PeoplePage() {
     }),
     { seter: 0, kvinner: 0, alder: 0, fartstid: 0, fn: 0 }
   );
+  const gridReps = grid ? representanter.filter((r) => r.parti === grid) : [];
 
   return (
     <div>
       <div className="pair-head">
         <h2>Hvem er de?</h2>
         <p>
-          De {total.seter} innvalgte representantene i hver stortingsperiode:
-          kjønnsbalanse, alder og erfaring, parti for parti.
+          De {total.seter} innvalgte representantene i hver stortingsperiode –
+          én prikk per person. Fargelegg salen etter parti, kjønn, alder eller
+          erfaring.
         </p>
       </div>
 
@@ -56,12 +61,14 @@ export default function PeoplePage() {
           <button
             key={p}
             className={`tab${p === periode ? " active" : ""}`}
-            onClick={() => setPeriode(p)}
+            onClick={() => { setPeriode(p); setGrid(null); }}
           >
             {p.replace("-", "–")}
           </button>
         ))}
       </nav>
+
+      <Salkart key={periode} representanter={representanter} />
 
       <div className="matrix-scroll">
         <table className="people-table">
@@ -123,18 +130,66 @@ export default function PeoplePage() {
           onClick={() =>
             downloadCsv(
               `representanter-${periode}.csv`,
-              ["parti", "seter", "kvinner", "kvinneandel_prosent", "snittalder", "snitt_aar_paa_stortinget", "periode"],
-              rows.map(([id, v]) => [
-                partyOrFallback(id).kort, v.seter, v.kvinner,
-                ((100 * v.kvinner) / v.seter).toFixed(1).replace(".", ","),
-                v.snittalder ?? "", v.snitt_fartstid ?? "", periode,
+              ["navn", "parti", "kjoenn", "fylke", "alder", "aar_paa_stortinget", "periode"],
+              representanter.map((r) => [
+                r.navn, partyOrFallback(r.parti).kort,
+                r.kjoenn === 1 ? "kvinne" : "mann", r.fylke ?? "",
+                r.alder ?? "", r.fartstid ?? "", periode,
               ])
             )
           }
         >
-          Last ned som CSV
+          Last ned alle representantene som CSV
         </button>
       </p>
+
+      <section className="party-chips">
+        <h2>Representantene</h2>
+        <p>Velg et parti for å se hvem som sitter for dem i denne perioden.</p>
+        <div className="chips-row">
+          {rows.map(([id]) => {
+            const p = partyOrFallback(id);
+            return (
+              <button
+                key={id}
+                className={`party-chip${grid === id ? " active" : ""}`}
+                onClick={() => setGrid(grid === id ? null : id)}
+              >
+                <span className="logo-tile" style={{ width: 24, height: 24 }}>
+                  {p.logo ? (
+                    <img src={p.logo} alt="" loading="lazy" />
+                  ) : (
+                    <span style={{ width: "55%", height: "55%", borderRadius: "50%", background: p.farge }} />
+                  )}
+                </span>
+                {p.kort}
+              </button>
+            );
+          })}
+        </div>
+
+        {grid && (
+          <>
+            <div className="rep-grid">
+              {gridReps.map((r) => (
+                <figure key={r.id} className="rep-tile">
+                  <img src={personPhoto(r.id)} alt={r.navn} loading="lazy" />
+                  <figcaption>
+                    <strong>{r.navn}</strong>
+                    <span>{r.fylke || ""}</span>
+                    <span>
+                      {r.alder != null && `${Math.floor(r.alder)} år`}
+                      {r.fartstid != null &&
+                        (r.fartstid < 0.1 ? " · ny" : ` · ${Math.round(r.fartstid)} år på tinget`)}
+                    </span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p className="count-note">Foto: Stortinget.</p>
+          </>
+        )}
+      </section>
     </div>
   );
 }

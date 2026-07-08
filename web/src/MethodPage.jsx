@@ -70,6 +70,35 @@ export default function MethodPage() {
         mellom partiene riktig, så fravær påvirker ikke partistandpunktene.
       </p>
 
+      <h3>Gjennomslag: partienes egne forslag</h3>
+      <p>
+        Stortingets voteringsbeskrivelser navngir forslagsstillerne når salen
+        stemmer over et forslag («Forslag nr. 17 på vegne av SV og R»).
+        Gjennomslag-tallene teller alle slike partiforslag som kom til
+        votering, og hvor mange av dem som ble vedtatt. Forslag fremmet av
+        flere partier sammen telles for hvert av partiene. Forslag fremmet av
+        enkeltrepresentanter eller presidentskapet – rundt 70 av 13 000 –
+        gjelder ikke et parti og holdes utenfor.
+      </p>
+      <p>
+        Tolk tallene med omhu: Regjeringspartier fremmer sjelden egne forslag,
+        fordi politikken deres allerede ligger i komitéinnstillingene. Lav
+        gjennomslagsprosent betyr først og fremst at partiet ofte utfordrer
+        flertallet – ikke at det er uten innflytelse, som også kan skje
+        gjennom forhandlinger før innstillingen.
+      </p>
+
+      <h3>Hvem er de?</h3>
+      <p>
+        Opplysningene om representantene – kjønn, fødselsdato, valgdistrikt og
+        når de først ble innvalgt – hentes fra Stortingets biografidata. Vi
+        teller de innvalgte representantene ved hver periodestart;
+        vararepresentanter er ikke med. Alder beregnes ved periodestart, og
+        «tid på Stortinget» er tiden siden representanten første gang ble
+        innvalgt som fast representant. Fotografiene hentes direkte fra
+        Stortingets åpne datatjeneste.
+      </p>
+
       <h3>Verifisering</h3>
       <p>
         For hver votering summeres de individuelle stemmene og sammenlignes med

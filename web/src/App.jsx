@@ -5,12 +5,13 @@ import PartyView from "./PartyView.jsx";
 import MethodPage from "./MethodPage.jsx";
 import SplitsPage from "./SplitsPage.jsx";
 import PeoplePage from "./PeoplePage.jsx";
+import GjennomslagPage from "./GjennomslagPage.jsx";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
-import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, fetchJSON, gjennomslagData, aggregateGjennomslag, personerData } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
 // Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
@@ -21,6 +22,7 @@ function parseHash() {
   if (h.startsWith("#/om")) return { view: "om" };
   if (h.startsWith("#/splittelser")) return { view: "splits" };
   if (h.startsWith("#/hvem")) return { view: "people" };
+  if (h.startsWith("#/gjennomslag")) return { view: "gjennomslag" };
   const party = h.match(/^#\/parti\/([\wÆØÅæøå]+)/);
   if (party) return { view: "party", party: partyOrFallback(party[1]) };
   const pair = h.match(/^#\/par\/([\wÆØÅæøå]+)\/([\wÆØÅæøå]+)/);
@@ -46,6 +48,7 @@ function Menu() {
         <div className="menu-panel" onClick={() => setOpen(false)}>
           <a href="#/">Oversikten</a>
           <a href="#/splittelser">Splittelser</a>
+          <a href="#/gjennomslag">Gjennomslag</a>
           <a href="#/hvem">Hvem er de?</a>
           <a href="#/forsta">Hvordan forstå tallene</a>
           <a href="#/metodikk">Metode</a>
@@ -53,6 +56,73 @@ function Menu() {
         </div>
       )}
     </nav>
+  );
+}
+
+// Home-page teasers for the story pages. Every number is computed from the
+// published data at load time — nothing hardcoded.
+function StoryCards() {
+  const [gj, setGj] = useState(null);
+  const [splits, setSplits] = useState(null);
+  const [kv, setKv] = useState(null);
+
+  useEffect(() => {
+    gjennomslagData().then((d) => {
+      const agg = aggregateGjennomslag(d, Object.keys(d));
+      let low = null;
+      for (const [id, v] of agg) {
+        if (v.fremmet < 300) continue;
+        const pct = (100 * v.vedtatt) / v.fremmet;
+        if (!low || pct < low.pct) low = { party: partyOrFallback(id), pct };
+      }
+      setGj(low);
+    }).catch(() => {});
+    fetchJSON("/data/splits.json").then((d) => setSplits(d.length)).catch(() => {});
+    personerData().then((d) => {
+      const latest = d[Object.keys(d).sort().pop()];
+      const partier = Object.values(latest.partier);
+      const seter = partier.reduce((a, v) => a + v.seter, 0);
+      const kvinner = partier.reduce((a, v) => a + v.kvinner, 0);
+      setKv(Math.round((100 * kvinner) / seter));
+    }).catch(() => {});
+  }, []);
+
+  return (
+    <section className="party-chips">
+      <h2>Mer i tallene</h2>
+      <div className="story-cards">
+        <a className="story-card" href="#/gjennomslag">
+          <span className="story-kicker">Gjennomslag</span>
+          {gj && (
+            <>
+              <span className="story-stat">{gj.pct.toFixed(1).replace(".", ",")} %</span>
+              <p>av forslagene fra {gj.party.navn} er blitt vedtatt siden 2011.</p>
+            </>
+          )}
+          <span className="story-link">Se hvem som vinner frem ›</span>
+        </a>
+        <a className="story-card" href="#/splittelser">
+          <span className="story-kicker">Splittelser</span>
+          {splits != null && (
+            <>
+              <span className="story-stat">{formatN(splits)}</span>
+              <p>ganger har et parti splittet seg i en votering.</p>
+            </>
+          )}
+          <span className="story-link">Se når partiene sprekker ›</span>
+        </a>
+        <a className="story-card" href="#/hvem">
+          <span className="story-kicker">Hvem er de?</span>
+          {kv != null && (
+            <>
+              <span className="story-stat">{kv} %</span>
+              <p>av dagens representanter er kvinner.</p>
+            </>
+          )}
+          <span className="story-link">Se hvem som sitter i salen ›</span>
+        </a>
+      </div>
+    </section>
   );
 }
 
@@ -142,6 +212,11 @@ export default function App() {
       ) : route.view === "people" ? (
         <main>
           <PeoplePage />
+          <Credit meta={meta} />
+        </main>
+      ) : route.view === "gjennomslag" ? (
+        <main>
+          <GjennomslagPage index={index} />
           <Credit meta={meta} />
         </main>
       ) : route.view === "party" ? (
@@ -253,6 +328,8 @@ export default function App() {
               ))}
             </div>
           </section>
+
+          <StoryCards />
 
           <Credit meta={meta} full />
         </main>
