@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(python3 fetch_personer.py)",
+      "Bash(python3 pipeline/analyse_personer.py)"
     ]
   }
 }
