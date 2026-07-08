@@ -3,6 +3,7 @@ import Matrix from "./Matrix.jsx";
 import PairView from "./PairView.jsx";
 import PartyView from "./PartyView.jsx";
 import MethodPage from "./MethodPage.jsx";
+import SplitsPage from "./SplitsPage.jsx";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
@@ -17,6 +18,7 @@ function parseHash() {
   if (h.startsWith("#/metodikk")) return { view: "method" };
   if (h.startsWith("#/forsta")) return { view: "forsta" };
   if (h.startsWith("#/om")) return { view: "om" };
+  if (h.startsWith("#/splittelser")) return { view: "splits" };
   const party = h.match(/^#\/parti\/([\wÆØÅæøå]+)/);
   if (party) return { view: "party", party: partyOrFallback(party[1]) };
   const pair = h.match(/^#\/par\/([\wÆØÅæøå]+)\/([\wÆØÅæøå]+)/);
@@ -41,6 +43,7 @@ function Menu() {
       {open && (
         <div className="menu-panel" onClick={() => setOpen(false)}>
           <a href="#/">Oversikten</a>
+          <a href="#/splittelser">Splittelser</a>
           <a href="#/forsta">Hvordan forstå tallene</a>
           <a href="#/metodikk">Metode</a>
           <a href="#/om">Om prosjektet</a>
@@ -126,6 +129,11 @@ export default function App() {
       ) : ["method", "forsta", "om"].includes(route.view) ? (
         <main>
           {route.view === "method" ? <MethodPage /> : route.view === "forsta" ? <ForstaPage /> : <OmPage />}
+          <Credit meta={meta} />
+        </main>
+      ) : route.view === "splits" ? (
+        <main>
+          <SplitsPage />
           <Credit meta={meta} />
         </main>
       ) : route.view === "party" ? (

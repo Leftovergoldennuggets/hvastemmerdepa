@@ -578,3 +578,23 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
 .see-also { margin-top: 12px; font-size: 14px; }
 .see-also a { color: var(--accent); text-decoration: none; }
 .see-also a:hover { text-decoration: underline; }
+
+/* Splits page */
+.votelist-plain { list-style: none; }
+.split-party {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 6px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.filter-tabs select {
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 5px 8px;
+  background: transparent;
+  color: var(--ink);
+}

@@ -191,6 +191,21 @@ def analyse_session(sesjon: str):
             for k, t in sorted(k_total.items())
         ]
 
+    # Internal party splits: at least two representatives voting against
+    # their own party's majority. Single dissenters are excluded — mis-presses
+    # are never corrected in the source data and would dominate the list.
+    splits = []
+    for row in positions:
+        if row["excluded"]:
+            continue
+        for parti, (f, m) in row["partier"].items():
+            if parti != "Uav" and min(f, m) >= 2:
+                splits.append({
+                    "sesjon": sesjon, "vid": row["vid"], "sak": row["sak"],
+                    "tittel": row["tittel"], "dato": row["dato"], "tema": row["tema"],
+                    "parti": parti, "for": f, "mot": m,
+                })
+
     summary = {
         "sesjon": sesjon,
         "saker": len(saker),
@@ -202,7 +217,7 @@ def analyse_session(sesjon: str):
         "partier": [{"id": p["id"], "navn": p["navn"]} for p in partier],
     }
     matrix = [{"pair": k, "agree": agree[k], "total": t} for k, t in sorted(total.items())]
-    return summary, positions, matrix, komite_data
+    return summary, positions, matrix, komite_data, splits
 
 
 def main():
@@ -213,12 +228,13 @@ def main():
                                       for p in (RAW / "saker").glob("*.json.gz"))
     index = []
     all_positions = []
+    all_splits = []
     used_komiteer = set()
     for sesjon in sessions:
         result = analyse_session(sesjon)
         if result is None:
             continue
-        summary, positions, matrix, komite_data = result
+        summary, positions, matrix, komite_data, splits = result
         (OUT / "positions" / f"{sesjon}.json").write_text(
             json.dumps(positions, ensure_ascii=False))
         (OUT / "matrix" / f"{sesjon}.json").write_text(
@@ -228,10 +244,15 @@ def main():
         used_komiteer.update(komite_data["counts"])
         index.append(summary)
         all_positions.extend(positions)
+        all_splits.extend(splits)
         print(f"[{sesjon}] {summary['recorded']} recorded votes, "
               f"{summary['verify_mismatches']} verify mismatches, "
               f"{summary['pending_backfill']} pending backfill")
     (OUT / "sessions.json").write_text(json.dumps(index, ensure_ascii=False, indent=1))
+
+    all_splits.sort(key=lambda s: s["dato"] or "", reverse=True)
+    (OUT / "splits.json").write_text(json.dumps(all_splits, ensure_ascii=False))
+    print(f"[splits] {len(all_splits)} party splits (>=2 dissenters)")
 
     # Committee id -> official name, for the ids that actually occur.
     alle = read(RAW / "allekomiteer.json.gz")["komiteer_liste"]
