@@ -671,7 +671,12 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
   margin-right: 5px;
   vertical-align: -1px;
 }
-.salkart-legend em { font-style: normal; color: var(--ink-muted); }
+.salkart-legend em {
+  font-style: normal;
+  font-weight: 650;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
 
 /* Representative card (selected dot) + photo grid */
 .rep-card {
@@ -767,45 +772,12 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
   .gj-label em { white-space: normal; }
 }
 
-/* Home-page story cards */
-.story-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  max-width: 860px;
-  margin: 0 auto;
-  text-align: left;
-}
-@media (max-width: 700px) {
-  .story-cards { grid-template-columns: 1fr; }
-}
-.story-card {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 20px 22px 18px;
-  border: 1px solid var(--hairline);
-  border-radius: 12px;
+/* Home-page salkart teaser */
+.home-salkart {
+  display: block;
+  max-width: 680px;
+  margin: 4px auto 10px;
   text-decoration: none;
-  color: var(--ink);
 }
-.story-card:hover { border-color: var(--accent); }
-.story-kicker {
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-.story-stat {
-  font-family: var(--serif);
-  font-size: 40px;
-  line-height: 1.05;
-  font-weight: 500;
-}
-.story-card p { font-size: 14px; color: var(--ink-secondary); margin: 0; }
-.story-card .story-link {
-  margin-top: auto;
-  padding-top: 8px;
-  font-size: 13.5px;
-  color: var(--accent);
-}
+.home-salkart .salkart { margin-bottom: 0; }
+.home-salkart:hover { opacity: 0.88; }

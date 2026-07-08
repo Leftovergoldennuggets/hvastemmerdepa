@@ -11,7 +11,8 @@ import OmPage from "./OmPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
-import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, fetchJSON, gjennomslagData, aggregateGjennomslag, personerData } from "./lib.js";
+import Salkart from "./Salkart.jsx";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
 // Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
@@ -59,69 +60,40 @@ function Menu() {
   );
 }
 
-// Home-page teasers for the story pages. Every number is computed from the
-// published data at load time — nothing hardcoded.
-function StoryCards() {
-  const [gj, setGj] = useState(null);
-  const [splits, setSplits] = useState(null);
-  const [kv, setKv] = useState(null);
+// Home-page teaser: the current chamber as a seat chart, linking to
+// the full "Hvem er de?" page. Data comes from the published pipeline
+// output at load time — nothing hardcoded.
+function HomeSalkart() {
+  const [reps, setReps] = useState(null);
+  const [periode, setPeriode] = useState(null);
 
   useEffect(() => {
-    gjennomslagData().then((d) => {
-      const agg = aggregateGjennomslag(d, Object.keys(d));
-      let low = null;
-      for (const [id, v] of agg) {
-        if (v.fremmet < 300) continue;
-        const pct = (100 * v.vedtatt) / v.fremmet;
-        if (!low || pct < low.pct) low = { party: partyOrFallback(id), pct };
-      }
-      setGj(low);
-    }).catch(() => {});
-    fetchJSON("/data/splits.json").then((d) => setSplits(d.length)).catch(() => {});
     personerData().then((d) => {
-      const latest = d[Object.keys(d).sort().pop()];
-      const partier = Object.values(latest.partier);
-      const seter = partier.reduce((a, v) => a + v.seter, 0);
-      const kvinner = partier.reduce((a, v) => a + v.kvinner, 0);
-      setKv(Math.round((100 * kvinner) / seter));
+      const latest = Object.keys(d).sort().pop();
+      setPeriode(latest);
+      setReps(d[latest].representanter);
     }).catch(() => {});
   }, []);
 
+  if (!reps) return null;
   return (
     <section className="party-chips">
-      <h2>Mer i tallene</h2>
-      <div className="story-cards">
-        <a className="story-card" href="#/gjennomslag">
-          <span className="story-kicker">Gjennomslag</span>
-          {gj && (
-            <>
-              <span className="story-stat">{gj.pct.toFixed(1).replace(".", ",")} %</span>
-              <p>av forslagene fra {gj.party.navn} er blitt vedtatt siden 2011.</p>
-            </>
-          )}
-          <span className="story-link">Se hvem som vinner frem ›</span>
-        </a>
-        <a className="story-card" href="#/splittelser">
-          <span className="story-kicker">Splittelser</span>
-          {splits != null && (
-            <>
-              <span className="story-stat">{formatN(splits)}</span>
-              <p>ganger har et parti splittet seg i en votering.</p>
-            </>
-          )}
-          <span className="story-link">Se når partiene sprekker ›</span>
-        </a>
-        <a className="story-card" href="#/hvem">
-          <span className="story-kicker">Hvem er de?</span>
-          {kv != null && (
-            <>
-              <span className="story-stat">{kv} %</span>
-              <p>av dagens representanter er kvinner.</p>
-            </>
-          )}
-          <span className="story-link">Se hvem som sitter i salen ›</span>
-        </a>
-      </div>
+      <h2>Hvem sitter i salen?</h2>
+      <p>
+        De {reps.length} representantene {periode && `valgt for ${periode.replace("-", "–")}`} –
+        én prikk per person.
+      </p>
+      <a className="home-salkart" href="#/hvem" aria-label="Se hvem representantene er">
+        <Salkart representanter={reps} interactive={false} />
+      </a>
+      <p className="see-also">
+        <a href="#/hvem">Se hvem de er – kjønn, alder og erfaring ›</a>
+      </p>
+      <p className="see-also">
+        Se også: <a href="#/gjennomslag">Hvem får gjennomslag?</a>
+        {" · "}
+        <a href="#/splittelser">Når splitter partiene seg?</a>
+      </p>
     </section>
   );
 }
@@ -329,7 +301,7 @@ export default function App() {
             </div>
           </section>
 
-          <StoryCards />
+          <HomeSalkart />
 
           <Credit meta={meta} full />
         </main>

@@ -13,17 +13,17 @@ const partyOrder = (id) => {
   return i === -1 ? LEFT_TO_RIGHT.length : i;
 };
 
-const KJONN = { kvinne: "#c4272e", mann: "#d8d4ce" };
+const KJONN = { kvinne: "#c4272e", mann: "#2C5F8A" };
 const ALDER_BINS = [
-  { label: "Under 35 år", test: (a) => a < 35, farge: "#BFD8CE" },
-  { label: "35–49 år", test: (a) => a < 50, farge: "#93C0AF" },
-  { label: "50–64 år", test: (a) => a < 65, farge: "#35886C" },
-  { label: "65 år eller mer", test: () => true, farge: "#14684F" },
+  { label: "Under 35 år", test: (a) => a < 35, farge: "#F2C14E" },
+  { label: "35–49 år", test: (a) => a < 50, farge: "#6BAED6" },
+  { label: "50–64 år", test: (a) => a < 65, farge: "#2171B5" },
+  { label: "65 år eller mer", test: () => true, farge: "#0A3D62" },
 ];
 const ERFARING_BINS = [
-  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#C4716A" },
-  { label: "Under 8 år", test: (f) => f < 8, farge: "#93C0AF" },
-  { label: "8 år eller mer", test: () => true, farge: "#14684F" },
+  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#D9782D" },
+  { label: "Under 8 år", test: (f) => f < 8, farge: "#6BAED6" },
+  { label: "8 år eller mer", test: () => true, farge: "#0A3D62" },
 ];
 
 const MODES = [
@@ -96,7 +96,7 @@ function legendFor(reps, mode) {
   }));
 }
 
-export default function Salkart({ representanter }) {
+export default function Salkart({ representanter, interactive = true }) {
   const [mode, setMode] = useState("parti");
   const [valgt, setValgt] = useState(null);
 
@@ -116,17 +116,19 @@ export default function Salkart({ representanter }) {
 
   return (
     <div className="salkart">
-      <nav className="controls salkart-modes" aria-label="Fargelegg salen etter">
-        {MODES.map((m) => (
-          <button
-            key={m.id}
-            className={`tab${m.id === mode ? " active" : ""}`}
-            onClick={() => setMode(m.id)}
-          >
-            {m.label}
-          </button>
-        ))}
-      </nav>
+      {interactive && (
+        <nav className="controls salkart-modes" aria-label="Fargelegg salen etter">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              className={`tab${m.id === mode ? " active" : ""}`}
+              onClick={() => setMode(m.id)}
+            >
+              {m.label}
+            </button>
+          ))}
+        </nav>
+      )}
 
       <svg viewBox="0 0 720 380" role="img" aria-label="Stortingssalen: én prikk per representant">
         {ordered.map((rep, i) => {
@@ -141,10 +143,12 @@ export default function Salkart({ representanter }) {
               fill={dotColor(rep, mode)}
               stroke={valgt?.id === rep.id ? "#191715" : "#fff"}
               strokeWidth={valgt?.id === rep.id ? 2 : 1}
-              style={{ cursor: "pointer" }}
-              onClick={() => setValgt(valgt?.id === rep.id ? null : rep)}
+              style={interactive ? { cursor: "pointer" } : undefined}
+              onClick={interactive ? () => setValgt(valgt?.id === rep.id ? null : rep) : undefined}
             >
-              <title>{`${rep.navn} (${partyOrFallback(rep.parti).kort}), ${rep.fylke || ""}`}</title>
+              {interactive && (
+                <title>{`${rep.navn} (${partyOrFallback(rep.parti).kort}), ${rep.fylke || ""}`}</title>
+              )}
             </circle>
           );
         })}
@@ -158,7 +162,7 @@ export default function Salkart({ representanter }) {
         ))}
       </div>
 
-      {valgt ? (
+      {!interactive ? null : valgt ? (
         <div className="rep-card">
           <img src={personPhoto(valgt.id)} alt={valgt.navn} loading="lazy" />
           <div>

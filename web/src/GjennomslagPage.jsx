@@ -28,6 +28,7 @@ export default function GjennomslagPage({ index }) {
   }, []);
 
   let ranking = [];
+  let small = [];
   if (data && selectedSessions.length) {
     const agg = aggregateGjennomslag(data, selectedSessions.map((s) => s.sesjon));
     ranking = [...agg.entries()]
@@ -38,16 +39,22 @@ export default function GjennomslagPage({ index }) {
         pct: (100 * v.vedtatt) / v.fremmet,
       }))
       .sort((a, b) => b.pct - a.pct);
+    small = [...agg.entries()]
+      .filter(([, v]) => v.fremmet > 0 && v.fremmet < 20)
+      .map(([id, v]) => ({ party: partyOrFallback(id), ...v }));
   }
   const maxPct = Math.max(10, ...ranking.map((r) => r.pct));
+  const allZero = ranking.length > 0 && ranking.every((r) => r.vedtatt === 0);
 
   return (
     <div>
       <div className="pair-head">
         <h2>Hvem får gjennomslag?</h2>
         <p>
-          Når et parti fremmer forslag i stortingssalen – hvor ofte blir de
-          vedtatt?
+          Et parti som er i mindretall i en sak, kan fremme sitt eget forslag
+          når saken avgjøres i stortingssalen. Her ser du hvor mange av disse
+          forslagene hvert parti faktisk har fått vedtatt – og hvor mange som
+          ble stemt ned.
         </p>
       </div>
 
@@ -82,6 +89,24 @@ export default function GjennomslagPage({ index }) {
             </li>
           ))}
         </ol>
+      )}
+
+      {allZero && (
+        <p className="empty-note" style={{ textAlign: "center" }}>
+          Ingen av disse forslagene ble vedtatt. Det er det vanlige bildet når
+          regjeringspartiene har flertall alene: Alt de er imot, stemmes ned.
+        </p>
+      )}
+      {small.length > 0 && (
+        <p className="empty-note" style={{ textAlign: "center" }}>
+          {small.map((s, i) => (
+            <span key={s.party.id}>
+              {i > 0 && (i === small.length - 1 ? " og " : ", ")}
+              {s.party.kort} ({s.vedtatt} av {s.fremmet} vedtatt)
+            </span>
+          ))}{" "}
+          fremmet færre enn 20 forslag {label} og rangeres derfor ikke.
+        </p>
       )}
 
       {ranking.length > 0 && (
@@ -122,6 +147,13 @@ export default function GjennomslagPage({ index }) {
           Tallene måler derfor først og fremst hvor ofte et parti vinner frem
           når det utfordrer flertallet, og må leses sammen med hvem som satt i
           regjering. Detaljene står på <a href="#/metodikk">metodesiden</a>.
+        </p>
+        <p>
+          Forskjellen på flertalls- og mindretallsregjering er dramatisk: I
+          2011–2013 hadde Ap, SV og Sp flertall sammen, og ikke ett eneste av
+          opposisjonens over 1 500 forslag ble vedtatt. Under
+          mindretallsregjeringer må regjeringen derimot forhandle, og
+          opposisjonspartier vinner jevnlig frem.
         </p>
       </div>
     </div>
