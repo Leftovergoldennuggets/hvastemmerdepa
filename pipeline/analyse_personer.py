@@ -30,17 +30,53 @@ def ms_date(s):
     return datetime.datetime.fromtimestamp(ms / 1000, datetime.timezone.utc).date()
 
 
+def biografi(pid, cache={}):
+    if pid not in cache:
+        p = RAW / "biografi" / f"{pid}.json.gz"
+        cache[pid] = read(p) if p.exists() else {}
+    return cache[pid]
+
+
 def first_elected(pid):
     """Date the person first sat as elected representative (vara periods
     excluded — being on the substitute list is not being elected)."""
-    p = RAW / "biografi" / f"{pid}.json.gz"
-    if not p.exists():
-        return None
-    perioder = read(p).get("stortingsperiode_kodet_liste") or []
+    perioder = biografi(pid).get("stortingsperiode_kodet_liste") or []
     dates = [ms_date(sp.get("fra_dato")) for sp in perioder
              if sp.get("verv") == "Representant" and sp.get("fra_dato")]
     dates = [d for d in dates if d]
     return min(dates) if dates else None
+
+
+def _years(e):
+    fra = e.get("fra_aar") if not e.get("fra_aar_ukjent") else None
+    til = e.get("til_aar") if not e.get("til_aar_ukjent") else None
+    if fra and til:
+        return f"{fra}" if fra == til else f"{fra}–{til}"
+    return f"{fra or til}" if (fra or til) else None
+
+
+def cv(pid):
+    """Education (type 10) and occupation (type 20) entries, verbatim from
+    Stortinget's coded biography — we display, never classify, free text."""
+    utd, yrk = [], []
+    for e in biografi(pid).get("utdanning_yrke_kodet_liste") or []:
+        navn = (e.get("navn") or "").strip()
+        if not navn:
+            continue
+        item = {"navn": navn, "aar": _years(e)}
+        (utd if e.get("type") == "10" else yrk).append(item)
+    return utd, yrk
+
+
+def komiteer(pid, periode):
+    """Fagkomité memberships in the given period (structured field)."""
+    out = []
+    for v in biografi(pid).get("stortingsverv_kodet_liste") or []:
+        if v.get("stortingsperiode_id") == periode and v.get("komite_type") == "FAG":
+            navn = v.get("komite_navn")
+            if navn and navn not in out:
+                out.append(navn)
+    return out
 
 
 def main():
@@ -67,6 +103,7 @@ def main():
             fartstid = round(max(0.0, (start - first).days / 365.25), 1) if first else None
             if fartstid is not None:
                 g["fartstid"].append(fartstid)
+            utd, yrk = cv(r["id"])
             personer.append({
                 "id": r["id"],
                 "navn": f"{r.get('fornavn', '')} {r.get('etternavn', '')}".strip(),
@@ -75,6 +112,9 @@ def main():
                 "alder": alder,
                 "fartstid": fartstid,
                 "fylke": (r.get("fylke") or {}).get("navn"),
+                "komiteer": komiteer(r["id"], periode),
+                "utdanning": utd,
+                "yrke": yrk,
             })
 
         out = {}

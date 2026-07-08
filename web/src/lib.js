@@ -155,9 +155,9 @@ export function aggregateGjennomslag(data, sesjonIds) {
   return out;
 }
 
-// Official portrait, served directly by Stortinget's open data service.
-export const personPhoto = (personId) =>
-  `https://data.stortinget.no/eksport/personbilde?personid=${encodeURIComponent(personId)}&storrelse=middels`;
+// Official Stortinget portrait, downloaded by the pipeline and served from
+// this site (hotlinking the API is rate-limited and breaks at scale).
+export const personPhoto = (personId) => `/fotos/${encodeURIComponent(personId)}.jpg`;
 
 // A party's stance on one vote: true = for, false = mot, null = no position
 // (absent, tied, or not in parliament).

@@ -683,13 +683,21 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
   position: relative;
   display: flex;
   gap: 16px;
-  align-items: center;
-  max-width: 420px;
+  align-items: flex-start;
+  max-width: 560px;
   margin: 18px auto 0;
   padding: 14px 40px 14px 14px;
   border: 1px solid var(--hairline);
   border-radius: 10px;
+  text-align: left;
 }
+.rep-card .rep-cv {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--ink-secondary);
+  margin-top: 4px;
+}
+.rep-card .rep-cv b { color: var(--ink); font-weight: 600; }
 .rep-card img {
   width: 72px;
   height: 90px;
@@ -742,6 +750,17 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
   font-weight: 600;
 }
 .rep-tile span { display: block; }
+.rep-tile .rep-komite { margin-top: 3px; color: var(--ink-secondary); }
+
+/* Geography table */
+.geo-table { margin-top: 24px; min-width: 520px; text-align: left; }
+.geo-dots { display: inline-flex; flex-wrap: wrap; gap: 3px; max-width: 340px; }
+.geo-dots i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
 button.party-chip { font: inherit; background: none; cursor: pointer; }
 .party-chip.active { border-color: var(--ink); color: var(--ink); font-weight: 600; }
 

@@ -90,13 +90,20 @@ export default function MethodPage() {
 
       <h3>Hvem er de?</h3>
       <p>
-        Opplysningene om representantene – kjønn, fødselsdato, valgdistrikt og
-        når de først ble innvalgt – hentes fra Stortingets biografidata. Vi
-        teller de innvalgte representantene ved hver periodestart;
-        vararepresentanter er ikke med. Alder beregnes ved periodestart, og
-        «tid på Stortinget» er tiden siden representanten første gang ble
-        innvalgt som fast representant. Fotografiene hentes direkte fra
-        Stortingets åpne datatjeneste.
+        Opplysningene om representantene – kjønn, fødselsdato, valgdistrikt,
+        komitémedlemskap og når de først ble innvalgt – hentes fra Stortingets
+        biografidata. Vi teller de innvalgte representantene ved hver
+        periodestart; vararepresentanter er ikke med. Alder beregnes ved
+        periodestart, og «tid på Stortinget» er tiden siden representanten
+        første gang ble innvalgt som fast representant.
+      </p>
+      <p>
+        Utdanning og yrke vises ordrett slik Stortinget selv har registrert
+        dem i biografiene – vi kategoriserer eller tolker aldri fritekst.
+        Landsdelene er de vanlige grupperingene av de 19 valgdistriktene
+        (Nord-Norge, Trøndelag, Vestlandet, Sørlandet, Østlandet og Oslo).
+        Fotografiene er Stortingets offisielle portretter, lastet ned fra den
+        åpne datatjenesten og vist med kreditering.
       </p>
 
       <h3>Verifisering</h3>

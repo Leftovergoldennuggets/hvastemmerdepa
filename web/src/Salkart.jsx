@@ -25,12 +25,24 @@ const ERFARING_BINS = [
   { label: "Under 8 år", test: (f) => f < 8, farge: "#6BAED6" },
   { label: "8 år eller mer", test: () => true, farge: "#0A3D62" },
 ];
+// Valgdistriktene bruker de klassiske fylkesnavnene (også etter
+// fylkessammenslåingene beholdt valgordningen de 19 gamle distriktene).
+const LANDSDELER = [
+  { label: "Nord-Norge", farge: "#2C5F8A", fylker: ["Nordland", "Troms", "Finnmark"] },
+  { label: "Trøndelag", farge: "#6BAED6", fylker: ["Sør-Trøndelag", "Nord-Trøndelag", "Trøndelag"] },
+  { label: "Vestlandet", farge: "#35886C", fylker: ["Rogaland", "Hordaland", "Sogn og Fjordane", "Møre og Romsdal", "Vestland"] },
+  { label: "Sørlandet", farge: "#F2C14E", fylker: ["Aust-Agder", "Vest-Agder", "Agder"] },
+  { label: "Østlandet", farge: "#D9782D", fylker: ["Østfold", "Akershus", "Hedmark", "Oppland", "Buskerud", "Vestfold", "Telemark", "Innlandet", "Viken"] },
+  { label: "Oslo", farge: "#8A4E85", fylker: ["Oslo"] },
+];
+const landsdelOf = (fylke) => LANDSDELER.find((l) => l.fylker.includes(fylke));
 
 const MODES = [
   { id: "parti", label: "Parti" },
   { id: "kjoenn", label: "Kjønn" },
   { id: "alder", label: "Alder" },
   { id: "erfaring", label: "Erfaring" },
+  { id: "landsdel", label: "Landsdel" },
 ];
 
 function bin(bins, value) {
@@ -44,6 +56,7 @@ function dotColor(rep, mode) {
   }
   if (mode === "alder") return bin(ALDER_BINS, rep.alder)?.farge || "#d8d4ce";
   if (mode === "erfaring") return bin(ERFARING_BINS, rep.fartstid)?.farge || "#d8d4ce";
+  if (mode === "landsdel") return landsdelOf(rep.fylke)?.farge || "#d8d4ce";
   return partyOrFallback(rep.parti).farge;
 }
 
@@ -86,6 +99,13 @@ function legendFor(reps, mode) {
       { label: "Kvinner", farge: KJONN.kvinne, n: kv },
       { label: "Menn", farge: KJONN.mann, n: reps.length - kv },
     ];
+  }
+  if (mode === "landsdel") {
+    return LANDSDELER.map((l) => ({
+      label: l.label,
+      farge: l.farge,
+      n: reps.filter((r) => landsdelOf(r.fylke) === l).length,
+    })).filter((l) => l.n > 0);
   }
   const bins = mode === "alder" ? ALDER_BINS : ERFARING_BINS;
   const value = mode === "alder" ? (r) => r.alder : (r) => r.fartstid;
@@ -178,7 +198,22 @@ export default function Salkart({ representanter, interactive = true }) {
                   ? " · ny på Stortinget denne perioden"
                   : ` · ${Math.round(valgt.fartstid)} år på Stortinget`)}
             </span>
-            <span className="foto-kred">Foto: Stortinget</span>
+            {valgt.komiteer?.length > 0 && (
+              <span className="rep-cv">{valgt.komiteer.join(" · ")}</span>
+            )}
+            {valgt.utdanning?.length > 0 && (
+              <span className="rep-cv">
+                <b>Utdanning:</b>{" "}
+                {valgt.utdanning.map((u) => u.navn + (u.aar ? ` (${u.aar})` : "")).join("; ")}
+              </span>
+            )}
+            {valgt.yrke?.length > 0 && (
+              <span className="rep-cv">
+                <b>Yrke:</b>{" "}
+                {valgt.yrke.map((y) => y.navn + (y.aar ? ` (${y.aar})` : "")).join("; ")}
+              </span>
+            )}
+            <span className="foto-kred">Foto: Stortinget · Utdanning og yrke slik Stortinget selv har registrert dem</span>
           </div>
           <button className="rep-card-close" aria-label="Lukk" onClick={() => setValgt(null)}>×</button>
         </div>

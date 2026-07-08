@@ -22,6 +22,9 @@ shutil.copy(SRC / "gjennomslag.json", DST / "gjennomslag.json")
 shutil.copytree(SRC / "matrix", DST / "matrix", dirs_exist_ok=True)
 shutil.copytree(SRC / "matrix_komite", DST / "matrix_komite", dirs_exist_ok=True)
 shutil.copytree(SRC / "positions", DST / "positions", dirs_exist_ok=True)
+fotos = ROOT / "data" / "raw" / "fotos"
+if fotos.exists():
+    shutil.copytree(fotos, ROOT / "web" / "public" / "fotos", dirs_exist_ok=True)
 for old in DST.rglob("*.json"):
     rel = old.relative_to(DST)
     if str(rel) not in ("sessions.json", "eras.json", "meta.json") and not (SRC / rel).exists():

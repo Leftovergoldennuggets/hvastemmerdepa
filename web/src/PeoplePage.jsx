@@ -144,6 +144,52 @@ export default function PeoplePage() {
       </p>
 
       <section className="party-chips">
+        <h2>Hvor kommer de fra?</h2>
+        <p>
+          Stortinget velges fra 19 valgdistrikter. Hver prikk er en
+          representant, farget etter parti – hold pekeren over for navnet.
+        </p>
+        <div className="matrix-scroll">
+          <table className="people-table geo-table">
+            <thead>
+              <tr>
+                <th>Valgdistrikt</th>
+                <th>Seter</th>
+                <th>Representanter</th>
+              </tr>
+            </thead>
+            <tbody>
+              {Object.entries(
+                representanter.reduce((acc, r) => {
+                  const f = r.fylke || "Ukjent";
+                  (acc[f] = acc[f] || []).push(r);
+                  return acc;
+                }, {})
+              )
+                .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "nb"))
+                .map(([fylke, reps]) => (
+                  <tr key={fylke}>
+                    <td>{fylke}</td>
+                    <td className="num">{reps.length}</td>
+                    <td>
+                      <span className="geo-dots">
+                        {reps.map((r) => (
+                          <i
+                            key={r.id}
+                            style={{ background: partyOrFallback(r.parti).farge }}
+                            title={`${r.navn} (${partyOrFallback(r.parti).kort})`}
+                          />
+                        ))}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="party-chips">
         <h2>Representantene</h2>
         <p>Velg et parti for å se hvem som sitter for dem i denne perioden.</p>
         <div className="chips-row">
@@ -182,6 +228,9 @@ export default function PeoplePage() {
                       {r.fartstid != null &&
                         (r.fartstid < 0.1 ? " · ny" : ` · ${Math.round(r.fartstid)} år på tinget`)}
                     </span>
+                    {r.komiteer?.length > 0 && (
+                      <span className="rep-komite">{r.komiteer.join(" · ")}</span>
+                    )}
                   </figcaption>
                 </figure>
               ))}
