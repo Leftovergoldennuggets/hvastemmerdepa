@@ -425,9 +425,15 @@ footer.credit a { color: inherit; }
 }
 .menu-panel a:hover { background: #f5f3f0; color: var(--accent); }
 
-td.cell.diagonal { cursor: default; }
-td.cell.diagonal:hover { outline: none; }
-td.cell:not(.diagonal) { cursor: pointer; }
+/* Diagonal (party vs itself): empty with a subtle hatch, as HDO did */
+td.blank.diagonal {
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    #E4E0D9 5px 6px
+  );
+}
+td.cell { cursor: pointer; }
 
 /* Party ranking view */
 a.party-key { text-decoration: none; }

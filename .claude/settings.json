@@ -40,7 +40,8 @@
       "Bash(curl -s \"https://api.github.com/search/code?q=org:holderdeord+alternativ\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(i['repository']['name'], i['path']\\) for i in d.get\\('items', []\\)]\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('scripts'\\)\\)\")",
-      "Bash(lsof -iTCP:5173 -iTCP:4173 -iTCP:3000 -sTCP:LISTEN)"
+      "Bash(lsof -iTCP:5173 -iTCP:4173 -iTCP:3000 -sTCP:LISTEN)",
+      "Bash(npx oxlint *)"
     ],
     "additionalDirectories": [
       "/Users/AndersEidesvik/Downloads"

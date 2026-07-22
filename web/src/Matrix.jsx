@@ -18,13 +18,6 @@ function Logo({ party, size = 26 }) {
 
 function Tooltip({ tip }) {
   if (!tip) return null;
-  if (tip.self) {
-    return (
-      <div className="tooltip" style={{ left: Math.min(tip.x + 14, window.innerWidth - 300), top: tip.y + 16 }}>
-        <div>{tip.self.navn} stemmer per definisjon likt med seg selv.</div>
-      </div>
-    );
-  }
   const { x, y, a, b, agree, total, label } = tip;
   const pct = (100 * agree) / total;
   return (
@@ -48,8 +41,9 @@ export default function Matrix({ matrix, label, onSelect }) {
   // order, unknown ids (a future new party) are appended rather than dropped.
   const ids = new Set();
   for (const key of matrix.keys()) key.split("|").forEach((id) => ids.add(id));
-  // Full symmetric matrix: every party on both axes, values mirrored, and a
-  // 100 % diagonal (a party always agrees with itself) as a reading anchor.
+  // Full symmetric matrix: every party on both axes, values mirrored. The
+  // diagonal (a party against itself) is left empty with a subtle hatch,
+  // as Holder de ord did — a "100 %" there is noise, not information.
   const present = [
     ...PARTIES.filter((p) => ids.has(p.id)),
     ...[...ids].filter((id) => !PARTY_BY_ID[id]).sort().map(partyOrFallback),
@@ -85,19 +79,7 @@ export default function Matrix({ matrix, label, onSelect }) {
                 </th>
                 {cols.map((colP, ci) => {
                   if (ci === ri) {
-                    return (
-                      <td
-                        key={colP.id}
-                        className="cell diagonal"
-                        style={{ background: cellColor(100), color: cellText(100) }}
-                        onMouseMove={(e) =>
-                          setTip({ x: e.clientX, y: e.clientY, self: rowP })
-                        }
-                        onMouseLeave={() => setTip(null)}
-                      >
-                        100
-                      </td>
-                    );
+                    return <td key={colP.id} className="blank diagonal" aria-hidden="true" />;
                   }
                   const cell = matrix.get(pairKey(rowP.id, colP.id));
                   if (!cell || !cell.total) return <td key={colP.id} className="blank" />;
