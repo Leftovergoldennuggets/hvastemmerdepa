@@ -30,16 +30,31 @@ for old in DST.rglob("*.json"):
     if str(rel) not in ("sessions.json", "eras.json", "meta.json") and not (SRC / rel).exists():
         old.unlink()
 
-# Build metadata so the site never hardcodes dates or totals.
+# Build metadata so the site never hardcodes dates or totals. Everything the
+# method page states as fact is computed here from the published data.
 import datetime
 import json
+from collections import defaultdict
+
 sessions = json.loads((SRC / "sessions.json").read_text())
-mismatches = []
+mismatches = []   # individual sums differ from official tallies (disclosed)
+pending = []      # API returns no individual votes despite official tallies
+unity = []        # per party per session: share of votes with zero dissenters
 for s in sessions:
-    if s["verify_mismatches"]:
-        for row in json.loads((SRC / "positions" / f"{s['sesjon']}.json").read_text()):
-            if row["verified"] is False:
-                mismatches.append({"vid": row["vid"], "dato": row["dato"], "tittel": row["tittel"]})
+    per_party = defaultdict(lambda: [0, 0])  # parti -> [united, participated]
+    for row in json.loads((SRC / "positions" / f"{s['sesjon']}.json").read_text()):
+        if row["verified"] is False:
+            mismatches.append({"vid": row["vid"], "dato": row["dato"], "tittel": row["tittel"]})
+        if row["excluded"] == "data_pending":
+            pending.append({"vid": row["vid"], "dato": row["dato"], "tittel": row["tittel"]})
+        if not row["excluded"]:
+            for parti, (f, m) in row["partier"].items():
+                if parti != "Uav" and f + m > 0:
+                    per_party[parti][1] += 1
+                    per_party[parti][0] += (f == 0 or m == 0)
+    for parti, (u, t) in per_party.items():
+        if t >= 50:  # need a meaningful sample within the session
+            unity.append(100 * u / t)
 
 meta = {
     "generated": datetime.date.today().isoformat(),
@@ -47,8 +62,15 @@ meta = {
     "first_session": sessions[0]["sesjon"],
     "last_session": sessions[-1]["sesjon"],
     "recorded_votes": sum(s["recorded"] for s in sessions),
+    "counted_votes": sum(s.get("counted", s["recorded"]) for s in sessions),
+    "alternativ_speil": sum(s.get("alternativ_speil", 0) for s in sessions),
     "verify_mismatches": mismatches,
+    "data_pending": pending,
     "enstemmig": sum(s["enstemmig"] for s in sessions),
+    "uten_anlegg": sum(s.get("uten_anlegg", 0) for s in sessions),
+    # Party unity, measured: min/max over party-sessions (>= 50 votes)
+    "unity_min": round(min(unity)) if unity else None,
+    "unity_max": round(max(unity)) if unity else None,
 }
 (DST / "meta.json").write_text(json.dumps(meta))
 

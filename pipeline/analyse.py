@@ -14,6 +14,13 @@ Method (documented publicly in METODIKK.md):
 - Votes on "lovens overskrift og loven i sin helhet" are excluded, following
   Stortinget's own guidance (formal confirmation votes without political
   meaning). They remain in positions/ with an excluded-flag for transparency.
+- Alternativ votering (the chamber choosing between two alternatives) is
+  exported by the API as TWO mirrored voteringer linked via
+  alternativ_votering_id (e.g. 63-38 vedtatt + 38-63 forkastet, same
+  representatives flipped). That is one decision, not two: the twin with the
+  higher votering_id is excluded ("alternativ_speil") so the event is counted
+  exactly once. Verified July 2026: all 1,297 pairs in the data mirror
+  perfectly, so which twin is kept does not affect any agree/disagree outcome.
 - Verification: for every vote, the sum of individual votes must reproduce the
   official antall_for/antall_mot exactly; mismatches are reported.
 
@@ -125,6 +132,13 @@ def analyse_session(sesjon: str):
                 if v.get("antall_for", -1) >= 0 and v.get("antall_mot", -1) >= 0]
     enstemmig = sum(1 for v in voteringer if v.get("votering_resultat_type") == 5)
 
+    # One alternativ votering = two mirrored voteringer in the API (see module
+    # docstring). Mark the higher-id twin for exclusion when both are present.
+    recorded_ids = {v["votering_id"] for v in recorded}
+    speil = {v["votering_id"] for v in recorded
+             if v.get("alternativ_votering_id") in recorded_ids
+             and v["votering_id"] > v["alternativ_votering_id"]}
+
     positions, mismatches, pending = [], 0, 0
     for v in recorded:
         vid = v["votering_id"]
@@ -155,11 +169,15 @@ def analyse_session(sesjon: str):
         excluded = None
         if EXCLUDE_TEMA.search(v.get("votering_tema") or ""):
             excluded = "lovteknisk"
+        elif vid in speil:
+            excluded = "alternativ_speil"
         elif not stemmer:
             excluded = "data_pending"
 
         positions.append({
             "vid": vid,
+            "alt": v.get("alternativ_votering_id")
+                   if v.get("alternativ_votering_id") in recorded_ids else None,
             "sak": v["_sak"]["id"],
             "tittel": v["_sak"].get("korttittel"),
             "komite": (v["_sak"].get("komite") or {}).get("id"),
@@ -211,7 +229,15 @@ def analyse_session(sesjon: str):
         "saker": len(saker),
         "voteringer": len(voteringer),
         "recorded": len(recorded),
+        # counted = rows that actually enter the agreement statistics
+        # (recorded minus lovteknisk/alternativ_speil/data_pending)
+        "counted": sum(1 for r in positions if not r["excluded"]),
+        "alternativ_speil": len(speil),
         "enstemmig": enstemmig,
+        # Decisions taken without the electronic count: mostly "enstemmig
+        # vedtatt" (type 5), plus "vedtatt mot 1 stemme"/"forkastet mot 0
+        # stemmer" etc. — none of these have per-representative data.
+        "uten_anlegg": len(voteringer) - len(recorded),
         "pending_backfill": pending,
         "verify_mismatches": mismatches,
         "partier": [{"id": p["id"], "navn": p["navn"]} for p in partier],

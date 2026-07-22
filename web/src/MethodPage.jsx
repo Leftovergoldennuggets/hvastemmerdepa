@@ -30,18 +30,20 @@ export default function MethodPage() {
 
       <h3>Hvilke voteringer telles?</h3>
       <p>
-        Alle voteringer tatt med voteringsanlegget. Stortinget bruker bare
-        anlegget når minst én representant krever votering – rene formaliteter
-        avgjøres ved akklamasjon og havner ikke i tallene. Dermed er det
-        Stortingets egen praksis, ikke vår vurdering, som skiller reelle
-        avstemninger fra formaliteter.
+        Alle voteringer der voteringsanlegget registrerte enkeltstemmer.
+        Stortinget bruker anlegget i de fleste voteringene, men enstemmige og
+        nær enstemmige avgjørelser tas ofte uten at enkeltstemmer registreres
+        – da finnes det ingen stemmedata å telle.
         {meta && (
           <>
-            {" "}I tillegg ble {formatN(meta.enstemmig)} vedtak enstemmig vedtatt
-            uten telling; disse har ingen stemmedata på partinivå og holdes
-            utenfor prosentene.
+            {" "}I datagrunnlaget gjelder det {formatN(meta.uten_anlegg ?? meta.enstemmig)}{" "}
+            avgjørelser ({formatN(meta.enstemmig)} enstemmig vedtatt, resten
+            nær enstemmige som «vedtatt mot 1 stemme»); disse holdes utenfor
+            prosentene.
           </>
         )}
+        {" "}Det er dermed Stortingets egen praksis, ikke vår vurdering, som
+        avgjør hvilke voteringer som får stemmedata.
       </p>
       <p>
         Ett unntak: voteringer over «lovens overskrift og loven i sin helhet»
@@ -51,14 +53,29 @@ export default function MethodPage() {
           Stortingets egne råd om statistikk på voteringsdata
         </a>.
       </p>
+      <p>
+        Ved <em>alternativ votering</em> – der salen velger mellom to
+        alternativer, for eksempel komiteens innstilling og et mindretallsforslag
+        – registrerer Stortingets datatjeneste én avstemning som to speilvendte
+        voteringer (63–38 og 38–63, samme representanter). Det er én beslutning,
+        ikke to, så vi teller hendelsen én gang og holder speilbildet utenfor
+        {meta?.alternativ_speil ? ` (${formatN(meta.alternativ_speil)} voteringer)` : ""}.
+      </p>
 
       <h3>Hva er et partis standpunkt?</h3>
       <p>
         Et partis standpunkt i en votering er det flertallet av partiets
-        deltakende representanter stemte. Partiene stemmer svært samlet: i
-        93–99 prosent av voteringene stemmer alle representantene i et parti
-        likt. Ved helt likt antall for og mot regnes partiet uten standpunkt i
-        den voteringen.
+        deltakende representanter stemte. Partiene stemmer svært samlet
+        {meta && meta.unity_min != null && (
+          <>
+            : målt per sesjon stemmer alle deltakende representanter i et
+            parti likt i {meta.unity_min}–{meta.unity_max} prosent av
+            voteringene
+          </>
+        )}
+        . Ved helt likt antall for og mot regnes partiet uten standpunkt i
+        den voteringen. Uavhengige representanter tilhører ikke noe parti og
+        inngår ikke i partistatistikken.
       </p>
 
       <h3>Hva betyr «enige»?</h3>
@@ -66,19 +83,30 @@ export default function MethodPage() {
         To partier er enige i en votering når begge har samme standpunkt –
         begge for, eller begge mot. Prosenten er antall voteringer der de var
         enige, delt på antall voteringer der begge deltok. Merk at Stortinget
-        ikke er til stede fulltallig; utbyttingsordningen holder styrkeforholdet
-        mellom partiene riktig, så fravær påvirker ikke partistandpunktene.
+        sjelden er fulltallig: utbyttingsordningen holder styrkeforholdet
+        mellom de større partiene riktig, men for partier med én eller få
+        representanter betyr fravær at partiet står uten standpunkt i
+        voteringen. Slike voteringer telles ikke med for det partiet. MDG
+        deltok for eksempel bare i 56 prosent av voteringene i 2013–2014, og
+        Pasientfokus i om lag 70 prosent – tallene deres bygger altså på de
+        voteringene de deltok i.
       </p>
 
       <h3>Gjennomslag: partienes egne forslag</h3>
       <p>
         Stortingets voteringsbeskrivelser navngir forslagsstillerne når salen
-        stemmer over et forslag («Forslag nr. 17 på vegne av SV og R»).
-        Gjennomslag-tallene teller alle slike partiforslag som kom til
-        votering, og hvor mange av dem som ble vedtatt. Forslag fremmet av
-        flere partier sammen telles for hvert av partiene. Forslag fremmet av
-        enkeltrepresentanter eller presidentskapet – rundt 70 av 13 000 –
-        gjelder ikke et parti og holdes utenfor.
+        stemmer over et forslag. Det skjer i to former: som egen votering
+        («Forslag nr. 17 på vegne av SV og R») eller som alternativ votering
+        der forslaget settes direkte opp mot komiteens innstilling
+        («Alternativ votering mellom innstillingen og forslag 1 fra H, FrP og
+        R»). Gjennomslag-tallene teller begge former: hvor mange voteringer
+        over partiforslag som ble holdt, og i hvor mange av dem forslaget
+        vant. Ved alternativ votering regnes forslaget som vedtatt når
+        forslagsstillernes side vant en votering med stemmer på begge sider.
+        Forslag fremmet av flere partier sammen telles for hvert av partiene.
+        Rundt hundre voteringer gjelder forslag fra enkeltrepresentanter
+        eller presidentskapet, eller lar seg ikke entydig knytte til partier;
+        de holdes utenfor.
       </p>
       <p>
         Tolk tallene med omhu: Regjeringspartier fremmer sjelden egne forslag,
@@ -133,16 +161,36 @@ export default function MethodPage() {
           </>
         )}
       </p>
+      {meta && meta.data_pending?.length > 0 && (
+        <p>
+          For {meta.data_pending.length} voteringer oppgir Stortingets API de
+          offisielle stemmetallene, men returnerer ingen individuelle
+          stemmedata. Uten enkeltstemmer kan vi ikke beregne partistandpunkt,
+          så disse holdes utenfor prosentene og er merket i datasettet
+          (<code>data_pending</code>):{" "}
+          {meta.data_pending.map((m, i) => (
+            <span key={m.vid}>
+              {i > 0 && "; "}
+              {m.tittel} ({m.dato ? formatDate(m.dato) : ""})
+            </span>
+          ))}.
+        </p>
+      )}
 
       <h3>Begrensninger å kjenne til</h3>
       <p>
         Prosent lik stemmegivning er ikke det samme som prosent politisk
-        enighet. Én votering kan gjelde flere sammenslåtte forslag, forslag
-        varierer i omfang, og subsidiær stemmegivning kan gjøre at et parti
-        stemmer for noe annet enn sitt primærstandpunkt. Stortingets arkiv
-        anbefaler å supplere med kvalitative vurderinger – det gjør vi også.
-        Enkeltrepresentanters feiltrykk rettes ikke i etterkant og kan gi
-        enkeltavvik.
+        enighet. Stortingets egen veiledning sier det utvetydig: «Det finnes
+        dermed ingen måleenhet i dette materialet som kan brukes til å måle
+        graden av enighet eller uenighet.» Tallene her måler derfor hvor ofte
+        partiene stemte likt – aldri hvor enige de er. Mange mindretallsforslag
+        fremmes for å markere standpunkt selv om utfallet er gitt; hvem som
+        fremmer og støtter dem sammen er reell informasjon om politisk nærhet,
+        men ikke det samme som enighet om politikkens innhold. Én votering kan
+        dessuten gjelde flere sammenslåtte forslag, forslag varierer i omfang,
+        og subsidiær stemmegivning kan gjøre at et parti stemmer for noe annet
+        enn sitt primærstandpunkt. Enkeltrepresentanters feiltrykk rettes ikke
+        i etterkant og kan gi enkeltavvik.
       </p>
       <p>
         Regjeringsdeltakelse forklarer mye: partier i regjering stemmer nesten

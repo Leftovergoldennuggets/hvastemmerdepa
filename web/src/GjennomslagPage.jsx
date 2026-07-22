@@ -137,9 +137,11 @@ export default function GjennomslagPage({ index }) {
         <p>
           Når en komité er ferdig med en sak, fremmer partiene som ikke fikk
           viljen sin i innstillingen egne forslag i salen. Stortingets
-          voteringsbeskrivelser navngir forslagsstillerne («Forslag nr. 17 på
-          vegne av SV og R»), og det er disse som telles her. Forslag fremmet
-          av flere partier sammen teller for hvert av dem.
+          voteringsbeskrivelser navngir forslagsstillerne – enten i en egen
+          votering («Forslag nr. 17 på vegne av SV og R») eller i en
+          alternativ votering der forslaget settes direkte opp mot komiteens
+          innstilling. Begge telles her. Forslag fremmet av flere partier
+          sammen teller for hvert av dem.
         </p>
         <p>
           Merk at regjeringspartier sjelden trenger å fremme egne forslag –
@@ -151,7 +153,7 @@ export default function GjennomslagPage({ index }) {
         <p>
           Forskjellen på flertalls- og mindretallsregjering er dramatisk: I
           2011–2013 hadde Ap, SV og Sp flertall sammen, og ikke ett eneste av
-          opposisjonens over 1 500 forslag ble vedtatt. Under
+          opposisjonens over 2 000 forslag ble vedtatt. Under
           mindretallsregjeringer må regjeringen derimot forhandle, og
           opposisjonspartier vinner jevnlig frem.
         </p>

@@ -3,7 +3,46 @@
     "allow": [
       "Bash(python3 -c ' *)",
       "Bash(python3 fetch_personer.py)",
-      "Bash(python3 pipeline/analyse_personer.py)"
+      "Bash(python3 pipeline/analyse_personer.py)",
+      "Bash(curl -sI \"https://data.stortinget.no/eksport/personbilde?personid=JGS&storrelse=middels\")",
+      "Bash(python3 pipeline/analyse_gjennomslag.py)",
+      "Bash(npx vite *)",
+      "Bash(pkill -f \"http.server 4173\")",
+      "Bash(curl -sI -H \"Referer: https://hvastemmerdepa.vercel.app/\" -H \"User-Agent: Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://data.stortinget.no/eksport/personbilde?personid=KIRB&storrelse=middels\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{content_type} %{size_download}\\\\n\" \"https://data.stortinget.no/eksport/personbilde?personid=ANLGJF&storrelse=middels\")",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(python3 fetch_fotos.py)",
+      "Bash(curl -sL -o norway-counties.json \"https://raw.githubusercontent.com/deldersveld/topojson/master/countries/norway/norway-counties.json\")",
+      "Bash(curl -sL -o norway-counties.json \"https://raw.githubusercontent.com/markmarkoh/topojson/master/countries/norway/norway-counties.json\")",
+      "Bash(curl -sL -o gadm36_NOR_1.json.zip \"https://biogeo.ucdavis.edu/data/gadm3.6/json/gadm36_NOR_1.json.zip\")",
+      "Bash(unzip -o gadm36_NOR_1.json.zip)",
+      "Bash(curl -sL -o fylker-old.json \"https://www.eriksmistad.no/upload/fylker.json\")",
+      "WebFetch(domain:data.norge.no)",
+      "Bash(curl -sL -o kommuner-old.json \"https://www.eriksmistad.no/upload/kommuner.json\")",
+      "Bash(curl -sL -o valgdistrikter.zip \"https://nedlasting.geonorge.no/geonorge/Basisdata/Valgdistrikter/GeoJSON/Basisdata_0000_Norge_25833_Valgdistrikter_GeoJSON.zip\")",
+      "Bash(unzip -o valgdistrikter.zip)",
+      "Bash(python3 /Users/AndersEidesvik/storting_votering/pipeline/build_kart.py)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --headless --disable-gpu --window-size=800,1100 --screenshot=kartpreview.png kartpreview.html)",
+      "Bash(kill 28689 28707 51237)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(s['sesjon'], 'saker:', s['saker'], 'vot:', s['voteringer'], 'rec:', s['recorded'], 'enst:', s['enstemmig'], 'pend:', s['pending_backfill'], 'mism:', s['verify_mismatches']\\) for s in d]\")",
+      "Bash(python3 /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/25461614-3389-4956-95f6-be329fdc7d7f/scratchpad/audit_checks.py)",
+      "WebFetch(domain:data.stortinget.no)",
+      "WebFetch(domain:polsys.sikt.no)",
+      "WebFetch(domain:www.stortinget.no)",
+      "WebFetch(domain:www.overstortinget.no)",
+      "Bash(curl -s \"https://data.brreg.no/enhetsregisteret/api/enheter/990524297\")",
+      "Bash(curl -s https://www.overstortinget.no/)",
+      "Bash(grep -oiE '\\(github|kildekode|about|/om[^a-z]|metode|Thor|Langfeldt|claude|gpt|ki-|ai-\\)[^<\"]{0,120}')",
+      "Bash(cp \"/Users/AndersEidesvik/Downloads/Storting *)",
+      "Bash(curl -s \"https://api.github.com/orgs/holderdeord/repos?per_page=100\")",
+      "Bash(python3 -c \"import json,sys; [print\\(r['name'], '|', \\(r['description'] or ''\\)[:80], '| updated', r['updated_at'][:10]\\) for r in json.load\\(sys.stdin\\)]\")",
+      "Bash(curl -s https://raw.githubusercontent.com/holderdeord/hdo-enighet/master/README.md)",
+      "Bash(curl -s \"https://api.github.com/search/code?q=org:holderdeord+alternativ\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(i['repository']['name'], i['path']\\) for i in d.get\\('items', []\\)]\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('scripts'\\)\\)\")"
+    ],
+    "additionalDirectories": [
+      "/Users/AndersEidesvik/Downloads"
     ]
   }
 }

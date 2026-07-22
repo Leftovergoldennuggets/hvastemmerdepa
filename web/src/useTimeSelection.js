@@ -26,7 +26,9 @@ export function useTimeSelection(index) {
     selection?.kind === "period"
       ? `i stortingsperioden ${selection.id}`
       : `i sesjonen ${selection?.id}`;
-  const totalVotes = selectedSessions.reduce((n, s) => n + s.recorded, 0);
+  // counted = votes that enter the statistics (excludes lovteknisk
+  // confirmations and the mirrored twin of each alternativ votering)
+  const totalVotes = selectedSessions.reduce((n, s) => n + (s.counted ?? s.recorded), 0);
 
   return { periods, selection, setSelection, selectedSessions, label, totalVotes };
 }
