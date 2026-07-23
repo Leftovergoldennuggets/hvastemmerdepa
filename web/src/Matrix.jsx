@@ -7,15 +7,16 @@ const THIN_N = 50; // below this many shared votes, the percentage is noisy
 /* Tween the matrix values when the selection changes, so numbers roll and
    colors step through the scale (split-flap style, as old HDO did with
    react-motion) instead of the table re-rendering cold. Cells without a
-   counterpart in the previous selection snap directly to their value. */
-function useTweenedMatrix(matrix) {
+   counterpart in the previous selection snap directly to their value.
+   Shared by the front-page matrix and the party-page ranking bars. */
+export function useTweenedMatrix(matrix) {
   const [disp, setDisp] = useState(matrix);
   const prevRef = useRef(matrix);
   useEffect(() => {
     const from = prevRef.current;
     prevRef.current = matrix;
     if (
-      !from || from === matrix ||
+      !matrix || !from || from === matrix ||
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) {
       setDisp(matrix);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback, cellColor } from "./parties.js";
 import { aggregateMatrix, pairKey, formatN } from "./lib.js";
+import { useTweenedMatrix } from "./Matrix.jsx";
 import { downloadCsv } from "./csv.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 import PeriodPicker from "./PeriodPicker.jsx";
@@ -26,23 +27,39 @@ export default function PartyView({ index, party }) {
   useEffect(() => {
     if (!selectedSessions.length) return;
     let live = true;
-    setMatrix(null);
+    // Keep the previous ranking on screen while the new selection loads,
+    // so bars and numbers roll to their new values instead of reloading.
     aggregateMatrix(selectedSessions.map((s) => s.sesjon))
       .then((m) => { if (live) setMatrix(m); })
       .catch(() => { if (live) setMatrix(new Map()); });
     return () => { live = false; };
   }, [selectedSessions]);
 
+  const shown = useTweenedMatrix(matrix);
+
   let ranking = [];
-  if (matrix) {
+  if (matrix && shown) {
     const ids = new Set();
     for (const key of matrix.keys()) key.split("|").forEach((id) => ids.add(id));
     ranking = [...ids]
       .filter((id) => id !== party.id)
-      .map((id) => ({ other: partyOrFallback(id), ...matrix.get(pairKey(party.id, id)) }))
-      .filter((r) => r.total > 0)
-      .map((r) => ({ ...r, pct: (100 * r.agree) / r.total }))
-      .sort((a, b) => b.pct - a.pct);
+      .map((id) => {
+        const key = pairKey(party.id, id);
+        const target = matrix.get(key);
+        if (!target || !target.total) return null;
+        const cell = shown.get(key) || target;
+        return {
+          other: partyOrFallback(id),
+          agree: cell.agree,
+          total: cell.total,
+          pct: cell.pct ?? (100 * cell.agree) / cell.total,
+          // rows sort by the destination value so the order settles at once
+          // while the numbers are still rolling
+          sortPct: (100 * target.agree) / target.total,
+        };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.sortPct - a.sortPct);
   }
 
   return (
