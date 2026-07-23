@@ -1,20 +1,22 @@
 // Party metadata. Order = political spectrum, left to right; this order is
 // fixed everywhere in the UI (matrix axes, legends) so readers build a stable
-// mental map. `farge` anchors in the parties' official/press colors (used for
-// series marks, not text); logos are the official marks (Wikimedia Commons).
-// `id` is Stortinget's party id in the data; `kort` is the abbreviation
-// people actually read in the press (Ap, not A).
+// mental map. `farge` anchors in the parties' official/press colors but the
+// shades are deliberately pulled apart so neighbours stay distinguishable on
+// small marks (salkart dots, map lists): R darker than Ap, Sp dark forest vs
+// MDG light yellow-green, H light blue vs FrP navy. Logos are the official
+// marks (Wikimedia Commons). `id` is Stortinget's party id in the data;
+// `kort` is the abbreviation people actually read in the press (Ap, not A).
 export const PARTIES = [
-  { id: "R",   kort: "R",   navn: "Rødt",                     farge: "#96232C", logo: "/logos/R.svg" },
-  { id: "SV",  kort: "SV",  navn: "Sosialistisk Venstreparti", farge: "#BE3B6E", logo: "/logos/SV.svg" },
-  { id: "MDG", kort: "MDG", navn: "Miljøpartiet De Grønne",    farge: "#3D8704", logo: "/logos/MDG.svg" },
-  { id: "A",   kort: "Ap",  navn: "Arbeiderpartiet",           farge: "#DD3049", logo: "/logos/A.svg" },
-  { id: "Sp",  kort: "Sp",  navn: "Senterpartiet",             farge: "#007D3E", logo: "/logos/Sp.png" },
-  { id: "KrF", kort: "KrF", navn: "Kristelig Folkeparti",      farge: "#C28E0E", logo: "/logos/KrF.svg" },
-  { id: "V",   kort: "V",   navn: "Venstre",                   farge: "#009186", logo: "/logos/V.svg" },
-  { id: "H",   kort: "H",   navn: "Høyre",                     farge: "#2B6CB8", logo: "/logos/H.svg" },
-  { id: "FrP", kort: "FrP", navn: "Fremskrittspartiet",        farge: "#2A5188", logo: "/logos/FrP.svg" },
-  { id: "PF",  kort: "PF",  navn: "Pasientfokus",              farge: "#857E74", logo: "/logos/PF.png" },
+  { id: "R",   kort: "R",   navn: "Rødt",                     farge: "#7A1E27", logo: "/logos/R.svg" },
+  { id: "SV",  kort: "SV",  navn: "Sosialistisk Venstreparti", farge: "#C24D87", logo: "/logos/SV.svg" },
+  { id: "MDG", kort: "MDG", navn: "Miljøpartiet De Grønne",    farge: "#88B437", logo: "/logos/MDG.svg" },
+  { id: "A",   kort: "Ap",  navn: "Arbeiderpartiet",           farge: "#E23F52", logo: "/logos/A.svg" },
+  { id: "Sp",  kort: "Sp",  navn: "Senterpartiet",             farge: "#0D5C30", logo: "/logos/Sp.png" },
+  { id: "KrF", kort: "KrF", navn: "Kristelig Folkeparti",      farge: "#D9A017", logo: "/logos/KrF.svg" },
+  { id: "V",   kort: "V",   navn: "Venstre",                   farge: "#00A195", logo: "/logos/V.svg" },
+  { id: "H",   kort: "H",   navn: "Høyre",                     farge: "#5B93D6", logo: "/logos/H.svg" },
+  { id: "FrP", kort: "FrP", navn: "Fremskrittspartiet",        farge: "#1C3A66", logo: "/logos/FrP.svg" },
+  { id: "PF",  kort: "PF",  navn: "Pasientfokus",              farge: "#8C8578", logo: "/logos/PF.png" },
 ];
 
 export const PARTY_BY_ID = Object.fromEntries(PARTIES.map((p) => [p.id, p]));

@@ -209,6 +209,14 @@ export default function App() {
         </main>
       ) : (
         <main>
+          <p className="matrix-intro">
+            Lurer du på hvor ofte Arbeiderpartiet og Høyre er på samme side?
+            Eller Rødt og FrP? Matrisen under viser andelen voteringer der to
+            partier stemte likt – grønt betyr ofte, rødt sjelden. Alt er
+            regnet rett fra Stortingets egne voteringsdata, votering for
+            votering. <a href="#/forsta">Slik leser du tallene ›</a>
+          </p>
+
           <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
 
           {komiteAgg && (

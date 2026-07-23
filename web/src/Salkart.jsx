@@ -3,9 +3,11 @@ import { partyOrFallback } from "./parties.js";
 import { personPhoto } from "./lib.js";
 
 // Hemicycle seat chart: one dot per elected representative. Seats are laid
-// out geometrically and filled left-to-right in the conventional political
-// order (Sp and MDG in the centre, as in the chamber), so each party forms
-// a wedge. Color modes recolor the same dots by gender, age or experience.
+// out geometrically and filled left-to-right; the fill order follows the
+// active color mode, so whatever you color by forms coherent wedges (parties
+// in spectrum order, women/men grouped, age and experience as gradients,
+// regions gathered). The layout is schematic — in the real chamber members
+// sit by county, not by party.
 
 const LEFT_TO_RIGHT = ["R", "SV", "A", "Sp", "MDG", "KrF", "V", "H", "FrP", "PF"];
 const partyOrder = (id) => {
@@ -120,16 +122,27 @@ export default function Salkart({ representanter, interactive = true }) {
   const [mode, setMode] = useState("parti");
   const [valgt, setValgt] = useState(null);
 
-  const ordered = useMemo(
-    () =>
-      [...representanter].sort(
-        (a, b) =>
-          partyOrder(a.parti) - partyOrder(b.parti) ||
-          (b.fartstid ?? -1) - (a.fartstid ?? -1) ||
-          a.navn.localeCompare(b.navn, "nb")
-      ),
-    [representanter]
-  );
+  // Fill order follows the active mode so the coloring reads as wedges,
+  // not confetti. Party order is the tie-breaker throughout, so wedges stay
+  // internally consistent (e.g. women sorted left-to-right by party).
+  const ordered = useMemo(() => {
+    const byParty = (a, b) =>
+      partyOrder(a.parti) - partyOrder(b.parti) ||
+      (b.fartstid ?? -1) - (a.fartstid ?? -1) ||
+      a.navn.localeCompare(b.navn, "nb");
+    const key =
+      mode === "kjoenn" ? (r) => (r.kjoenn === 1 ? 0 : 1)
+      : mode === "alder" ? (r) => r.alder ?? 999
+      : mode === "erfaring" ? (r) => r.fartstid ?? 999
+      : mode === "landsdel" ? (r) => {
+          const i = LANDSDELER.indexOf(landsdelOf(r.fylke));
+          return i === -1 ? 99 : i;
+        }
+      : null;
+    return [...representanter].sort(
+      key ? (a, b) => key(a) - key(b) || byParty(a, b) : byParty
+    );
+  }, [representanter, mode]);
   const seats = useMemo(() => seatLayout(ordered.length), [ordered.length]);
   const legend = legendFor(ordered, mode);
   const valgtParty = valgt && partyOrFallback(valgt.parti);

@@ -50,6 +50,12 @@ export default function PartyView({ index, party }) {
       <div className="pair-head">
         <Logo party={party} />
         <h2>Hvem stemmer {party.navn} med?</h2>
+        <p>
+          Partiene rangert etter hvor stor andel av voteringene de og{" "}
+          {party.kort} stemte likt – regnet av voteringene der begge deltok.
+          Trykk på et parti for hele historien: utviklingen over tid og de
+          konkrete sakene de var enige og uenige om.
+        </p>
       </div>
 
       <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />

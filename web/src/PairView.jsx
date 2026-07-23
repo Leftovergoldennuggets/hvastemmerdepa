@@ -3,6 +3,22 @@ import { pairSeries, loadPositions, erasData, pairEras, aggregateKomite, komitee
 import { cellColor, cellText, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 
+/* Progressive disclosure: the pair page opens with the headline number and
+   the time series; the detail tables live in collapsed folds so the overview
+   stays calm while explorers can dig. Native <details> keeps it accessible. */
+function Fold({ title, hint, defaultOpen = false, children }) {
+  return (
+    <details className="fold" open={defaultOpen}>
+      <summary>
+        <span className="fold-title">{title}</span>
+        {hint && <span className="fold-hint">{hint}</span>}
+        <span className="fold-arrow" aria-hidden="true">›</span>
+      </summary>
+      {children}
+    </details>
+  );
+}
+
 function Logo({ party, size = 34 }) {
   return (
     <span className="logo-tile" style={{ width: size, height: size }}>
@@ -159,26 +175,30 @@ function EraTable({ a, b }) {
     : `${r.role === a.id ? a.navn : b.navn} i regjering`;
 
   return (
-    <section className="era-table">
-      <h3>Gjennom regjeringene</h3>
-      <ol>
-        {rows.map((r, i) => {
-          const pct = (100 * r.agree) / r.total;
-          return (
-            <li key={i}>
-              <span className="era-name">
-                {r.navn} ({r.partier.map((id) => partyOrFallback(id).kort).join(", ")}){" "}
-                <span className="era-years">{r.fra}–{r.til}</span>
-              </span>
-              <span className="era-role">{roleText(r)}</span>
-              <span className="era-pct" style={{ background: cellColor(pct), color: cellText(pct) }}>
-                {pct.toFixed(1).replace(".", ",")} %
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-    </section>
+    <Fold
+      title="Gjennom regjeringene"
+      hint="regjeringsdeltakelse forklarer mye av stemmegivningen"
+    >
+      <section className="era-table">
+        <ol>
+          {rows.map((r, i) => {
+            const pct = (100 * r.agree) / r.total;
+            return (
+              <li key={i}>
+                <span className="era-name">
+                  {r.navn} ({r.partier.map((id) => partyOrFallback(id).kort).join(", ")}){" "}
+                  <span className="era-years">{r.fra}–{r.til}</span>
+                </span>
+                <span className="era-role">{roleText(r)}</span>
+                <span className="era-pct" style={{ background: cellColor(pct), color: cellText(pct) }}>
+                  {pct.toFixed(1).replace(".", ",")} %
+                </span>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    </Fold>
   );
 }
 
@@ -208,24 +228,28 @@ function KomiteTable({ index, a, b }) {
 
   if (!rows || rows.length < 2) return null;
   return (
-    <section className="era-table">
-      <h3>Tema for tema</h3>
-      <ol>
-        {rows.map((r) => (
-          <li key={r.kid}>
-            <span className="era-name">{r.navn}</span>
-            <span className="era-role">{formatN(r.total)} voteringer</span>
-            <span className="era-pct" style={{ background: cellColor(r.pct), color: cellText(r.pct) }}>
-              {r.pct.toFixed(1).replace(".", ",")} %
-            </span>
-          </li>
-        ))}
-      </ol>
-      <p className="empty-note">
-        Tema følger fagkomiteen som behandlet saken, alle år samlet. Temaer med
-        under 30 felles voteringer vises ikke.
-      </p>
-    </section>
+    <Fold
+      title="Tema for tema"
+      hint="hvor de er mest og minst enige, etter fagkomité"
+    >
+      <section className="era-table">
+        <ol>
+          {rows.map((r) => (
+            <li key={r.kid}>
+              <span className="era-name">{r.navn}</span>
+              <span className="era-role">{formatN(r.total)} voteringer</span>
+              <span className="era-pct" style={{ background: cellColor(r.pct), color: cellText(r.pct) }}>
+                {r.pct.toFixed(1).replace(".", ",")} %
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="empty-note">
+          Tema følger fagkomiteen som behandlet saken, alle år samlet. Temaer med
+          under 30 felles voteringer vises ikke.
+        </p>
+      </section>
+    </Fold>
   );
 }
 
@@ -307,7 +331,17 @@ function VoteList({ index, a, b }) {
   };
 
   return (
+    <Fold
+      title="Voteringene, én for én"
+      hint="hva uenigheten faktisk handler om"
+      defaultOpen
+    >
     <section className="votelist">
+      <p className="votelist-intro">
+        Hver rad er én votering i stortingssalen, nyeste først. Kolonnen til
+        høyre viser hva hvert av partiene stemte. Trykk på saken for å lese
+        den hos stortinget.no.
+      </p>
       <div className="filter-tabs">
         <button className={`tab${filter === "uenige" ? " active" : ""}`} onClick={() => setFilter("uenige")}>
           Der de stemte ulikt
@@ -330,8 +364,8 @@ function VoteList({ index, a, b }) {
               <div className="vote-tema">{r.tema}</div>
             </div>
             <div className="vote-stances">
-              <span><strong>{a.kort}</strong> {r.sa ? "for" : "mot"}</span>
-              <span><strong>{b.kort}</strong> {r.sb ? "for" : "mot"}</span>
+              <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
+              <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
             </div>
           </li>
         ))}
@@ -351,6 +385,7 @@ function VoteList({ index, a, b }) {
         kontrollere resultatet.
       </p>
     </section>
+    </Fold>
   );
 }
 
