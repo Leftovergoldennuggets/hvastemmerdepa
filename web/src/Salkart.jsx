@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { partyOrFallback } from "./parties.js";
-import { personPhoto } from "./lib.js";
+import { personPhoto, personUrl } from "./lib.js";
 
 // Hemicycle seat chart: one dot per elected representative. Seats are laid
 // out geometrically and filled left-to-right; the fill order follows the
@@ -16,26 +16,33 @@ const partyOrder = (id) => {
 };
 
 const KJONN = { kvinne: "#c4272e", mann: "#2C5F8A" };
+// Age and experience are ordered quantities, so they get sequential ramps in
+// a single hue family (light = young/new, dark = old/veteran) instead of
+// mixed categorical colors. Age warm amber-brown, experience cool green —
+// distinct from each other and from the party palette.
 const ALDER_BINS = [
-  { label: "Under 35 år", test: (a) => a < 35, farge: "#F2C14E" },
-  { label: "35–49 år", test: (a) => a < 50, farge: "#6BAED6" },
-  { label: "50–64 år", test: (a) => a < 65, farge: "#2171B5" },
-  { label: "65 år eller mer", test: () => true, farge: "#0A3D62" },
+  { label: "Under 35 år", test: (a) => a < 35, farge: "#EFC069" },
+  { label: "35–49 år", test: (a) => a < 50, farge: "#D08A3E" },
+  { label: "50–64 år", test: (a) => a < 65, farge: "#9C5B24" },
+  { label: "65 år eller mer", test: () => true, farge: "#5F3413" },
 ];
 const ERFARING_BINS = [
-  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#D9782D" },
-  { label: "Under 8 år", test: (f) => f < 8, farge: "#6BAED6" },
-  { label: "8 år eller mer", test: () => true, farge: "#0A3D62" },
+  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#A5CDBF" },
+  { label: "Under 8 år", test: (f) => f < 8, farge: "#5FA88C" },
+  { label: "8–15 år", test: (f) => f < 16, farge: "#2E7A5C" },
+  { label: "16 år eller mer", test: () => true, farge: "#0F4D36" },
 ];
 // Valgdistriktene bruker de klassiske fylkesnavnene (også etter
 // fylkessammenslåingene beholdt valgordningen de 19 gamle distriktene).
+// Order = the mental map of Norway read left-to-right: start i sør/vest,
+// østover, så nordover. Styrer både sektorene i salen og legenden.
 const LANDSDELER = [
-  { label: "Nord-Norge", farge: "#2C5F8A", fylker: ["Nordland", "Troms", "Finnmark"] },
-  { label: "Trøndelag", farge: "#6BAED6", fylker: ["Sør-Trøndelag", "Nord-Trøndelag", "Trøndelag"] },
+  { label: "Sørlandet", farge: "#D9A017", fylker: ["Aust-Agder", "Vest-Agder", "Agder"] },
   { label: "Vestlandet", farge: "#35886C", fylker: ["Rogaland", "Hordaland", "Sogn og Fjordane", "Møre og Romsdal", "Vestland"] },
-  { label: "Sørlandet", farge: "#F2C14E", fylker: ["Aust-Agder", "Vest-Agder", "Agder"] },
   { label: "Østlandet", farge: "#D9782D", fylker: ["Østfold", "Akershus", "Hedmark", "Oppland", "Buskerud", "Vestfold", "Telemark", "Innlandet", "Viken"] },
   { label: "Oslo", farge: "#8A4E85", fylker: ["Oslo"] },
+  { label: "Trøndelag", farge: "#6BAED6", fylker: ["Sør-Trøndelag", "Nord-Trøndelag", "Trøndelag"] },
+  { label: "Nord-Norge", farge: "#2C5F8A", fylker: ["Nordland", "Troms", "Finnmark"] },
 ];
 const landsdelOf = (fylke) => LANDSDELER.find((l) => l.fylker.includes(fylke));
 
@@ -226,6 +233,11 @@ export default function Salkart({ representanter, interactive = true }) {
                 {valgt.yrke.map((y) => y.navn + (y.aar ? ` (${y.aar})` : "")).join("; ")}
               </span>
             )}
+            <span className="rep-cv">
+              <a href={personUrl(valgt.id)} target="_blank" rel="noreferrer">
+                Se hele biografien hos stortinget.no ›
+              </a>
+            </span>
             <span className="foto-kred">Foto: Stortinget · Utdanning og yrke slik Stortinget selv har registrert dem</span>
           </div>
           <button className="rep-card-close" aria-label="Lukk" onClick={() => setValgt(null)}>×</button>

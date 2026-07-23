@@ -73,6 +73,10 @@ export const formatDate = (iso) =>
 export const sakUrl = (sakId) =>
   `https://www.stortinget.no/no/Saker-og-publikasjoner/Saker/Sak/?p=${sakId}`;
 
+// Official biography page for a representative on stortinget.no.
+export const personUrl = (personId) =>
+  `https://www.stortinget.no/no/Representanter-og-komiteer/Representantene/Representant/?perid=${encodeURIComponent(personId)}`;
+
 // Agreement between two parties per session, oldest first.
 export async function pairSeries(index, aId, bId) {
   const key = pairKey(aId, bId);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback } from "./parties.js";
-import { personerData, personPhoto } from "./lib.js";
+import { personerData, personPhoto, personUrl } from "./lib.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
 import NorgesKart from "./NorgesKart.jsx";
@@ -21,6 +21,7 @@ export default function PeoplePage() {
   const [data, setData] = useState(null);
   const [periode, setPeriode] = useState(null);
   const [grid, setGrid] = useState(null); // party id shown in the photo browser
+  const [openRep, setOpenRep] = useState(null); // rep id with CV expanded
 
   useEffect(() => {
     personerData().then((d) => {
@@ -184,24 +185,54 @@ export default function PeoplePage() {
 
         {grid && (
           <>
+            <p className="count-note">
+              Trykk på et kort for utdanning og yrke – slik Stortinget selv
+              har registrert dem.
+            </p>
             <div className="rep-grid">
-              {gridReps.map((r) => (
-                <figure key={r.id} className="rep-tile">
-                  <img src={personPhoto(r.id)} alt={r.navn} loading="lazy" />
-                  <figcaption>
-                    <strong>{r.navn}</strong>
-                    <span>{r.fylke || ""}</span>
-                    <span>
-                      {r.alder != null && `${Math.floor(r.alder)} år`}
-                      {r.fartstid != null &&
-                        (r.fartstid < 0.1 ? " · ny" : ` · ${Math.round(r.fartstid)} år på tinget`)}
-                    </span>
-                    {r.komiteer?.length > 0 && (
-                      <span className="rep-komite">{r.komiteer.join(" · ")}</span>
-                    )}
-                  </figcaption>
-                </figure>
-              ))}
+              {gridReps.map((r) => {
+                const open = openRep === r.id;
+                return (
+                  <figure
+                    key={r.id}
+                    className={`rep-tile${open ? " open" : ""}`}
+                    onClick={() => setOpenRep(open ? null : r.id)}
+                  >
+                    <img src={personPhoto(r.id)} alt={r.navn} loading="lazy" />
+                    <figcaption>
+                      <strong>{r.navn}</strong>
+                      <span>{r.fylke || ""}</span>
+                      <span>
+                        {r.alder != null && `${Math.floor(r.alder)} år`}
+                        {r.fartstid != null &&
+                          (r.fartstid < 0.1 ? " · ny" : ` · ${Math.round(r.fartstid)} år på tinget`)}
+                      </span>
+                      {r.komiteer?.length > 0 && (
+                        <span className="rep-komite">{r.komiteer.join(" · ")}</span>
+                      )}
+                      {open && (
+                        <span className="rep-cv-detail" onClick={(e) => e.stopPropagation()}>
+                          {r.utdanning?.length > 0 && (
+                            <span>
+                              <b>Utdanning:</b>{" "}
+                              {r.utdanning.map((u) => u.navn + (u.aar ? ` (${u.aar})` : "")).join("; ")}
+                            </span>
+                          )}
+                          {r.yrke?.length > 0 && (
+                            <span>
+                              <b>Yrke:</b>{" "}
+                              {r.yrke.map((y) => y.navn + (y.aar ? ` (${y.aar})` : "")).join("; ")}
+                            </span>
+                          )}
+                          <a href={personUrl(r.id)} target="_blank" rel="noreferrer">
+                            Se hele biografien hos stortinget.no ›
+                          </a>
+                        </span>
+                      )}
+                    </figcaption>
+                  </figure>
+                );
+              })}
             </div>
             <p className="count-note">Foto: Stortinget.</p>
           </>

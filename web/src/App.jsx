@@ -83,8 +83,11 @@ function HomeSalkart() {
     <section className="party-chips">
       <h2>Hvem sitter i salen?</h2>
       <p>
-        De {reps.length} representantene {periode && `valgt for ${periode.replace("-", "–")}`} –
-        én prikk per person.
+        Politikk er også mennesker. Her er de {reps.length} representantene{" "}
+        {periode && `valgt for ${periode.replace("-", "–")}`} – én prikk per
+        person, farget etter parti. Trykk deg inn for å se salen fordelt på
+        kjønn, alder, erfaring og landsdel, eller for å finne en enkelt
+        representant.
       </p>
       <a className="home-salkart" href="#/hvem" aria-label="Se hvem representantene er">
         <Salkart representanter={reps} interactive={false} />
@@ -166,10 +169,6 @@ export default function App() {
       <Menu />
       <header className="masthead">
         <h1><a href="#/">Hva stemmer de på?</a></h1>
-        <p className="standfirst">
-          Hvor ofte stemmer partiene på Stortinget likt – og med hvem?
-          Alle voteringer siden 2011.
-        </p>
       </header>
 
       {!index || !selection ? (
@@ -300,7 +299,11 @@ export default function App() {
 
           <section className="party-chips">
             <h2>Utforsk ett parti</h2>
-            <p>Se hvem hvert parti stemmer mest – og minst – sammen med.</p>
+            <p>
+              Hvert parti har sin egen side: hvem det stemmer mest og minst
+              sammen med, hvordan det har endret seg gjennom regjeringene –
+              og de konkrete sakene bak tallene.
+            </p>
             <div className="chips-row">
               {PARTIES.filter((p) =>
                 matrix && [...matrix.keys()].some((k) => k.split("|").includes(p.id))

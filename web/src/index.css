@@ -467,6 +467,22 @@ footer.credit a { color: inherit; }
 /* Government-change markers in the pair time series */
 .era-line { stroke: #C9C3B8; stroke-width: 1; stroke-dasharray: 3 4; }
 .era-label { font-size: 11px; fill: #8A8378; }
+.chart-caption {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-muted);
+  margin-top: 6px;
+}
+.band-key {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  vertical-align: baseline;
+}
+.band-red { background: rgba(221, 48, 73, 0.14); }
+.band-blue { background: rgba(43, 108, 184, 0.14); }
 
 /* Free-vote (samvittighetsvotering) tag on the splits list */
 .fri-tag {
@@ -835,6 +851,25 @@ button.dl:disabled { color: var(--ink-muted); text-decoration: none; cursor: wai
   padding-top: 5px;
   border-top: 1px solid var(--hairline);
   color: var(--ink-secondary);
+}
+.rep-tile { cursor: pointer; }
+.rep-tile.open {
+  box-shadow: 0 8px 22px rgba(25, 23, 21, 0.09);
+  background: #fff;
+}
+.rep-cv-detail {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--hairline);
+  cursor: auto;
+}
+.rep-cv-detail > span { margin-bottom: 4px; }
+.rep-cv-detail b { color: var(--ink-secondary); font-weight: 600; }
+.rep-cv-detail a {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--accent);
 }
 
 /* Norway map */

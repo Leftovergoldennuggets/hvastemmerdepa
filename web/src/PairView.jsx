@@ -62,29 +62,45 @@ function TimeSeries({ series, a, b }) {
     .map((s, i) => ({ y: s.sesjon.slice(0, 4), i }))
     .filter(({ y }) => ["2011", "2013", "2017", "2021", "2025"].includes(y));
 
-  // Government changes as x-positions. Sessions run 1 Oct-30 Sep; a change
+  // Government eras as tinted background bands (red-green vs borgerlig blue)
+  // separated by dashed lines. Sessions run 1 Oct-30 Sep; a change
   // mid-session lands proportionally between the session points. Only PM
-  // changes get a label; coalition reshuffles are unlabelled lines.
+  // changes get a text label; every band explains itself on hover.
+  const RED_TINT = "rgba(221, 48, 73, 0.055)";
+  const BLUE_TINT = "rgba(43, 108, 184, 0.06)";
   const markers = [];
+  const bands = [];
   if (eras && series.length > 1) {
     let prev = null;
+    let bandStart = L;
+    const xFor = (dato) => {
+      const [yy, mm] = [Number(dato.slice(0, 4)), Number(dato.slice(5, 7))];
+      const sessYear = mm >= 10 ? yy : yy - 1;
+      const idx = series.findIndex((s) => s.sesjon.startsWith(String(sessYear)));
+      if (idx === -1) return null;
+      const f = Math.min(1, Math.max(0,
+        (new Date(dato) - new Date(`${sessYear}-10-01`)) / (365 * 864e5)));
+      const pos = Math.min(series.length - 1, Math.max(0, idx + f - 0.5));
+      return L + (pos / (series.length - 1)) * (W - L - R);
+    };
+    const bandFor = (era, x1, x2) => ({
+      x1, x2,
+      fill: era.partier.includes("A") ? RED_TINT : BLUE_TINT,
+      title: `${era.navn}-regjeringen (${era.partier.join(", ")}), `
+        + `${era.fra.slice(0, 4)}–${era.til ? era.til.slice(0, 4) : "nå"}`,
+    });
     for (const era of eras) {
       if (prev && era.fra) {
-        const [yy, mm] = [Number(era.fra.slice(0, 4)), Number(era.fra.slice(5, 7))];
-        const sessYear = mm >= 10 ? yy : yy - 1;
-        const idx = series.findIndex((s) => s.sesjon.startsWith(String(sessYear)));
-        if (idx !== -1) {
-          const f = Math.min(1, Math.max(0,
-            (new Date(era.fra) - new Date(`${sessYear}-10-01`)) / (365 * 864e5)));
-          const pos = Math.min(series.length - 1, Math.max(0, idx + f - 0.5));
-          markers.push({
-            x: L + (pos / (series.length - 1)) * (W - L - R),
-            label: era.navn !== prev.navn ? era.navn : null,
-          });
+        const x = xFor(era.fra);
+        if (x !== null) {
+          bands.push(bandFor(prev, bandStart, x));
+          bandStart = x;
+          markers.push({ x, label: era.navn !== prev.navn ? era.navn : null });
         }
       }
       prev = era;
     }
+    if (prev) bands.push(bandFor(prev, bandStart, W - R));
   }
 
   const onMove = (e) => {
@@ -108,6 +124,18 @@ function TimeSeries({ series, a, b }) {
         onMouseMove={onMove}
         onMouseLeave={() => setHover(null)}
       >
+        {bands.map((bd, k) => (
+          <rect
+            key={`b${k}`}
+            x={bd.x1}
+            y={T}
+            width={Math.max(0, bd.x2 - bd.x1)}
+            height={H - T - B}
+            fill={bd.fill}
+          >
+            <title>{bd.title}</title>
+          </rect>
+        ))}
         {[0, 25, 50, 75, 100].map((v) => {
           const y = T + (1 - v / 100) * (H - T - B);
           return (
@@ -157,6 +185,15 @@ function TimeSeries({ series, a, b }) {
             i sesjonen {hover.sesjon}.
           </div>
         </div>
+      )}
+      {bands.length > 0 && (
+        <p className="chart-caption">
+          Bakgrunnen viser hvem som satt i regjering:{" "}
+          <span className="band-key band-red" /> rødgrønn,{" "}
+          <span className="band-key band-blue" /> borgerlig. Stiplede linjer
+          er regjeringsskifter – hold pekeren over et felt for
+          konstellasjonen.
+        </p>
       )}
     </div>
   );
