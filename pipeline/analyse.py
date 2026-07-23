@@ -184,6 +184,9 @@ def analyse_session(sesjon: str):
             "dato": date_of(v.get("votering_tid")),
             "tema": v.get("votering_tema"),
             "vedtatt": v.get("vedtatt"),
+            # Stortinget's own flag: party discipline formally lifted
+            # (conscience votes) — displayed, never used to exclude anything.
+            "fri": bool(v.get("fri_votering")),
             "for": v["antall_for"],
             "mot": v["antall_mot"],
             "verified": verified,
@@ -221,7 +224,7 @@ def analyse_session(sesjon: str):
                 splits.append({
                     "sesjon": sesjon, "vid": row["vid"], "sak": row["sak"],
                     "tittel": row["tittel"], "dato": row["dato"], "tema": row["tema"],
-                    "parti": parti, "for": f, "mot": m,
+                    "parti": parti, "for": f, "mot": m, "fri": row["fri"],
                 })
 
     summary = {

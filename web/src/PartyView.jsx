@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PARTIES, partyOrFallback, cellColor, cellText } from "./parties.js";
+import { partyOrFallback, cellColor } from "./parties.js";
 import { aggregateMatrix, pairKey, formatN } from "./lib.js";
 import { downloadCsv } from "./csv.js";
 import { useTimeSelection } from "./useTimeSelection.js";

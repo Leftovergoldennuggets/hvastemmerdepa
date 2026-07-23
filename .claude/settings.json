@@ -41,7 +41,10 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(i['repository']['name'], i['path']\\) for i in d.get\\('items', []\\)]\")",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('scripts'\\)\\)\")",
       "Bash(lsof -iTCP:5173 -iTCP:4173 -iTCP:3000 -sTCP:LISTEN)",
-      "Bash(npx oxlint *)"
+      "Bash(npx oxlint *)",
+      "Bash(curl -s https://raw.githubusercontent.com/holderdeord/hdo-transcript-search/master/README.md)",
+      "Bash(curl -s \"https://api.github.com/repos/holderdeord/hdo-transcript-search/contents\")",
+      "Bash(python3 -c \"import json,sys; [print\\(x['name']\\) for x in json.load\\(sys.stdin\\)]\")"
     ],
     "additionalDirectories": [
       "/Users/AndersEidesvik/Downloads"

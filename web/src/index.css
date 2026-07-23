@@ -425,6 +425,21 @@ footer.credit a { color: inherit; }
 }
 .menu-panel a:hover { background: #f5f3f0; color: var(--accent); }
 
+/* Government-change markers in the pair time series */
+.era-line { stroke: #C9C3B8; stroke-width: 1; stroke-dasharray: 3 4; }
+.era-label { font-size: 11px; fill: #8A8378; }
+
+/* Free-vote (samvittighetsvotering) tag on the splits list */
+.fri-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 7px;
+  border: 1px solid #C9C3B8;
+  border-radius: 9px;
+  color: #6E675C;
+  white-space: nowrap;
+}
+
 /* Diagonal (party vs itself): empty with a subtle hatch, as HDO did */
 td.blank.diagonal {
   background: repeating-linear-gradient(

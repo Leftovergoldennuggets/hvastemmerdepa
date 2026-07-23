@@ -203,7 +203,8 @@ export default function MethodPage() {
         Hver votering i listene lenker til saken hos stortinget.no. Hele
         datasettet og all kode – innhenting, beregning og denne nettsiden – er
         åpen, slik at hvem som helst kan kjøre analysen på nytt fra Stortingets
-        rådata og få de samme tallene.
+        rådata og få de samme tallene. Datafilene siden bygger på kan lastes
+        ned direkte – se <a href="#/data">Åpne data</a>.
       </p>
     </div>
   );

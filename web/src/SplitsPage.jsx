@@ -41,8 +41,9 @@ export default function SplitsPage() {
         <p>
           Partiene på Stortinget stemmer nesten alltid samlet. Her er de{" "}
           {splits.length} voteringene siden 2011 der minst to representanter
-          brøt med sitt eget parti – ofte samvittighetssaker eller lokale
-          interesser.
+          brøt med sitt eget parti. Der Stortinget selv har registrert
+          voteringen som fri – partilinjen formelt opphevet, typisk
+          samvittighetssaker – er den merket «fri votering».
         </p>
       </div>
 
@@ -64,9 +65,10 @@ export default function SplitsPage() {
           onClick={() =>
             downloadCsv(
               `splittelser${parti ? "-" + parti.toLowerCase() : ""}.csv`,
-              ["dato", "parti", "for", "mot", "sak_id", "sak", "votering_tema", "lenke"],
+              ["dato", "parti", "for", "mot", "fri_votering", "sak_id", "sak", "votering_tema", "lenke"],
               sorted.map((s) => [
                 s.dato || "", partyOrFallback(s.parti).kort, s.for, s.mot,
+                s.fri ? "ja" : "nei",
                 s.sak, s.tittel || "", s.tema || "", sakUrl(s.sak),
               ])
             )
@@ -89,7 +91,10 @@ export default function SplitsPage() {
               </div>
               <div className="vote-main">
                 <a href={sakUrl(s.sak)} target="_blank" rel="noreferrer">{s.tittel}</a>
-                <div className="vote-tema">{s.tema}</div>
+                <div className="vote-tema">
+                  {s.tema}
+                  {s.fri && <> {" "}<span className="fri-tag">fri votering</span></>}
+                </div>
               </div>
               <div className="vote-stances">
                 <span><strong>{s.for}</strong> for</span>

@@ -3,6 +3,22 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-07-23 — Frie voteringer, regjeringsmarkører og åpne data-side
+
+- **Splittelser bruker nå Stortingets eget fri votering-flagg** i stedet for
+  å anta («ofte samvittighetssaker»): positions- og splits-radene har fått
+  feltet `fri` (fra API-feltet `fri_votering`), og merkede voteringer vises
+  med etikett. Målt: bare 5 av 676 splittelser skjedde i formelt frie
+  voteringer — antakelsen i den gamle teksten var misvisende og er fjernet.
+- **Regjeringsskifter tegnes som stiplede linjer** i tidsseriene på
+  parsidene (statsministerskifter med navn; koalisjonsendringer uten).
+  Plasseringen interpoleres fra dato innenfor sesjonen.
+- **Ny side «Åpne data»** (#/data): dokumenterer alle JSON-filene siden
+  leser fra, feltbetydninger (inkl. excluded-kodene og `fri`), vilkår og
+  kreditering. Lenket fra metodesiden og menyen.
+- Kosmetisk (22. juli, eget commit): matrisens diagonal er tom med skravur
+  i stedet for «100 %»-celler, som hos Holder de ord.
+
 ## 2026-07-22 (senere samme dag) — Metodeside-rettinger og gjennomslag-utvidelse
 
 **Gjennomslag teller nå også alternativ votering (revisjonens punkt B1).**

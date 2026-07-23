@@ -8,6 +8,7 @@ import PeoplePage from "./PeoplePage.jsx";
 import GjennomslagPage from "./GjennomslagPage.jsx";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
+import DataPage from "./DataPage.jsx";
 import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
@@ -21,6 +22,7 @@ function parseHash() {
   if (h.startsWith("#/metodikk")) return { view: "method" };
   if (h.startsWith("#/forsta")) return { view: "forsta" };
   if (h.startsWith("#/om")) return { view: "om" };
+  if (h.startsWith("#/data")) return { view: "data" };
   if (h.startsWith("#/splittelser")) return { view: "splits" };
   if (h.startsWith("#/hvem")) return { view: "people" };
   if (h.startsWith("#/gjennomslag")) return { view: "gjennomslag" };
@@ -53,6 +55,7 @@ function Menu() {
           <a href="#/hvem">Hvem er de?</a>
           <a href="#/forsta">Hvordan forstå tallene</a>
           <a href="#/metodikk">Metode</a>
+          <a href="#/data">Åpne data</a>
           <a href="#/om">Om prosjektet</a>
         </div>
       )}
@@ -171,9 +174,12 @@ export default function App() {
 
       {!index || !selection ? (
         <div className="loading">Laster data …</div>
-      ) : ["method", "forsta", "om"].includes(route.view) ? (
+      ) : ["method", "forsta", "om", "data"].includes(route.view) ? (
         <main>
-          {route.view === "method" ? <MethodPage /> : route.view === "forsta" ? <ForstaPage /> : <OmPage />}
+          {route.view === "method" ? <MethodPage />
+            : route.view === "forsta" ? <ForstaPage />
+            : route.view === "data" ? <DataPage />
+            : <OmPage />}
           <Credit meta={meta} />
         </main>
       ) : route.view === "splits" ? (

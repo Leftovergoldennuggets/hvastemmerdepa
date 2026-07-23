@@ -16,10 +16,13 @@ function Logo({ party, size = 34 }) {
 }
 
 /* Hand-rolled SVG line chart: agreement per session, 0-100 %, hairline grid,
-   hover crosshair + tooltip, direct label on the last point. */
+   hover crosshair + tooltip, direct label on the last point. Government
+   changes are drawn as dashed vertical lines (labelled when the PM changed). */
 function TimeSeries({ series, a, b }) {
   const [hover, setHover] = useState(null);
+  const [eras, setEras] = useState(null);
   const wrapRef = useRef(null);
+  useEffect(() => { erasData().then(setEras).catch(() => {}); }, []);
   const W = 900, H = 280, L = 44, R = 24, T = 18, B = 30;
   const pts = series
     .map((s, i) => ({ ...s, i }))
@@ -42,6 +45,31 @@ function TimeSeries({ series, a, b }) {
   const years = series
     .map((s, i) => ({ y: s.sesjon.slice(0, 4), i }))
     .filter(({ y }) => ["2011", "2013", "2017", "2021", "2025"].includes(y));
+
+  // Government changes as x-positions. Sessions run 1 Oct-30 Sep; a change
+  // mid-session lands proportionally between the session points. Only PM
+  // changes get a label; coalition reshuffles are unlabelled lines.
+  const markers = [];
+  if (eras && series.length > 1) {
+    let prev = null;
+    for (const era of eras) {
+      if (prev && era.fra) {
+        const [yy, mm] = [Number(era.fra.slice(0, 4)), Number(era.fra.slice(5, 7))];
+        const sessYear = mm >= 10 ? yy : yy - 1;
+        const idx = series.findIndex((s) => s.sesjon.startsWith(String(sessYear)));
+        if (idx !== -1) {
+          const f = Math.min(1, Math.max(0,
+            (new Date(era.fra) - new Date(`${sessYear}-10-01`)) / (365 * 864e5)));
+          const pos = Math.min(series.length - 1, Math.max(0, idx + f - 0.5));
+          markers.push({
+            x: L + (pos / (series.length - 1)) * (W - L - R),
+            label: era.navn !== prev.navn ? era.navn : null,
+          });
+        }
+      }
+      prev = era;
+    }
+  }
 
   const onMove = (e) => {
     const rect = wrapRef.current.getBoundingClientRect();
@@ -79,6 +107,14 @@ function TimeSeries({ series, a, b }) {
             <text key={y} x={x} y={H - 8} className="tick" textAnchor="middle">{y}</text>
           );
         })}
+        {markers.map((m, k) => (
+          <g key={k}>
+            <line x1={m.x} x2={m.x} y1={T} y2={H - B} className="era-line" />
+            {m.label && (
+              <text x={m.x + 5} y={T + 10} className="era-label">{m.label}</text>
+            )}
+          </g>
+        ))}
         {hover && (
           <line x1={hover.x} x2={hover.x} y1={T} y2={H - B} className="crosshair" />
         )}
