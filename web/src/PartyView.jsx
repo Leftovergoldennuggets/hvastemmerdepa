@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback, cellColor } from "./parties.js";
 import { aggregateMatrix, pairKey, formatN } from "./lib.js";
-import { useTweenedMatrix } from "./Matrix.jsx";
+import { useTweenedMatrix } from "./useTweenedMatrix.js";
 import { downloadCsv } from "./csv.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 import PeriodPicker from "./PeriodPicker.jsx";
