@@ -141,8 +141,9 @@ export default function App() {
   useEffect(() => {
     if (!selectedSessions.length) return;
     let live = true;
-    setMatrix(null);
-    setKomiteAgg(null);
+    // Keep the previous matrix on screen while the new one loads — the
+    // switch then animates cell by cell (HDO-style) instead of flashing
+    // a loading state. Data is small and cached, so the gap is tiny.
     setLoadError(false);
     const ids = selectedSessions.map((s) => s.sesjon);
     Promise.all([aggregateMatrix(ids), aggregateKomite(ids)])
