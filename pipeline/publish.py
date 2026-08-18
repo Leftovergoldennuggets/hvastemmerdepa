@@ -40,6 +40,7 @@ sessions = json.loads((SRC / "sessions.json").read_text())
 mismatches = []   # individual sums differ from official tallies (disclosed)
 pending = []      # API returns no individual votes despite official tallies
 unity = []        # per party per session: share of votes with zero dissenters
+same_side = 0     # counted votes where every party with a stance chose the same side
 for s in sessions:
     per_party = defaultdict(lambda: [0, 0])  # parti -> [united, participated]
     for row in json.loads((SRC / "positions" / f"{s['sesjon']}.json").read_text()):
@@ -52,6 +53,9 @@ for s in sessions:
                 if parti != "Uav" and f + m > 0:
                     per_party[parti][1] += 1
                     per_party[parti][0] += (f == 0 or m == 0)
+            stances = {f > m for parti, (f, m) in row["partier"].items()
+                       if parti != "Uav" and f != m}
+            same_side += (len(stances) == 1)
     for parti, (u, t) in per_party.items():
         if t >= 50:  # need a meaningful sample within the session
             unity.append(100 * u / t)
@@ -68,6 +72,10 @@ meta = {
     "data_pending": pending,
     "enstemmig": sum(s["enstemmig"] for s in sessions),
     "uten_anlegg": sum(s.get("uten_anlegg", 0) for s in sessions),
+    # Counted votes where all parties with a stance ended on the same side —
+    # cited on the method page to show the numbers are effectively
+    # contested-votes-only (unanimous decisions never reach the vote system).
+    "alle_samme_side": same_side,
     # Party unity, measured: min/max over party-sessions (>= 50 votes)
     "unity_min": round(min(unity)) if unity else None,
     "unity_max": round(max(unity)) if unity else None,

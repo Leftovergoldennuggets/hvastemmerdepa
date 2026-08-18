@@ -46,6 +46,20 @@ export default function MethodPage() {
         avgjør hvilke voteringer som får stemmedata.
       </p>
       <p>
+        Dette har en viktig konsekvens: prosentene bygger i praksis bare på
+        voteringer der salen faktisk delte seg. Enstemmige avgjørelser tas
+        uten voteringsanlegget og inngår aldri i tallene
+        {meta && meta.alle_samme_side != null && (
+          <>
+            {" "}– og blant de {formatN(meta.counted_votes)} voteringene som
+            teller, endte alle deltakende partier på samme side i bare{" "}
+            {formatN(meta.alle_samme_side)} av dem
+          </>
+        )}
+        . Det nettstedet måler er altså: når Stortinget var delt – hvem stemte
+        likt?
+      </p>
+      <p>
         Ett unntak: voteringer over «lovens overskrift og loven i sin helhet»
         – en lovteknisk bekreftelse på slutten av hver lovbehandling – holdes
         utenfor, i tråd med{" "}
@@ -60,6 +74,16 @@ export default function MethodPage() {
         voteringer (63–38 og 38–63, samme representanter). Det er én beslutning,
         ikke to, så vi teller hendelsen én gang og holder speilbildet utenfor
         {meta?.alternativ_speil ? ` (${formatN(meta.alternativ_speil)} voteringer)` : ""}.
+      </p>
+      <p>
+        <strong>Én votering teller én gang, uansett hvor mange forslag den
+        omfatter.</strong> For å spare tid setter presidenten ofte forslag som
+        hører sammen og ventes å få samme utfall, under ett – «forslagene
+        nr. 1–7 fra SV, R og MDG» avgjøres da i én avstemning. Vi teller
+        avstemninger, ikke forslag: én votering i referatet er én rad i
+        tallene, og alt kan etterprøves ved å telle i referatet. Statistikk
+        som i stedet teller per forslag – slik nettstedet Holder de ord
+        gjorde – vekter annerledes og gir derfor andre tall enn våre.
       </p>
 
       <h3>Hva er et partis standpunkt?</h3>

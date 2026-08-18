@@ -3,6 +3,31 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-08-18 — Metodepresiseringer, daglig auto-oppdatering og reviewer-guide
+
+- **Telleenheten er nå eksplisitt på metodesiden:** én votering teller én
+  gang, uansett hvor mange forslag presidenten har satt under ett. Dette har
+  alltid vært metoden; nå står det og avviket mot statistikk som teller per
+  forslag (som Holder de ord) er forklart.
+- **Målt og dokumentert: tallene er i praksis «kun omstridte voteringer».**
+  Enstemmige vedtak tas uten voteringsanlegget og har aldri inngått i
+  prosentene. Målt på hele datagrunnlaget ender alle deltakende partier på
+  samme side i under én prosent av de tellende voteringene (34 av 8 239
+  siden okt. 2021). En «kun omstridte»-bryter à la Holder de ords
+  ignore_unanimous ville flyttet parprosentene med ≤ 0,2 pp og bygges derfor
+  ikke; i stedet beregner publish.py nå tallet (meta-feltet
+  `alle_samme_side`) og metodesiden + matriseforklaringen opplyser om det.
+- **Daglig auto-oppdatering** (.github/workflows/oppdater.yml): henter delta
+  fra API-et hver morgen, regner alt på nytt og publiserer — men bare hvis
+  en fornuftssjekk (pipeline/check_update.py) bekrefter at ingen sesjoner
+  eller voteringer er forsvunnet siden forrige publisering (data er
+  append-only, så krymping = feil). Feiler noe, står nettsiden urørt.
+  Nye hjelpefiler: pipeline/refresh_current.py (sletter de foranderlige
+  listefilene for inneværende sesjon så fetch.py henter dem på nytt) og
+  check_update.py. Ingen beregningslogikk er endret.
+- **GJENNOMGANG.md**: guide for den eksterne kodegjennomgangen (prioritert
+  lesesti, nøkkelinvarianter, stikkprøveprotokoll).
+
 ## 2026-07-23 — Frie voteringer, regjeringsmarkører og åpne data-side
 
 - **Splittelser bruker nå Stortingets eget fri votering-flagg** i stedet for

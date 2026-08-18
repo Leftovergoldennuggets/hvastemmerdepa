@@ -214,7 +214,9 @@ export default function App() {
             Eller Rødt og FrP? Matrisen under viser andelen voteringer der to
             partier stemte likt – grønt betyr ofte, rødt sjelden. Alt er
             regnet rett fra Stortingets egne voteringsdata, votering for
-            votering. <a href="#/forsta">Slik leser du tallene ›</a>
+            votering – og bare voteringer der salen delte seg, teller med:
+            enstemmige vedtak registreres ikke i voteringsanlegget.{" "}
+            <a href="#/forsta">Slik leser du tallene ›</a>
           </p>
 
           <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
