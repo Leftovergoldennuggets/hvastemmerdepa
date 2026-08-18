@@ -54,6 +54,11 @@ jobs:
             rm data-raw.tar.gz
           fi
 
+      - name: Rydd bort macOS-metadatafiler
+        # En tarball laget på macOS kan inneholde AppleDouble-filer («._x»);
+        # på Linux blir de ekte filer som pipeline-glob'ene snubler i.
+        run: find data/raw -name '._*' -delete 2>/dev/null || true
+
       - name: Hent nye data (delta)
         run: |
           python3 pipeline/refresh_current.py
