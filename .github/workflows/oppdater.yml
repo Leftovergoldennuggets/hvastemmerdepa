@@ -1,0 +1,90 @@
+# Daglig dataoppdatering: henter nye voteringer fra Stortingets API, regner
+# alt på nytt, fornuftssjekker resultatet mot forrige publisering og pusher —
+# Vercel deployer automatisk ved push. Feiler et steg, committes ingenting og
+# nettsiden står urørt på gårsdagens data.
+#
+# Rådataene (~230 MB, ikke i git) holdes i Actions-cachen mellom kjøringer;
+# er cachen borte, lastes de fra release-en "raw-seed" i dette repoet.
+# NB: GitHub kjører ikke fra vår hvitelistede IP — FETCH_RATE må stå på
+# standard (95 kall/min, innenfor Stortingets grense for alle).
+
+name: Daglig dataoppdatering
+
+on:
+  schedule:
+    - cron: "30 3 * * *" # 05:30 norsk sommertid, 04:30 vintertid
+  workflow_dispatch:
+
+concurrency:
+  group: oppdater
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  oppdater:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Hent rådata-lageret fra cache
+        uses: actions/cache@v4
+        with:
+          path: data/raw
+          # run_id-nøkkelen finnes aldri fra før, så oppdatert cache lagres
+          # etter hver kjøring; restore-keys henter nyeste tidligere versjon.
+          key: raw-data-${{ github.run_id }}
+          restore-keys: raw-data-
+
+      - name: Seed rådata fra release (bare hvis cachen er tom)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f data/raw/sesjoner.json.gz ]; then
+            echo "Cache tom — laster raw-seed-releasen"
+            gh release download raw-seed --pattern 'data-raw.tar.gz' \
+              --repo "$GITHUB_REPOSITORY" --output data-raw.tar.gz
+            tar -xzf data-raw.tar.gz
+            rm data-raw.tar.gz
+          fi
+
+      - name: Hent nye data (delta)
+        run: |
+          python3 pipeline/refresh_current.py
+          python3 pipeline/fetch.py
+          python3 pipeline/fetch_personer.py
+          python3 pipeline/fetch_fotos.py
+
+      - name: Beregn alt på nytt
+        run: |
+          python3 pipeline/analyse.py
+          python3 pipeline/analyse_personer.py
+          python3 pipeline/analyse_gjennomslag.py
+
+      - name: Fornuftssjekk mot forrige publisering
+        run: python3 pipeline/check_update.py
+
+      - name: Publiser til nettstedet
+        run: python3 pipeline/publish.py
+
+      - name: Commit og push hvis dataene er endret
+        run: |
+          git config user.name "Anders Eidesvik"
+          git config user.email "anders.eidesvik@gmail.com"
+          git add data/computed web/public/data web/public/fotos
+          # meta.json får ny "generated"-dato hver kjøring; commit bare når
+          # noe utover den er endret, så "sist oppdatert" betyr reell endring.
+          CHANGED=$(git diff --cached --name-only)
+          if [ -z "$CHANGED" ] || [ "$CHANGED" = "web/public/data/meta.json" ]; then
+            echo "Ingen datadendringer i dag."
+            git reset
+          else
+            git commit -m "Daglig dataoppdatering ($(date -u +%F))"
+            git push
+          fi
