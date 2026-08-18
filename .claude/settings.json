@@ -46,7 +46,17 @@
       "Bash(curl -s \"https://api.github.com/repos/holderdeord/hdo-transcript-search/contents\")",
       "Bash(python3 -c \"import json,sys; [print\\(x['name']\\) for x in json.load\\(sys.stdin\\)]\")",
       "Bash(curl -sI \"https://www.stortinget.no/no/Representanter-og-komiteer/Representantene/Representant/?perid=JGS\")",
-      "Bash(curl -s \"https://www.stortinget.no/no/Representanter-og-komiteer/Representantene/Representant/?perid=JGS\")"
+      "Bash(curl -s \"https://www.stortinget.no/no/Representanter-og-komiteer/Representantene/Representant/?perid=JGS\")",
+      "Bash(python3 -c \"import json; m=json.load\\(open\\('web/public/data/meta.json'\\)\\); print\\('alle_samme_side:', m['alle_samme_side'], '| counted:', m['counted_votes']\\)\")",
+      "Bash(python3 pipeline/refresh_current.py --dry-run)",
+      "Bash(python3 pipeline/refresh_current.py)",
+      "Bash(FETCH_RATE=300 python3 pipeline/fetch.py)",
+      "Bash(FETCH_RATE=300 python3 pipeline/fetch_personer.py)",
+      "Bash(FETCH_RATE=300 python3 pipeline/fetch_fotos.py)",
+      "Bash(python3 pipeline/check_update.py)",
+      "Bash(tar -czf __TRACKED_VAR__/data-raw.tar.gz data/raw)",
+      "Bash(tar -czf /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/d8b93a50-573c-4448-8c57-46cac5d2b3df/scratchpad/data-raw.tar.gz data/raw)",
+      "Bash(gh release *)"
     ],
     "additionalDirectories": [
       "/Users/AndersEidesvik/Downloads"
