@@ -26,6 +26,9 @@ export default function MethodPage() {
             {meta.last_session}, sist oppdatert {formatDate(meta.generated)}.
           </>
         )}
+        {" "}Nye voteringer hentes automatisk fra API-et hver morgen og
+        publiseres først når en kontroll har bekreftet at ingenting mangler;
+        «sist oppdatert» viser når dataene sist faktisk endret seg.
       </p>
 
       <h3>Hvilke voteringer telles?</h3>

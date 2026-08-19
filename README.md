@@ -19,6 +19,8 @@ pipeline/analyse.py   Beregner partistandpunkter, enighetsmatriser og
                       stemmetall
 pipeline/publish.py   Kopierer beregnede data + metadata inn i nettstedet
 web/                  Nettstedet (React + Vite, ingen backend – ren statisk side)
+.github/workflows/    Daglig auto-oppdatering: delta-henting, omregning,
+                      fornuftssjekk (pipeline/check_update.py) og publisering
 data/raw/             Rådata fra API-et (gjenskapes med fetch.py; ikke i git)
 data/computed/        Beregnede data (gjenskapes med analyse.py)
 ```

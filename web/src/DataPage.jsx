@@ -93,6 +93,8 @@ export default function DataPage() {
           <> Datagrunnlaget dekker {formatN(meta.recorded_votes)} registrerte
           voteringer, sist oppdatert {meta.generated}.</>
         )}
+        {" "}Dataene oppdateres automatisk hver morgen med nye voteringer fra
+        Stortingets API.
       </p>
       <p>
         Filformatene holdes stabile; nye felter kan komme til, men
