@@ -968,3 +968,24 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 }
 .home-salkart .salkart { margin-bottom: 0; }
 .home-salkart:hover { opacity: 0.88; }
+
+/* Om-siden: person-seksjon med foto */
+.om-person {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin: 8px 0 20px;
+}
+.om-foto {
+  width: 210px;
+  max-width: 38%;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .om-person { flex-direction: column; }
+  .om-foto { width: 100%; max-width: 320px; }
+}
+
+/* Home-page gjennomslag teaser */
+.home-gj .gj-ranking { margin: 12px auto 6px; }

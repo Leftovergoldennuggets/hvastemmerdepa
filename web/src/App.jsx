@@ -13,7 +13,7 @@ import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
-import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
 // Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
@@ -96,9 +96,67 @@ function HomeSalkart() {
         <a href="#/hvem">Se hvem de er – kjønn, alder og erfaring ›</a>
       </p>
       <p className="see-also">
-        Se også: <a href="#/gjennomslag">Hvem får gjennomslag?</a>
-        {" · "}
-        <a href="#/splittelser">Når splitter partiene seg?</a>
+        Se også: <a href="#/splittelser">Når splitter partiene seg?</a>
+      </p>
+    </section>
+  );
+}
+
+function HomeGjennomslag({ sessions, label }) {
+  const [data, setData] = useState(null);
+  useEffect(() => { gjennomslagData().then(setData).catch(() => {}); }, []);
+  if (!data || !sessions.length) return null;
+
+  const agg = aggregateGjennomslag(data, sessions.map((s) => s.sesjon));
+  const ranking = [...agg.entries()]
+    .filter(([, v]) => v.fremmet >= 20)
+    .map(([id, v]) => ({
+      party: partyOrFallback(id),
+      ...v,
+      pct: (100 * v.vedtatt) / v.fremmet,
+    }))
+    .sort((a, b) => b.pct - a.pct);
+  if (!ranking.length) return null;
+  const maxPct = Math.max(10, ...ranking.map((r) => r.pct));
+
+  return (
+    <section className="party-chips home-gj">
+      <h2>Hvem får gjennomslag?</h2>
+      <p>
+        Partier som ikke får viljen sin i komiteen, fremmer egne forslag i
+        salen. Her er hvor mange av hvert partis forslag som faktisk ble
+        vedtatt {label} – både antallet og andelen.
+      </p>
+      <ol className="ranking gj-ranking">
+        {ranking.map((r) => (
+          <li key={r.party.id}>
+            <a className="gj-row" href="#/gjennomslag">
+              <span className="gj-label">
+                <span className="logo-tile" style={{ width: 26, height: 26 }}>
+                  {r.party.logo ? (
+                    <img src={r.party.logo} alt="" loading="lazy" />
+                  ) : (
+                    <span style={{ width: "55%", height: "55%", borderRadius: "50%", background: r.party.farge }} />
+                  )}
+                </span>
+                <span>
+                  <strong>{r.party.kort}</strong>
+                  <em>{formatN(r.vedtatt)} av {formatN(r.fremmet)} forslag vedtatt</em>
+                </span>
+              </span>
+              <span className="rank-track">
+                <span
+                  className="rank-bar"
+                  style={{ width: `${(100 * r.pct) / maxPct}%`, background: "#35886C" }}
+                />
+              </span>
+              <span className="rank-pct">{r.pct.toFixed(1).replace(".", ",")} %</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <p className="see-also">
+        <a href="#/gjennomslag">Hele bildet – og hvorfor tallene er så lave ›</a>
       </p>
     </section>
   );
@@ -320,6 +378,8 @@ export default function App() {
               ))}
             </div>
           </section>
+
+          <HomeGjennomslag sessions={selectedSessions} label={label} />
 
           <HomeSalkart />
 
