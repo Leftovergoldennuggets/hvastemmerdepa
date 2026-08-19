@@ -1,0 +1,12 @@
+{
+  "kommentar": "Regjeringskonstellasjoner innenfor dataomfanget (elektroniske voteringer fra okt. 2011). Datoer verifisert mot regjeringen.no / no.wikipedia.org (Erna Solbergs regjering, Jonas Gahr Støres regjering), juli 2026. Må utvides manuelt ved hvert regjeringsskifte: nytt innslag med fra-dato, forrige innslag får til-dato.",
+  "regjeringer": [
+    { "navn": "Stoltenberg II", "fra": "2011-10-01", "til": "2013-10-16", "partier": ["A", "SV", "Sp"] },
+    { "navn": "Solberg",        "fra": "2013-10-16", "til": "2018-01-17", "partier": ["H", "FrP"] },
+    { "navn": "Solberg",        "fra": "2018-01-17", "til": "2019-01-22", "partier": ["H", "FrP", "V"] },
+    { "navn": "Solberg",        "fra": "2019-01-22", "til": "2020-01-24", "partier": ["H", "FrP", "V", "KrF"] },
+    { "navn": "Solberg",        "fra": "2020-01-24", "til": "2021-10-14", "partier": ["H", "V", "KrF"] },
+    { "navn": "Støre",          "fra": "2021-10-14", "til": "2025-02-04", "partier": ["A", "Sp"] },
+    { "navn": "Støre",          "fra": "2025-02-04", "til": null,          "partier": ["A"] }
+  ]
+}

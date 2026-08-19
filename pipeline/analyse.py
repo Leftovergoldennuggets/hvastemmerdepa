@@ -41,21 +41,12 @@ OUT = ROOT / "computed"
 
 EXCLUDE_TEMA = re.compile(r"lovens?\s+overskrift", re.I)
 
-# Government constellations within the data range (electronic votes start
-# Oct 2011). Dates verified against regjeringen.no / no.wikipedia.org
-# (Erna Solbergs regjering, Jonas Gahr Støres regjering), July 2026:
-# Solberg took office 16 Oct 2013; V joined 17 Jan 2018; KrF joined
-# 22 Jan 2019; FrP left 24 Jan 2020; Støre took office 14 Oct 2021;
-# Sp left 4 Feb 2025; Ap continued alone (also after the Sept 2025 election).
-GOVERNMENTS = [
-    {"navn": "Stoltenberg II", "fra": "2011-10-01", "til": "2013-10-16", "partier": ["A", "SV", "Sp"]},
-    {"navn": "Solberg",        "fra": "2013-10-16", "til": "2018-01-17", "partier": ["H", "FrP"]},
-    {"navn": "Solberg",        "fra": "2018-01-17", "til": "2019-01-22", "partier": ["H", "FrP", "V"]},
-    {"navn": "Solberg",        "fra": "2019-01-22", "til": "2020-01-24", "partier": ["H", "FrP", "V", "KrF"]},
-    {"navn": "Solberg",        "fra": "2020-01-24", "til": "2021-10-14", "partier": ["H", "V", "KrF"]},
-    {"navn": "Støre",          "fra": "2021-10-14", "til": "2025-02-04", "partier": ["A", "Sp"]},
-    {"navn": "Støre",          "fra": "2025-02-04", "til": None,          "partier": ["A"]},
-]
+# Government constellations live in regjeringer.json (data, not logic) so a
+# government change means editing a config file, not this code. Dates in the
+# file are verified against regjeringen.no / no.wikipedia.org; extend it
+# manually at every change of government.
+GOVERNMENTS = json.loads(
+    (Path(__file__).resolve().parent / "regjeringer.json").read_text())["regjeringer"]
 
 
 def read(path: Path):
