@@ -44,15 +44,20 @@ visning — feil der gir synlig feil graf, ikke stille metodefeil), all CSS,
 `pipeline/fetch_fotos.py`, `pipeline/build_kart.py` (salkart-geometri),
 `pipeline/fetch_personer.py` / `analyse_personer.py` (representant-sidene —
 samme mønstre som analyse.py), `pipeline/refresh_current.py` /
-`check_update.py` / `.github/workflows/oppdater.yml` (orkestrering av den
-daglige auto-oppdateringen — ingen beregninger skjer der).
+`check_update.py` / `valider_format.py` / `.github/workflows/oppdater.yml`
+(orkestrering og vakthold for den daglige auto-oppdateringen — ingen
+beregninger skjer der).
 
 ## Nøkkelinvarianter — påstandene alt hviler på
 
-1. **Stemmekoder:** 1 = ikke til stede, 2 = for, 3 = mot. (Verifisert ved at
-   summen av individstemmer reproduserer offisielle antall_for/antall_mot for
-   19 605 av 19 620 voteringer; de 3 avvikene og 12 tomme er opplyst på
-   metodesiden.)
+1. **Stemmekoder:** 1 = ikke til stede, 2 = for, 3 = mot. To uavhengige
+   bevis: (a) summen av individstemmer reproduserer offisielle
+   antall_for/antall_mot for 19 605 av 19 620 voteringer (avvikene er
+   opplyst på metodesiden), og (b) Stortingets XML-eksport bruker navngitte
+   verdier («for»/«mot»/«ikke_tilstede») for samme data — kjør
+   `python3 pipeline/sjekk_json_mot_xml.py` for å se mappingen bevist
+   direkte fra API-et (JSON-formatet er ellers udokumentert hos Stortinget;
+   XML-feltene er dokumentert, og skriptet viser at JSON speiler dem).
 2. **Partistandpunkt** = flertallet blant partiets representanter som faktisk
    stemte; nøyaktig likt = «delt» (telles ikke). Uavhengige («Uav») holdes
    utenfor all partistatistikk.

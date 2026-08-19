@@ -66,6 +66,11 @@ jobs:
           python3 pipeline/fetch_personer.py
           python3 pipeline/fetch_fotos.py
 
+      - name: Valider dataformatet
+        # Feltene pipelinen leser må finnes med riktig type — endrer API-et
+        # JSON-formen, stopper jobben her i stedet for å regne feil.
+        run: python3 pipeline/valider_format.py
+
       - name: Beregn alt på nytt
         run: |
           python3 pipeline/analyse.py

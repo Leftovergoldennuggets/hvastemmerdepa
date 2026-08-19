@@ -344,3 +344,9 @@ Each check takes ~10 minutes and requires no coding beyond running a command.
    tallies by 1–2 — which side is authoritative?
 5. Is there any official marker (beyond fri_votering) for
    presedens/formality votes we should exclude, à la "lovens overskrift"?
+6. (Added 19 Aug 2026, from the external code review.) Feedback: the JSON
+   export format is undocumented — only the XML elements are described.
+   We verified empirically that JSON mirrors XML field-for-field
+   (pipeline/sjekk_json_mot_xml.py), but official documentation would help
+   every reuser. Also observed: session from/til dates before 1996 differ
+   by exactly one hour between the XML and JSON exports (DST artifact).

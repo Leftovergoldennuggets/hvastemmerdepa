@@ -3,6 +3,35 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-08-19 — Svar på ekstern kodegjennomgang (Andreas Moe)
+
+Gjennomgangen påpekte tre ting; alle er håndtert samme dag:
+
+- **«JSON-formatet er udokumentert»** — riktig: Stortinget dokumenterer
+  XML-feltene per endepunkt, men ikke JSON-eksporten. I stedet for å skrive
+  om pipelinen til XML er ekvivalensen nå *bevist og voktet*:
+  - `pipeline/sjekk_json_mot_xml.py` henter samme data i begge formater og
+    sammenligner felt for felt (kjørt på 2024-2025 og 2016-2017: identisk).
+    Viktigst: XML-en bruker *navngitte* verdier der JSON bruker tallkoder,
+    så kjøringen beviser stemmekode-tabellen fra API-et selv:
+    **ikke_tilstede=1, for=2, mot=3** (og votering_resultat_type:
+    enstemmig_vedtatt=5, ikke_spesifisert=0). Kodene var tidligere bare
+    verifisert empirisk mot offisielle stemmetall; nå er begge bevis på plass.
+  - `pipeline/valider_format.py` kjører i den daglige oppdateringen og
+    krever at hvert felt pipelinen leser finnes med riktig type og verdi
+    (3,3 mill. enkeltstemmer sjekkes på ~15 s). Endrer API-et formen,
+    stopper jobben før noe beregnes.
+  - Observert API-detalj meldes Stortinget: sesjonsdatoer før 1996 avviker
+    én time mellom XML og JSON (sommertid-artefakt; utenfor vårt omfang).
+- **«Regjeringene er hardkodet i analyse.py»** — flyttet til
+  `pipeline/regjeringer.json` (data, ikke logikk). Verifisert: beregnet
+  output er bit-identisk før og etter flyttingen.
+- **«npm supply chain»** — vurdert: nettstedet har kun react/react-dom som
+  kjøretidsavhengigheter (~80 pakker totalt med byggeverktøy), låsefil i
+  git, og `npm audit fix` fjernet to kjente sårbarheter i byggekjeden
+  (nanoid, postcss). Python-pipelinen bruker kun standardbiblioteket —
+  null tredjepartsavhengigheter der tallene lages.
+
 ## 2026-08-18 — Metodepresiseringer, daglig auto-oppdatering og reviewer-guide
 
 - **Telleenheten er nå eksplisitt på metodesiden:** én votering teller én
