@@ -989,3 +989,11 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 
 /* Home-page gjennomslag teaser */
 .home-gj .gj-ranking { margin: 12px auto 6px; }
+
+/* Home-page om-seksjon */
+.home-om .om-person {
+  max-width: 720px;
+  margin: 6px auto 0;
+  text-align: left;
+}
+.home-om .om-foto { width: 150px; }

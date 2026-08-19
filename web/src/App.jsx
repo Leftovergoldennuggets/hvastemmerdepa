@@ -86,8 +86,8 @@ function HomeSalkart() {
         Politikk er også mennesker. Her er de {reps.length} representantene{" "}
         {periode && `valgt for ${periode.replace("-", "–")}`} – én prikk per
         person, farget etter parti. Trykk deg inn for å se salen fordelt på
-        kjønn, alder, erfaring og landsdel, eller for å finne en enkelt
-        representant.
+        kjønn, alder og erfaring, se hvor i landet de kommer fra – eller
+        finne en enkelt representant.
       </p>
       <a className="home-salkart" href="#/hvem" aria-label="Se hvem representantene er">
         <Salkart representanter={reps} interactive={false} />
@@ -98,6 +98,36 @@ function HomeSalkart() {
       <p className="see-also">
         Se også: <a href="#/splittelser">Når splitter partiene seg?</a>
       </p>
+    </section>
+  );
+}
+
+function HomeOm() {
+  return (
+    <section className="party-chips home-om">
+      <h2>Om prosjektet</h2>
+      <div className="om-person">
+        <img
+          className="om-foto"
+          src="/anders.jpg"
+          alt="Anders Eidesvik"
+          loading="lazy"
+          onError={(e) => { e.currentTarget.style.display = "none"; }}
+        />
+        <div>
+          <p>
+            Hva stemmer de på? er et uavhengig, ikke-kommersielt
+            samfunnsprosjekt laget av Anders Eidesvik, tidligere journalist i
+            NRK, Klassekampen og Dagens Næringsliv. Målet er å gjøre
+            Stortingets voteringer like lette å lese som de er viktige – med
+            åpen metode, åpne data og lenke til kilden for hver eneste
+            votering.
+          </p>
+          <p className="see-also" style={{ textAlign: "left" }}>
+            <a href="#/om">Mer om prosjektet og hvem som står bak ›</a>
+          </p>
+        </div>
+      </div>
     </section>
   );
 }
@@ -358,6 +388,12 @@ export default function App() {
             )}
           </p>
 
+          <HomeSalkart />
+
+          <HomeGjennomslag sessions={selectedSessions} label={label} />
+
+          <HomeOm />
+
           <section className="party-chips">
             <h2>Utforsk ett parti</h2>
             <p>
@@ -378,10 +414,6 @@ export default function App() {
               ))}
             </div>
           </section>
-
-          <HomeGjennomslag sessions={selectedSessions} label={label} />
-
-          <HomeSalkart />
 
           <Credit meta={meta} full />
         </main>
