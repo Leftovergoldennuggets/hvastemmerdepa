@@ -28,22 +28,21 @@ export default function GjennomslagPage({ index }) {
   }, []);
 
   let ranking = [];
-  let small = [];
   if (data && selectedSessions.length) {
     const agg = aggregateGjennomslag(data, selectedSessions.map((s) => s.sesjon));
+    // Ranked by the NUMBER of adopted proposals, not the share: opposition
+    // parties routinely file stacks of proposals they know will fall, so the
+    // count of what actually passed says more about real influence.
     ranking = [...agg.entries()]
-      .filter(([, v]) => v.fremmet >= 20)
+      .filter(([, v]) => v.fremmet > 0)
       .map(([id, v]) => ({
         party: partyOrFallback(id),
         ...v,
         pct: (100 * v.vedtatt) / v.fremmet,
       }))
-      .sort((a, b) => b.pct - a.pct);
-    small = [...agg.entries()]
-      .filter(([, v]) => v.fremmet > 0 && v.fremmet < 20)
-      .map(([id, v]) => ({ party: partyOrFallback(id), ...v }));
+      .sort((a, b) => b.vedtatt - a.vedtatt || b.pct - a.pct);
   }
-  const maxPct = Math.max(10, ...ranking.map((r) => r.pct));
+  const maxVedtatt = Math.max(1, ...ranking.map((r) => r.vedtatt));
   const allZero = ranking.length > 0 && ranking.every((r) => r.vedtatt === 0);
 
   return (
@@ -75,16 +74,16 @@ export default function GjennomslagPage({ index }) {
                   <Logo party={r.party} />
                   <span>
                     <strong>{r.party.kort}</strong>
-                    <em>{formatN(r.vedtatt)} av {formatN(r.fremmet)} forslag vedtatt</em>
+                    <em>av {formatN(r.fremmet)} fremmet · {r.pct.toFixed(1).replace(".", ",")} %</em>
                   </span>
                 </span>
                 <span className="rank-track">
                   <span
                     className="rank-bar"
-                    style={{ width: `${(100 * r.pct) / maxPct}%`, background: "#35886C" }}
+                    style={{ width: `${(100 * r.vedtatt) / maxVedtatt}%`, background: "#35886C" }}
                   />
                 </span>
-                <span className="rank-pct">{r.pct.toFixed(1).replace(".", ",")} %</span>
+                <span className="rank-pct">{formatN(r.vedtatt)}</span>
               </a>
             </li>
           ))}
@@ -97,22 +96,13 @@ export default function GjennomslagPage({ index }) {
           regjeringspartiene har flertall alene: Alt de er imot, stemmes ned.
         </p>
       )}
-      {small.length > 0 && (
-        <p className="empty-note" style={{ textAlign: "center" }}>
-          {small.map((s, i) => (
-            <span key={s.party.id}>
-              {i > 0 && (i === small.length - 1 ? " og " : ", ")}
-              {s.party.kort} ({s.vedtatt} av {s.fremmet} vedtatt)
-            </span>
-          ))}{" "}
-          fremmet færre enn 20 forslag {label} og rangeres derfor ikke.
-        </p>
-      )}
-
       {ranking.length > 0 && (
         <p className="count-note">
-          Forslag fremmet på vegne av partiet i salen {label}, alene eller
-          sammen med andre. Søylene er skalert til den høyeste verdien.
+          Antall vedtatte forslag fremmet på vegne av partiet i salen {label},
+          alene eller sammen med andre. Rangeringen går etter antallet, ikke
+          andelen: Opposisjonspartier fremmer rutinemessig mange forslag de
+          vet vil falle, så antallet som faktisk blir vedtatt sier mer om
+          reelt gjennomslag.
           {" · "}
           <button
             className="dl"

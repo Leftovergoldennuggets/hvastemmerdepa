@@ -70,7 +70,7 @@ export default function PeoplePage() {
         ))}
       </nav>
 
-      <Salkart key={periode} representanter={representanter} />
+      <Salkart representanter={representanter} />
 
       <div className="matrix-scroll">
         <table className="people-table">

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { partyOrFallback } from "./parties.js";
 import { personPhoto, personUrl } from "./lib.js";
 
@@ -108,6 +108,10 @@ function legendFor(reps, mode) {
 export default function Salkart({ representanter, interactive = true }) {
   const [mode, setMode] = useState("parti");
   const [valgt, setValgt] = useState(null);
+
+  // New period = new people: close the person card, but KEEP the color mode
+  // so you can flip through periods while staying in e.g. experience view.
+  useEffect(() => { setValgt(null); }, [representanter]);
 
   // Fill order follows the active mode so the coloring reads as wedges,
   // not confetti. Party order is the tie-breaker throughout, so wedges stay

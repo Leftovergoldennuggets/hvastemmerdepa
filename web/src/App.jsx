@@ -138,24 +138,27 @@ function HomeGjennomslag({ sessions, label }) {
   if (!data || !sessions.length) return null;
 
   const agg = aggregateGjennomslag(data, sessions.map((s) => s.sesjon));
+  // Ranked by adopted-proposal COUNT, not share — same reasoning as on the
+  // gjennomslag page: the count says more about real influence.
   const ranking = [...agg.entries()]
-    .filter(([, v]) => v.fremmet >= 20)
+    .filter(([, v]) => v.fremmet > 0)
     .map(([id, v]) => ({
       party: partyOrFallback(id),
       ...v,
       pct: (100 * v.vedtatt) / v.fremmet,
     }))
-    .sort((a, b) => b.pct - a.pct);
+    .sort((a, b) => b.vedtatt - a.vedtatt || b.pct - a.pct);
   if (!ranking.length) return null;
-  const maxPct = Math.max(10, ...ranking.map((r) => r.pct));
+  const maxVedtatt = Math.max(1, ...ranking.map((r) => r.vedtatt));
 
   return (
     <section className="party-chips home-gj">
       <h2>Hvem får gjennomslag?</h2>
       <p>
         Partier som ikke får viljen sin i komiteen, fremmer egne forslag i
-        salen. Her er hvor mange av hvert partis forslag som faktisk ble
-        vedtatt {label} – både antallet og andelen.
+        salen. Her er hvor mange forslag hvert parti faktisk fikk vedtatt{" "}
+        {label} – antallet sier mer enn andelen, for opposisjonen fremmer
+        mange forslag den vet vil falle.
       </p>
       <ol className="ranking gj-ranking">
         {ranking.map((r) => (
@@ -171,16 +174,16 @@ function HomeGjennomslag({ sessions, label }) {
                 </span>
                 <span>
                   <strong>{r.party.kort}</strong>
-                  <em>{formatN(r.vedtatt)} av {formatN(r.fremmet)} forslag vedtatt</em>
+                  <em>av {formatN(r.fremmet)} fremmet · {r.pct.toFixed(1).replace(".", ",")} %</em>
                 </span>
               </span>
               <span className="rank-track">
                 <span
                   className="rank-bar"
-                  style={{ width: `${(100 * r.pct) / maxPct}%`, background: "#35886C" }}
+                  style={{ width: `${(100 * r.vedtatt) / maxVedtatt}%`, background: "#35886C" }}
                 />
               </span>
-              <span className="rank-pct">{r.pct.toFixed(1).replace(".", ",")} %</span>
+              <span className="rank-pct">{formatN(r.vedtatt)}</span>
             </a>
           </li>
         ))}
