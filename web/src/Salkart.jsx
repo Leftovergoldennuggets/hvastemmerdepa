@@ -5,9 +5,9 @@ import { personPhoto, personUrl } from "./lib.js";
 // Hemicycle seat chart: one dot per elected representative. Seats are laid
 // out geometrically and filled left-to-right; the fill order follows the
 // active color mode, so whatever you color by forms coherent wedges (parties
-// in spectrum order, women/men grouped, age and experience as gradients,
-// regions gathered). The layout is schematic — in the real chamber members
-// sit by county, not by party.
+// in spectrum order, women/men grouped, age and experience as gradients).
+// The layout is schematic — in the real chamber members sit by county, not
+// by party. Geography lives on the Norway map, not here.
 
 const LEFT_TO_RIGHT = ["R", "SV", "A", "Sp", "MDG", "KrF", "V", "H", "FrP", "PF"];
 const partyOrder = (id) => {
@@ -18,40 +18,28 @@ const partyOrder = (id) => {
 const KJONN = { kvinne: "#c4272e", mann: "#2C5F8A" };
 // Age and experience are ordered quantities, so they get sequential ramps in
 // a single hue family (light = young/new, dark = old/veteran) instead of
-// mixed categorical colors. Age warm amber-brown, experience cool green —
-// distinct from each other and from the party palette.
+// mixed categorical colors. Age warm amber-brown, experience violet — violet
+// because no party owns it, while the old green ramp's darkest step was
+// nearly identical to Senterpartiet's color. Both ramps validated: every
+// adjacent pair separates for normal vision and all CVD types (ΔE ≥ 15).
 const ALDER_BINS = [
-  { label: "Under 35 år", test: (a) => a < 35, farge: "#EFC069" },
-  { label: "35–49 år", test: (a) => a < 50, farge: "#D08A3E" },
-  { label: "50–64 år", test: (a) => a < 65, farge: "#9C5B24" },
-  { label: "65 år eller mer", test: () => true, farge: "#5F3413" },
+  { label: "Under 35 år", test: (a) => a < 35, farge: "#F3CD7E" },
+  { label: "35–49 år", test: (a) => a < 50, farge: "#C8862F" },
+  { label: "50–64 år", test: (a) => a < 65, farge: "#935618" },
+  { label: "65 år eller mer", test: () => true, farge: "#59300B" },
 ];
 const ERFARING_BINS = [
-  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#A5CDBF" },
-  { label: "Under 8 år", test: (f) => f < 8, farge: "#5FA88C" },
-  { label: "8–15 år", test: (f) => f < 16, farge: "#2E7A5C" },
-  { label: "16 år eller mer", test: () => true, farge: "#0F4D36" },
+  { label: "Ny denne perioden", test: (f) => f < 0.1, farge: "#DCC3EA" },
+  { label: "Under 8 år", test: (f) => f < 8, farge: "#B48CD3" },
+  { label: "8–15 år", test: (f) => f < 16, farge: "#84539E" },
+  { label: "16 år eller mer", test: () => true, farge: "#523067" },
 ];
-// Valgdistriktene bruker de klassiske fylkesnavnene (også etter
-// fylkessammenslåingene beholdt valgordningen de 19 gamle distriktene).
-// Order = the mental map of Norway read left-to-right: start i sør/vest,
-// østover, så nordover. Styrer både sektorene i salen og legenden.
-const LANDSDELER = [
-  { label: "Sørlandet", farge: "#D9A017", fylker: ["Aust-Agder", "Vest-Agder", "Agder"] },
-  { label: "Vestlandet", farge: "#35886C", fylker: ["Rogaland", "Hordaland", "Sogn og Fjordane", "Møre og Romsdal", "Vestland"] },
-  { label: "Østlandet", farge: "#D9782D", fylker: ["Østfold", "Akershus", "Hedmark", "Oppland", "Buskerud", "Vestfold", "Telemark", "Innlandet", "Viken"] },
-  { label: "Oslo", farge: "#8A4E85", fylker: ["Oslo"] },
-  { label: "Trøndelag", farge: "#6BAED6", fylker: ["Sør-Trøndelag", "Nord-Trøndelag", "Trøndelag"] },
-  { label: "Nord-Norge", farge: "#2C5F8A", fylker: ["Nordland", "Troms", "Finnmark"] },
-];
-const landsdelOf = (fylke) => LANDSDELER.find((l) => l.fylker.includes(fylke));
 
 const MODES = [
   { id: "parti", label: "Parti" },
   { id: "kjoenn", label: "Kjønn" },
   { id: "alder", label: "Alder" },
   { id: "erfaring", label: "Erfaring" },
-  { id: "landsdel", label: "Landsdel" },
 ];
 
 function bin(bins, value) {
@@ -65,7 +53,6 @@ function dotColor(rep, mode) {
   }
   if (mode === "alder") return bin(ALDER_BINS, rep.alder)?.farge || "#d8d4ce";
   if (mode === "erfaring") return bin(ERFARING_BINS, rep.fartstid)?.farge || "#d8d4ce";
-  if (mode === "landsdel") return landsdelOf(rep.fylke)?.farge || "#d8d4ce";
   return partyOrFallback(rep.parti).farge;
 }
 
@@ -109,13 +96,6 @@ function legendFor(reps, mode) {
       { label: "Menn", farge: KJONN.mann, n: reps.length - kv },
     ];
   }
-  if (mode === "landsdel") {
-    return LANDSDELER.map((l) => ({
-      label: l.label,
-      farge: l.farge,
-      n: reps.filter((r) => landsdelOf(r.fylke) === l).length,
-    })).filter((l) => l.n > 0);
-  }
   const bins = mode === "alder" ? ALDER_BINS : ERFARING_BINS;
   const value = mode === "alder" ? (r) => r.alder : (r) => r.fartstid;
   return bins.map((b) => ({
@@ -141,10 +121,6 @@ export default function Salkart({ representanter, interactive = true }) {
       mode === "kjoenn" ? (r) => (r.kjoenn === 1 ? 0 : 1)
       : mode === "alder" ? (r) => r.alder ?? 999
       : mode === "erfaring" ? (r) => r.fartstid ?? 999
-      : mode === "landsdel" ? (r) => {
-          const i = LANDSDELER.indexOf(landsdelOf(r.fylke));
-          return i === -1 ? 99 : i;
-        }
       : null;
     return [...representanter].sort(
       key ? (a, b) => key(a) - key(b) || byParty(a, b) : byParty

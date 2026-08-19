@@ -155,8 +155,6 @@ export default function MethodPage() {
       <p>
         Utdanning og yrke vises ordrett slik Stortinget selv har registrert
         dem i biografiene – vi kategoriserer eller tolker aldri fritekst.
-        Landsdelene er de vanlige grupperingene av de 19 valgdistriktene
-        (Nord-Norge, Trøndelag, Vestlandet, Sørlandet, Østlandet og Oslo).
         Fotografiene er Stortingets offisielle portretter, lastet ned fra den
         åpne datatjenesten og vist med kreditering. Norgeskartet bygger på{" "}
         <a href="https://kartverket.no">Kartverkets</a> offisielle geometri for
