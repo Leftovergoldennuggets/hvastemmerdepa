@@ -3,6 +3,26 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-08-27 — Automatiske tester, kvalitetsdossier
+
+- **Testsuite** (`pipeline/tests/`, 22 tester — forslag fra Ludvig L.
+  Johansson, issue #6): scenariotester med fiktive minieksempler der fasiten
+  er selvinnlysende og står i klartekst i hver test (flertall, delt parti,
+  uavhengige, speilvoteringer, partibytte/vara, parvis enighet, splittelser,
+  lovteknisk, data_pending, verifiseringsavvik, sesjonsgrenser), pluss tester
+  mot EKTE rådata (sak 103140 med speilparet 24896/24897) og mot to
+  håndverifiserte alternativ-voteringer (3381, 3541 — fasit fra
+  stortinget.no, lenket i testene). Ingen fasit er beregnet av koden som
+  testes. Kjøres i CI ved hver push (.github/workflows/test.yml) og før hver
+  daglige dataoppdatering. Negativ-kontroll utført: bevisst feil fasit gir
+  rød test med lesbar feilmelding.
+- **KVALITETSKONTROLL.md**: samlet dossier for eksterne gjennomgåere —
+  metodevalg med begrunnelser, kontrollhistorikk, prosedyrene mot
+  KI-hallusinering, og hva som kan etterprøves uten koding.
+- (Sikt-regresjonstest ble vurdert, men arkivet har ingen åpen API-sti å
+  fryse et utsnitt fra; juli-kryssjekken på 17 815 voteringer står
+  dokumentert i AUDIT.md §E som beviset mot Sikt.)
+
 ## 2026-08-19 — Svar på ekstern kodegjennomgang (Andreas Moe)
 
 Gjennomgangen påpekte tre ting; alle er håndtert samme dag:

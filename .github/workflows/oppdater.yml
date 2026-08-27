@@ -66,6 +66,11 @@ jobs:
           python3 pipeline/fetch_personer.py
           python3 pipeline/fetch_fotos.py
 
+      - name: Kjør testsuiten
+        # Regresjonssperre før dagens beregning: logikken må bestå alle
+        # scenariotestene (fiktive + ekte fixturer) før nye tall publiseres.
+        run: python3 -m unittest discover -s pipeline/tests
+
       - name: Valider dataformatet
         # Feltene pipelinen leser må finnes med riktig type — endrer API-et
         # JSON-formen, stopper jobben her i stedet for å regne feil.

@@ -1,0 +1,21 @@
+# Kjører testsuiten (pipeline/tests/) ved hver push — regresjonssperren:
+# ingen endring kan ødelegge beregningslogikken uten at det synes her.
+# Testene trenger ingen rådata (fixturene ligger i repoet) og tar sekunder.
+
+name: Tester
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Kjør testsuiten
+        run: python3 -m unittest discover -s pipeline/tests -v

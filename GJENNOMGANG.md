@@ -39,6 +39,13 @@ web/             →  statisk nettside   (React; leser JSON, regner ikke selv)
 beregner faktapåstandene metodesiden viser (samholds-prosent, avvikslister,
 andelen voteringer der alle partier sto på samme side).
 
+**Testsuiten:** `python3 -m unittest discover -s pipeline/tests -v` kjører
+22 tester av beregningslogikken — fiktive scenarioer med selvinnlysende
+fasit i klartekst, pluss ekte rådata der fasiten er Stortingets offisielle
+tall (kilde-URL-er står i testene). Kjøres automatisk ved hver push og før
+hver daglige dataoppdatering. Se også KVALITETSKONTROLL.md for hele
+kontrollhistorikken.
+
 **Kan trygt hoppes over:** resten av `web/src/` (~2 600 linjer JSX er ren
 visning — feil der gir synlig feil graf, ikke stille metodefeil), all CSS,
 `pipeline/fetch_fotos.py`, `pipeline/build_kart.py` (salkart-geometri),
