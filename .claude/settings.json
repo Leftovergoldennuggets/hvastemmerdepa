@@ -56,7 +56,17 @@
       "Bash(python3 pipeline/check_update.py)",
       "Bash(tar -czf __TRACKED_VAR__/data-raw.tar.gz data/raw)",
       "Bash(tar -czf /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/d8b93a50-573c-4448-8c57-46cac5d2b3df/scratchpad/data-raw.tar.gz data/raw)",
-      "Bash(gh release *)"
+      "Bash(gh release *)",
+      "Bash(gh workflow *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(COPYFILE_DISABLE=1 tar -czf __TRACKED_VAR__/data-raw.tar.gz data/raw)",
+      "Bash(tar -tzf __TRACKED_VAR__/data-raw.tar.gz)",
+      "Bash(node scripts/validate_palette.js \"#F4D08A,#D89A45,#A8641F,#6B3A0E\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#DCC3EA,#B48CD3,#84539E,#523067\" --mode light)",
+      "Bash(node scripts/validate_palette.js \"#F3CD7E,#C8862F,#935618,#59300B\" --mode light)",
+      "Bash(sips -g pixelWidth -g pixelHeight \"IMG_3781 2.JPG\")",
+      "Bash(sips -Z 900 -s format jpeg -s formatOptions 80 \"IMG_3781 2.JPG\" --out web/public/anders.jpg)",
+      "Bash(mv \"IMG_3781 2.JPG\" /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/d8b93a50-573c-4448-8c57-46cac5d2b3df/scratchpad/)"
     ],
     "additionalDirectories": [
       "/Users/AndersEidesvik/Downloads"
