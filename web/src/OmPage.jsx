@@ -54,7 +54,8 @@ export default function OmPage() {
             Andre ting jeg driver med: <a href="https://ki-nytt.no">KI-nytt</a>,
             en nettside om kunstig intelligens og samfunn, og{" "}
             <a href="https://anderseidesvik.com">fotografi</a>. Innspill og
-            spørsmål er velkomne:{" "}
+            spørsmål er velkomne, og oppdager du noe som ser feil ut, blir
+            jeg takknemlig for beskjed – feil rettes:{" "}
             <a href="mailto:anders.eidesvik@gmail.com">anders.eidesvik@gmail.com</a>.
           </p>
         </div>

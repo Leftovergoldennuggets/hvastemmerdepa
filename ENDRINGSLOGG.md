@@ -3,6 +3,34 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-09-13 — Oppfølging av uavhengig gjennomgang #2 (RAPPORT-KODEGJENNOMGANG.md)
+
+Gjennomgangen (31. aug) reproduserte alle tall byte-identisk fra rådata og
+konkluderte «tallene er riktige»; funnene gjaldt fremtidig drift og
+dokumentasjon. Alle «må fikses»-punktene er nå gjennomført:
+
+- **Datofiks (beregningsendring):** voteringer dateres nå i norsk tid, ikke
+  UTC. Nattmøter som krysset midnatt ble datert én dag for tidlig — 505 av
+  19 620 voteringer fikk korrigert dato. Målt effekt ellers: null — ingen
+  votering byttet sesjon, ingen regjeringsperiode-tall endret seg, alle
+  enighetsmatriser uendret. Ny test låser adferden (`date_of` i norsk tid).
+- **Fornuftssjekken utvidet** (check_update.py): vokter nå også partilister
+  (uendret for publiserte sesjoner), alle matriser (finnes, ikke tomme,
+  0 ≤ enige ≤ totalt), regjeringsperiode-, gjennomslag- og persondata.
+- **Tre testhull tettet** (påvist ved gjennomgangens mutasjonstest):
+  regjeringsperiode-tilordning ved grensedato, speiltvilling i gjennomslag,
+  og inkluderende sesjonsgrenser. Testsuiten er nå 26 tester.
+- **Varsling:** feiler nattjobben, opprettes automatisk et GitHub-issue
+  (e-postvarsling alene når bare én person).
+- **Frontend:** feilet lasting av selve dataindeksen viser nå feilmelding
+  med prøv igjen-knapp i stedet for evig «Laster …».
+- **Metodesiden rettet og utvidet:** verifiseringstallet regnes nå riktig
+  (19 605 – trekker fra både de 3 avvikene og de 12 uten individdata); ny
+  seksjon om KI-assistanse og menneskelig kvalitetssikring (to uavhengige
+  gjennomganger, begge reproduserte tallene); 2013–14-sesjonen omtales med
+  samtidig kilde (Dagsavisen/Holder de ord, aug. 2014). Sifferfeil «2,3
+  mill.» → 3,3 mill. rettet i AUDIT.md og KVALITETSKONTROLL.md.
+
 ## 2026-08-27 — Automatiske tester, kvalitetsdossier
 
 - **Testsuite** (`pipeline/tests/`, 22 tester — forslag fra Ludvig L.

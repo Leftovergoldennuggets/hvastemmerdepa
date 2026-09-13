@@ -49,7 +49,8 @@ metoden føres i [ENDRINGSLOGG.md](ENDRINGSLOGG.md).
 | Når | Kontroll | Resultat |
 |---|---|---|
 | Løpende, hver kjøring | **Egen-verifisering**: for hver votering summeres enkeltstemmene og sammenlignes med Stortingets offisielle for/mot-tall | 19 605 av 19 620 stemmer eksakt; de 3 avvikene (mai 2025, 1–2 stemmer) og 11 voteringer med tomme individdata er opplyst på metodesiden |
-| 2. juli 2026 | **Stemmekodene verifisert empirisk** (1 = ikke til stede, 2 = for, 3 = mot) mot offisielle tall | Bekreftet over samtlige 2,3 mill. enkeltstemmer; kun kodene 1/2/3 forekommer |
+| 2. juli 2026 | **Stemmekodene verifisert empirisk** (1 = ikke til stede, 2 = for, 3 = mot) mot offisielle tall | Bekreftet over samtlige 3,3 mill. enkeltstemmer; kun kodene 1/2/3 forekommer |
+| 31. aug 2026 | **Uavhengig gjennomgang #2** (ekstern utvikler): full re-kjøring fra rådata, mutasjonstesting, API-stikkprøver, hosting-målinger (RAPPORT-KODEGJENNOMGANG.md) | «Tallene på nettstedet er riktige» — byte-identisk reproduksjon; 7/7 stikkprøver stemte; funnene gjaldt fremtidig drift og er fulgt opp (se ENDRINGSLOGG) |
 | 22.–23. juli 2026 | **Full revisjon** av kode og data ([AUDIT.md](AUDIT.md)): alle funn etterprøvd empirisk, rangert etter alvor | Hovedfunn: speilvoteringer ble telt dobbelt (rettet samme dag; effekt ≤ 1 prosentpoeng), gjennomslag manglet én forslagsform (rettet), tre faktafeil på metodesiden (rettet). Alt dokumentert med målt effekt |
 | 22. juli 2026 | **Kryssjekk mot Sikt/NSDs uavhengige Voteringsarkiv** (17 815 voteringer koblet på id) | 99,94 % samsvar; alle avvik forklart (Sikt hadde byttet perspektiv på gamle speilpar — våre tall stemte med Stortingets) |
 | Juli 2026 | **Sammenligning med Holder de ords metode** (åpen kildekode) | Tre bevisste avvik identifisert, vurdert og dokumentert (telleenhet, delte partier, konsensus-håndtering) |

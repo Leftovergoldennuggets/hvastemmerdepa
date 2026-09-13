@@ -219,7 +219,12 @@ export default function App() {
   const [komiteAgg, setKomiteAgg] = useState(null);
   const [komiteNavn, setKomiteNavn] = useState({});
 
-  useEffect(() => { sessionsIndex().then(setIndex); }, []);
+  const [indexError, setIndexError] = useState(false);
+  const loadIndex = () => {
+    setIndexError(false);
+    sessionsIndex().then(setIndex).catch(() => setIndexError(true));
+  };
+  useEffect(loadIndex, []);
   useEffect(() => { siteMeta().then(setMeta).catch(() => {}); }, []);
   useEffect(() => { komiteerData().then(setKomiteNavn).catch(() => {}); }, []);
 
@@ -264,7 +269,14 @@ export default function App() {
       </header>
 
       {!index || !selection ? (
-        <div className="loading">Laster data …</div>
+        indexError ? (
+          <div className="loading">
+            Kunne ikke laste dataene. Sjekk nettforbindelsen –{" "}
+            <button className="tab" onClick={loadIndex}>prøv igjen</button>
+          </div>
+        ) : (
+          <div className="loading">Laster data …</div>
+        )
       ) : ["method", "forsta", "om", "data"].includes(route.view) ? (
         <main>
           {route.view === "method" ? <MethodPage />

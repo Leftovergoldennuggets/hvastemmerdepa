@@ -258,7 +258,9 @@ in flagged free votes. Nice-to-have, not blocking.
 
 ## D. VERIFIED CORRECT (worth telling the hired reviewer so they can re-verify)
 
-- Vote codes: only 1/2/3 occur in all 2,313,738 individual votes
+- Vote codes: only 1/2/3 occur in all 3,313,738 individual votes
+  (digit typo "2,3M" corrected Sept 2026 after the external review — the
+  breakdown below always summed to 3.3M)
   (1=absent 1,341,647; 2=for 749,820; 3=against 1,222,271). The README's
   claim is right.
 - Official-tally verification: 19,605/19,620 votes reproduce Stortinget's

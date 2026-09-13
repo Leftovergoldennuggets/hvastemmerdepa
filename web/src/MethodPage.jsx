@@ -169,8 +169,10 @@ export default function MethodPage() {
         {meta && (
           <>
             {" "}I dag stemmer{" "}
-            <strong>{formatN(meta.recorded_votes - meta.verify_mismatches.length)}</strong>{" "}
-            av {formatN(meta.recorded_votes)} voteringer eksakt.
+            <strong>{formatN(meta.recorded_votes - meta.verify_mismatches.length - (meta.data_pending?.length ?? 0))}</strong>{" "}
+            av {formatN(meta.recorded_votes)} voteringer eksakt (de{" "}
+            {formatN(meta.data_pending?.length ?? 0)} voteringene uten
+            individdata, se under, kan ikke kontrolleres i det hele tatt).
             {meta.verify_mismatches.length > 0 && (
               <>
                 {" "}{meta.verify_mismatches.length} voteringer har et lite avvik
@@ -223,13 +225,38 @@ export default function MethodPage() {
         partisidene tallene brutt ned per regjeringsperiode.
       </p>
 
+      <h3>KI og menneskelig kvalitetssikring</h3>
+      <p>
+        Koden er skrevet med KI-assistanse (Claude). Nettopp derfor er den
+        kontrollert i flere uavhengige lag: hver beregning egen-verifiseres
+        mot Stortingets offisielle stemmetall, tallene er kryssjekket mot det
+        uavhengige Voteringsarkivet hos Sikt og mot metoden til nettstedet
+        Holder de ord, en testsuite med fasit fra stortinget.no kjøres før
+        hver eneste publisering – og to utviklere har uavhengig gjennomgått
+        koden, og begge klarte å gjenskape de publiserte tallene fra
+        Stortingets rådata. Oppdager du noe som ser feil ut, ta gjerne
+        kontakt (se <a href="#/om">Om prosjektet</a>) – feil rettes.
+      </p>
+
       <h3>Etterprøv oss</h3>
       <p>
         Hver votering i listene lenker til saken hos stortinget.no. Hele
-        datasettet og all kode – innhenting, beregning og denne nettsiden – er
-        åpen, slik at hvem som helst kan kjøre analysen på nytt fra Stortingets
-        rådata og få de samme tallene. Datafilene siden bygger på kan lastes
-        ned direkte – se <a href="#/data">Åpne data</a>.
+        datasettet og all kode – innhenting, beregning og denne nettsiden –
+        legges åpent ut sammen med nettstedet, slik at hvem som helst kan
+        kjøre analysen på nytt fra Stortingets rådata og få de samme tallene.
+        Datafilene siden bygger på kan lastes ned direkte – se{" "}
+        <a href="#/data">Åpne data</a>.
+      </p>
+      <p>
+        Én sesjon skiller seg ut i datagrunnlaget: 2013–2014 har uvanlig få
+        registrerte voteringer (284, mot 705–2 429 i andre sesjoner). Det er
+        reell parlamentarisk adferd i det første året etter regjeringsskiftet
+        i 2013, ikke manglende data – nivået ble{" "}
+        <a href="https://www.dagsavisen.no/nyheter/innenriks/2014/08/05/skulker-naer-en-av-to-voteringer-pa-stortinget/">
+          målt til det samme i sanntid
+        </a>{" "}
+        av Dagsavisen og Holder de ord i august 2014, og er bekreftet mot
+        uavhengige arkiver.
       </p>
     </div>
   );
