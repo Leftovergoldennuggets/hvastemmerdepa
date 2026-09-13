@@ -53,6 +53,10 @@ Voteringskoder i API-et (verifisert mot offisielle stemmetall):
 
 ## Kilder og lisens
 
-- Data: Stortingets tjeneste for åpne data, [NLOD](https://data.norge.no/nlod/no/2.0)
-- Regjeringsperioder: regjeringen.no / Wikipedia (datoer i `pipeline/analyse.py`)
+- Kode: [MIT-lisens](LICENSE) – bruk, lær og bygg videre fritt, med kreditering
+- Rådata: Stortingets tjeneste for åpne data, [NLOD](https://data.norge.no/nlod/no/2.0)
+  (Stortinget er kilde)
+- Beregnede data: fri gjenbruk til nyhetssaker, undervisning, forskning m.m. –
+  krediter Stortinget (rådata) og dette prosjektet (beregningene)
+- Regjeringsperioder: regjeringen.no / Wikipedia (datoer i `pipeline/regjeringer.json`)
 - Partilogoer: offisielle merker via Wikimedia Commons, brukt redaksjonelt
