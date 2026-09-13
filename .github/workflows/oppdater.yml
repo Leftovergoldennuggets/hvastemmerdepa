@@ -21,6 +21,7 @@ concurrency:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   oppdater:
@@ -87,6 +88,19 @@ jobs:
 
       - name: Publiser til nettstedet
         run: python3 pipeline/publish.py
+
+      - name: Opprett issue hvis jobben feilet
+        # E-postvarsling fra GitHub går bare til den som sist endret cron-
+        # linjen og bare hvis varsler er på — et issue i repoet er synlig
+        # for alle og drukner ikke. Nettsiden står trygt på gårsdagens data.
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "Nattlig dataoppdatering feilet $(date -u +%F)" \
+            --body "Kjøringen feilet — nettsiden står urørt på forrige gode data. Se loggen: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            || echo "kunne ikke opprette issue (varsling via e-post gjelder fortsatt)"
 
       - name: Commit og push hvis dataene er endret
         run: |
