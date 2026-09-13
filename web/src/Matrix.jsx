@@ -55,6 +55,9 @@ export default function Matrix({ matrix, label, onSelect }) {
 
   return (
     <>
+      {/* matrix-wrap carries the mobile fade hint that shows the table
+          continues past the right edge; matrix-scroll does the scrolling */}
+      <div className="matrix-wrap">
       <div className="matrix-scroll">
         <table className="matrix" aria-label={`Andel voteringer der partiene stemte likt, ${label}`}>
           <thead>
@@ -109,6 +112,7 @@ export default function Matrix({ matrix, label, onSelect }) {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
       <div className="ramp-legend">
         <span>Oftest uenige</span>

@@ -990,6 +990,113 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 /* Home-page gjennomslag teaser */
 .home-gj .gj-ranking { margin: 12px auto 6px; }
 
+/* Synlig tema-velger (desktop hadde en naken systemmeny) */
+.tema-row select {
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  padding: 8px 12px;
+  max-width: 100%;
+}
+
+/* Matrise: radetikettene henger med ved sidescroll på små skjermer */
+.matrix tbody th,
+.matrix thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--bg);
+}
+.matrix-wrap { position: relative; }
+@media (max-width: 700px) {
+  /* Fade i høyrekant: et hint om at tabellen fortsetter */
+  .matrix-wrap::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 8px;
+    width: 26px;
+    background: linear-gradient(to left, #fff, rgba(255, 255, 255, 0));
+    pointer-events: none;
+  }
+}
+
+/* Meny i topplinjen på undersider (før: knapp fastspikret som kolliderte
+   med tilbake-lenken og forsvant ved scrolling) */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.menu-inline { position: relative; top: auto; right: auto; }
+.menu-inline .menu-btn { width: 36px; height: 36px; padding: 8px; }
+.menu-inline .menu-panel { top: 40px; }
+
+/* Parsidens tema-linje under hovedtallet */
+.pair-tema {
+  font-size: 13.5px;
+  color: var(--ink-secondary);
+  margin-top: 2px;
+}
+
+/* Sak-grupper i voteringslisten */
+.vote-group summary {
+  list-style: none;
+  cursor: pointer;
+}
+.vote-group summary::-webkit-details-marker { display: none; }
+.vote-group summary .vote-main > a { pointer-events: auto; }
+.vote-group summary .vote-tema::after {
+  content: " ▸";
+  color: var(--ink-muted);
+}
+.vote-group[open] summary .vote-tema::after { content: " ▾"; }
+.vote-sublist {
+  list-style: none;
+  margin: 0 0 6px 18px;
+  padding-left: 10px;
+  border-left: 2px solid var(--hairline);
+}
+.vote-sublist .vote-row { padding: 7px 0; border-bottom: none; }
+.vote-varierer { color: var(--ink-muted); font-style: italic; font-size: 13.5px; }
+
+/* Ferske splittelser på forsiden */
+.home-splits-list {
+  list-style: none;
+  max-width: 720px;
+  margin: 14px auto 6px;
+  text-align: left;
+}
+.home-splits-list a {
+  display: grid;
+  grid-template-columns: 92px 64px 1fr 52px;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--hairline);
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 14.5px;
+}
+.home-splits-list a:hover .hs-tittel { color: var(--accent); }
+.hs-dato { color: var(--ink-muted); font-size: 13px; }
+.hs-parti { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+.hs-tall {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-secondary);
+}
+@media (max-width: 560px) {
+  .home-splits-list a { grid-template-columns: 64px 1fr 52px; }
+  .hs-dato { display: none; }
+}
+
 /* Home-page om-seksjon */
 .home-om .om-person {
   max-width: 720px;

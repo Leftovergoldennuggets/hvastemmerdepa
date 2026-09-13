@@ -239,7 +239,9 @@ function EraTable({ a, b }) {
   );
 }
 
-function KomiteTable({ index, a, b }) {
+/* Per-committee agreement for the pair, shared by the headline line in the
+   pair head and the full "Tema for tema" fold. Sorted most-agreeing first. */
+function useKomitePair(index, a, b) {
   const [rows, setRows] = useState(null);
 
   useEffect(() => {
@@ -263,6 +265,13 @@ function KomiteTable({ index, a, b }) {
     return () => { live = false; };
   }, [index, a.id, b.id]);
 
+  return rows;
+}
+
+const pctStr = (p) => p.toFixed(0);
+const senkNavn = (navn) => navn.charAt(0).toLowerCase() + navn.slice(1);
+
+function KomiteTable({ rows }) {
   if (!rows || rows.length < 2) return null;
   return (
     <Fold
@@ -335,6 +344,16 @@ function VoteList({ index, a, b }) {
 
   const shown = rows.filter((r) => r.match[filter]).slice(0, visible);
   const exhausted = loaded >= newestFirst.length;
+
+  // Budget and omnibus cases explode into dozens of near-identical rows
+  // (one per forslag). Group consecutive votes on the same sak so the list
+  // reads as a case list; single votes render as before.
+  const groups = [];
+  for (const r of shown) {
+    const g = groups[groups.length - 1];
+    if (g && g.sak === r.sak) g.rows.push(r);
+    else groups.push({ sak: r.sak, tittel: r.tittel, rows: [r] });
+  }
   const [exporting, setExporting] = useState(false);
 
   const exportAll = async () => {
@@ -391,21 +410,77 @@ function VoteList({ index, a, b }) {
         </button>
       </div>
       <ol>
-        {shown.map((r) => (
-          <li key={r.vid} className="vote-row">
-            <div className="vote-meta">
-              {r.dato ? formatDate(r.dato) : ""}
-            </div>
-            <div className="vote-main">
-              <a href={sakUrl(r.sak)} target="_blank" rel="noreferrer">{r.tittel}</a>
-              <div className="vote-tema">{r.tema}</div>
-            </div>
-            <div className="vote-stances">
-              <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
-              <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
-            </div>
-          </li>
-        ))}
+        {groups.map((g) => {
+          if (g.rows.length === 1) {
+            const r = g.rows[0];
+            return (
+              <li key={r.vid} className="vote-row">
+                <div className="vote-meta">
+                  {r.dato ? formatDate(r.dato) : ""}
+                </div>
+                <div className="vote-main">
+                  <a href={sakUrl(r.sak)} target="_blank" rel="noreferrer">{r.tittel}</a>
+                  <div className="vote-tema">{r.tema}</div>
+                </div>
+                <div className="vote-stances">
+                  <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
+                  <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
+                </div>
+              </li>
+            );
+          }
+          const ensartet = g.rows.every((r) => r.sa === g.rows[0].sa && r.sb === g.rows[0].sb);
+          return (
+            <li key={`sak-${g.sak}-${g.rows[0].vid}`}>
+              <details className="vote-group">
+                <summary>
+                  <div className="vote-row">
+                    <div className="vote-meta">
+                      {g.rows[0].dato ? formatDate(g.rows[0].dato) : ""}
+                    </div>
+                    <div className="vote-main">
+                      <a
+                        href={sakUrl(g.sak)}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {g.tittel}
+                      </a>
+                      <div className="vote-tema">
+                        {g.rows.length} voteringer i samme sak – trykk for å se dem
+                      </div>
+                    </div>
+                    <div className="vote-stances">
+                      {ensartet ? (
+                        <>
+                          <span><strong>{a.kort}</strong> <em className={g.rows[0].sa ? "stem-for" : "stem-mot"}>{g.rows[0].sa ? "for" : "mot"}</em></span>
+                          <span><strong>{b.kort}</strong> <em className={g.rows[0].sb ? "stem-for" : "stem-mot"}>{g.rows[0].sb ? "for" : "mot"}</em></span>
+                        </>
+                      ) : (
+                        <span className="vote-varierer">varierer</span>
+                      )}
+                    </div>
+                  </div>
+                </summary>
+                <ol className="vote-sublist">
+                  {g.rows.map((r) => (
+                    <li key={r.vid} className="vote-row">
+                      <div className="vote-meta">{r.dato ? formatDate(r.dato) : ""}</div>
+                      <div className="vote-main">
+                        <div className="vote-tema">{r.tema}</div>
+                      </div>
+                      <div className="vote-stances">
+                        <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
+                        <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </details>
+            </li>
+          );
+        })}
       </ol>
       {shown.length === 0 && (
         <p className="empty-note">
@@ -428,6 +503,7 @@ function VoteList({ index, a, b }) {
 
 export default function PairView({ index, a, b }) {
   const [series, setSeries] = useState(null);
+  const komiteRows = useKomitePair(index, a, b);
 
   useEffect(() => {
     let live = true;
@@ -454,6 +530,15 @@ export default function PairView({ index, a, b }) {
             av {formatN(overall.total)} felles voteringer siden {firstYear}.
           </p>
         )}
+        {komiteRows && komiteRows.length >= 3 && (
+          <p className="pair-tema">
+            Mest uenige i {senkNavn(komiteRows[komiteRows.length - 1].navn)}{" "}
+            ({pctStr(komiteRows[komiteRows.length - 1].pct)} %) og{" "}
+            {senkNavn(komiteRows[komiteRows.length - 2].navn)}{" "}
+            ({pctStr(komiteRows[komiteRows.length - 2].pct)} %) · mest enige i{" "}
+            {senkNavn(komiteRows[0].navn)} ({pctStr(komiteRows[0].pct)} %)
+          </p>
+        )}
         <p className="see-also">
           <a href={`#/parti/${a.id}`}>Hvem stemmer {a.kort} med? →</a>
           {" · "}
@@ -462,7 +547,7 @@ export default function PairView({ index, a, b }) {
       </div>
       {series ? <TimeSeries series={series} a={a} b={b} /> : <div className="loading">Laster …</div>}
       <EraTable a={a} b={b} />
-      <KomiteTable index={index} a={a} b={b} />
+      <KomiteTable rows={komiteRows} />
       <VoteList index={index} a={a} b={b} />
     </div>
   );

@@ -13,7 +13,7 @@ import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
-import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag, fetchJSON } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
 // Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
@@ -35,10 +35,10 @@ function parseHash() {
   return { view: "matrix" };
 }
 
-function Menu() {
+function Menu({ inline = false }) {
   const [open, setOpen] = useState(false);
   return (
-    <nav className="menu">
+    <nav className={`menu${inline ? " menu-inline" : ""}`}>
       <button
         className="menu-btn"
         aria-expanded={open}
@@ -95,8 +95,48 @@ function HomeSalkart() {
       <p className="see-also">
         <a href="#/hvem">Se hvem de er – kjønn, alder og erfaring ›</a>
       </p>
+    </section>
+  );
+}
+
+function HomeSplits() {
+  const [splits, setSplits] = useState(null);
+  useEffect(() => { fetchJSON("/data/splits.json").then(setSplits).catch(() => {}); }, []);
+  if (!splits || splits.length === 0) return null;
+  return (
+    <section className="party-chips home-splits">
+      <h2>Når sprekker partiene?</h2>
+      <p>
+        Partiene stemmer nesten alltid samlet – derfor er det en nyhet når de
+        ikke gjør det. De ferskeste voteringene der minst to representanter
+        brøt med sitt eget parti:
+      </p>
+      <ol className="home-splits-list">
+        {splits.slice(0, 3).map((s) => {
+          const p = partyOrFallback(s.parti);
+          return (
+            <li key={`${s.vid}-${s.parti}`}>
+              <a href="#/splittelser">
+                <span className="hs-dato">{s.dato ? formatDate(s.dato) : ""}</span>
+                <span className="hs-parti">
+                  <span className="logo-tile" style={{ width: 22, height: 22 }}>
+                    {p.logo ? (
+                      <img src={p.logo} alt="" loading="lazy" />
+                    ) : (
+                      <span style={{ width: "55%", height: "55%", borderRadius: "50%", background: p.farge }} />
+                    )}
+                  </span>
+                  {p.kort}
+                </span>
+                <span className="hs-tittel">{s.tittel}</span>
+                <span className="hs-tall">{s.for}–{s.mot}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
       <p className="see-also">
-        Se også: <a href="#/splittelser">Når splitter partiene seg?</a>
+        <a href="#/splittelser">Alle splittelser siden 2011 ›</a>
       </p>
     </section>
   );
@@ -258,12 +298,14 @@ export default function App() {
 
   return (
     <div className="shell">
-      {route.view !== "matrix" && (
+      {route.view !== "matrix" ? (
         <div className="topbar">
           <a href="#/">← Til forsiden</a>
+          <Menu inline />
         </div>
+      ) : (
+        <Menu />
       )}
-      <Menu />
       <header className="masthead">
         <h1><a href="#/">Hva stemmer de?</a></h1>
       </header>
@@ -331,9 +373,9 @@ export default function App() {
                 <option value="">Alle temaer</option>
                 {[...komiteAgg.counts.entries()]
                   .sort((a, b) => b[1] - a[1])
-                  .map(([kid]) => (
+                  .map(([kid, n]) => (
                     <option key={kid} value={kid}>
-                      {komiteNavn[kid] || kid}
+                      {komiteNavn[kid] || kid} · {formatN(n)} voteringer
                     </option>
                   ))}
               </select>
@@ -406,6 +448,8 @@ export default function App() {
           <HomeSalkart />
 
           <HomeGjennomslag sessions={selectedSessions} label={label} />
+
+          <HomeSplits />
 
           <HomeOm />
 
