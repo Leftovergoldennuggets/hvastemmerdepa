@@ -51,6 +51,27 @@ cd web && npm install && npm run dev
 Voteringskoder i API-et (verifisert mot offisielle stemmetall):
 `1 = ikke til stede, 2 = for, 3 = mot`.
 
+## Bruke tallene
+
+Vil du bare ha dataene – til en nyhetssak, undervisning eller egen analyse –
+trenger du ikke kjøre noe som helst:
+
+- **Ferdig beregnede tall** ligger i [`web/public/data/`](web/public/data)
+  (samme filer serveres live under `/data/` på nettstedet). Viktigst:
+  `positions/<sesjon>.json` har én rad per votering med hvert partis interne
+  for/mot-stemmetall, og `matrix/<sesjon>.json` har parvise enighetstall
+  (`agree` av `total` felles voteringer).
+- **Feltforklaringer** for alle filene står på nettstedets
+  [Åpne data-side](https://hvastemmerdepa.vercel.app/#/data) – inkludert
+  ekskluderingskodene og hva som telles.
+- **CSV**: hver visning på nettstedet har en «Last ned som CSV»-knapp.
+- **Rådataene** (alt fra Stortingets API, uendret, 148 MB) ligger som
+  release-en [raw-seed](../../releases/tag/raw-seed) – last den ned og kjør
+  `python3 pipeline/analyse.py` for å reprodusere alle tall selv.
+- **Hvordan tallene skal tolkes** (og ikke tolkes) står på nettstedets
+  [metodeside](https://hvastemmerdepa.vercel.app/#/metodikk) – kortversjon:
+  tallene måler hvor ofte partiene *stemte likt*, aldri hvor «enige» de er.
+
 ## Kilder og lisens
 
 - Kode: [MIT-lisens](LICENSE) – bruk, lær og bygg videre fritt, med kreditering

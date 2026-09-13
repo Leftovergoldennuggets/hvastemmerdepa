@@ -94,7 +94,12 @@ export default function DataPage() {
           voteringer, sist oppdatert {meta.generated}.</>
         )}
         {" "}Dataene oppdateres automatisk hver morgen med nye voteringer fra
-        Stortingets API.
+        Stortingets API. All kode og rådataene ligger åpent i{" "}
+        <a href="https://github.com/Leftovergoldennuggets/hvastemmerdepa">
+          kodearkivet på GitHub
+        </a>{" "}
+        (rådataene som nedlastbar «raw-seed»-release), slik at alle tall kan
+        reproduseres fra bunnen.
       </p>
       <p>
         Filformatene holdes stabile; nye felter kan komme til, men

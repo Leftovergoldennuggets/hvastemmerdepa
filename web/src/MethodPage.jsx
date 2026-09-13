@@ -242,10 +242,14 @@ export default function MethodPage() {
       <p>
         Hver votering i listene lenker til saken hos stortinget.no. Hele
         datasettet og all kode – innhenting, beregning og denne nettsiden –
-        legges åpent ut sammen med nettstedet, slik at hvem som helst kan
-        kjøre analysen på nytt fra Stortingets rådata og få de samme tallene.
-        Datafilene siden bygger på kan lastes ned direkte – se{" "}
-        <a href="#/data">Åpne data</a>.
+        er åpen:{" "}
+        <a href="https://github.com/Leftovergoldennuggets/hvastemmerdepa">
+          github.com/Leftovergoldennuggets/hvastemmerdepa
+        </a>
+        . Hvem som helst kan kjøre analysen på nytt fra Stortingets rådata og
+        få de samme tallene – oppskriften står i kodearkivet, sammen med
+        kvalitetskontrollhistorikken og testene. Datafilene siden bygger på
+        kan lastes ned direkte – se <a href="#/data">Åpne data</a>.
       </p>
       <p>
         Én sesjon skiller seg ut i datagrunnlaget: 2013–2014 har uvanlig få
