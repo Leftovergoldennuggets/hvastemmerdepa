@@ -66,7 +66,12 @@
       "Bash(node scripts/validate_palette.js \"#F3CD7E,#C8862F,#935618,#59300B\" --mode light)",
       "Bash(sips -g pixelWidth -g pixelHeight \"IMG_3781 2.JPG\")",
       "Bash(sips -Z 900 -s format jpeg -s formatOptions 80 \"IMG_3781 2.JPG\" --out web/public/anders.jpg)",
-      "Bash(mv \"IMG_3781 2.JPG\" /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/d8b93a50-573c-4448-8c57-46cac5d2b3df/scratchpad/)"
+      "Bash(mv \"IMG_3781 2.JPG\" /private/tmp/claude-501/-Users-AndersEidesvik-storting-votering/d8b93a50-573c-4448-8c57-46cac5d2b3df/scratchpad/)",
+      "Bash(curl -s -m 20 \"https://polsys.sikt.no/storting/voteringsarkiv\" -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s -m 20 \"https://polsys.sikt.no/api/votering?limit=2\")",
+      "Bash(curl -s -m 20 \"https://polsys.sikt.no/storting/api/voteringsarkiv?limit=2\")",
+      "Bash(python3 -m unittest discover -s pipeline/tests -v)",
+      "Bash(python3 -m unittest discover -s pipeline/tests)"
     ],
     "additionalDirectories": [
       "/Users/AndersEidesvik/Downloads"
