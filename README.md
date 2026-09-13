@@ -1,4 +1,4 @@
-# Hva stemmer de på?
+# Hva stemmer de?
 
 Uavhengig, ikke-kommersielt samfunnsprosjekt som viser hvor ofte partiene på
 Stortinget stemmer likt – basert på alle registrerte voteringer siden oktober

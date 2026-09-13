@@ -3,7 +3,7 @@ export default function OmPage() {
     <div className="method">
       <h2>Om prosjektet</h2>
       <p className="lede">
-        Hva stemmer de på? er et uavhengig, ikke-kommersielt samfunnsprosjekt
+        Hva stemmer de? er et uavhengig, ikke-kommersielt samfunnsprosjekt
         som gjør Stortingets voteringsdata tilgjengelige for alle.
       </p>
       <p>
@@ -61,6 +61,20 @@ export default function OmPage() {
         </div>
       </div>
 
+      <h3>Takk og inspirasjon</h3>
+      <p>
+        Prosjektet er inspirert av{" "}
+        <a href="https://github.com/holderdeord">Holder de ord</a>, den
+        frivillige organisasjonen som i mange år gjorde Stortingets voteringer
+        tilgjengelige for offentligheten. Nettstedet deres er lagt ned, men
+        kildekoden deres er fortsatt åpen – og både metoden og tallene her er
+        kvalitetssjekket mot den, i tillegg til mot{" "}
+        <a href="https://polsys.sikt.no/storting/voteringsarkiv">
+          Voteringsarkivet hos Sikt
+        </a>{" "}
+        (tidligere NSD). Takk til begge for arbeidet som gjorde det mulig å
+        etterprøve dette prosjektet skikkelig.
+      </p>
       <p>
         Data: <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a>,
         brukt under <a href="https://data.norge.no/nlod/no/2.0">NLOD-lisensen</a>.

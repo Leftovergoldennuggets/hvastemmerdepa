@@ -116,7 +116,7 @@ function HomeOm() {
         />
         <div>
           <p>
-            Hva stemmer de på? er et uavhengig, ikke-kommersielt
+            Hva stemmer de? er et uavhengig, ikke-kommersielt
             samfunnsprosjekt laget av Anders Eidesvik, tidligere journalist i
             NRK, Klassekampen og Dagens Næringsliv. Målet er å gjøre
             Stortingets voteringer like lette å lese som de er viktige – med
@@ -265,7 +265,7 @@ export default function App() {
       )}
       <Menu />
       <header className="masthead">
-        <h1><a href="#/">Hva stemmer de på?</a></h1>
+        <h1><a href="#/">Hva stemmer de?</a></h1>
       </header>
 
       {!index || !selection ? (

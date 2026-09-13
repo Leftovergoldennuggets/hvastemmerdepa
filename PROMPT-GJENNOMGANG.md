@@ -1,4 +1,4 @@
-# Gjenbrukbar prompt: uavhengig gjennomgang av «Hva stemmer de på?»
+# Gjenbrukbar prompt: uavhengig gjennomgang av «Hva stemmer de?»
 
 Slik brukes den: åpne Claude Code (eller tilsvarende AI-verktøy) i prosjektmappen og
 lim inn teksten under. Kjør den etter større endringer, eller et par ganger i året.
