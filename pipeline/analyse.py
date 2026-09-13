@@ -7,7 +7,7 @@ Reads data/raw/ (see fetch.py) and writes data/computed/:
                           internal for/mot tally and derived position
   matrix/<sesjon>.json    pairwise agreement counts derived from positions
 
-Method (documented publicly in METODIKK.md):
+Method (documented publicly on the website's method page, #/metodikk):
 - A party's position on a vote is the majority among its representatives who
   voted; an exact tie counts as no position ("delt").
 - Two parties agree on a vote when they took the same position.

@@ -30,6 +30,9 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+# Stortinget documents the XML export; ?format=json returns the same data
+# with the same field names — proven field-for-field by sjekk_json_mot_xml.py
+# and guarded daily by valider_format.py.
 BASE = "https://data.stortinget.no/eksport"
 RAW = Path(__file__).resolve().parent.parent / "data" / "raw"
 FIRST_SESSION_YEAR = 2011  # electronic per-representative voting starts 2011-2012

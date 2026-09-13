@@ -1,5 +1,10 @@
 # Hva stemmer de?
 
+[![Tester](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/test.yml/badge.svg)](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/test.yml)
+[![Daglig dataoppdatering](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/oppdater.yml/badge.svg)](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/oppdater.yml)
+
+**Nettstedet:** [hvastemmerdepa.vercel.app](https://hvastemmerdepa.vercel.app)
+
 Uavhengig, ikke-kommersielt samfunnsprosjekt som viser hvor ofte partiene på
 Stortinget stemmer likt – basert på alle registrerte voteringer siden oktober
 2011, hentet fra [Stortingets tjeneste for åpne data](https://data.stortinget.no)
@@ -8,6 +13,15 @@ Stortinget stemmer likt – basert på alle registrerte voteringer siden oktober
 Alt er etterprøvbart: rådata lastes ned uendret, hver beregning kontrollsummeres
 mot Stortingets offisielle stemmetall, og hver votering på nettstedet lenker til
 saken hos stortinget.no. Metoden er dokumentert på nettstedets metodeside.
+
+**Kvalitetsdokumentasjon:** [KVALITETSKONTROLL.md](KVALITETSKONTROLL.md)
+(metodevalg, kontrollhistorikk og hvordan alt etterprøves) ·
+[AUDIT.md](AUDIT.md) (full revisjon, juli 2026) ·
+[RAPPORT-KODEGJENNOMGANG.md](RAPPORT-KODEGJENNOMGANG.md) (uavhengig gjennomgang,
+aug. 2026: «tallene er riktige», byte-identisk reproduksjon fra rådata) ·
+[ENDRINGSLOGG.md](ENDRINGSLOGG.md) (alle metodeendringer) ·
+[GJENNOMGANG.md](GJENNOMGANG.md) (lesesti for kodegjennomgang).
+Tester: `python3 -m unittest discover -s pipeline/tests`
 
 ## Struktur
 
