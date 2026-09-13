@@ -106,6 +106,16 @@ class TestVedtattLogikkMotHandverifiserteVoteringer(unittest.TestCase):
         resultat = self.kjor([RAD_3541])
         self.assertEqual(resultat["FrP"], {"fremmet": 1, "vedtatt": 0})
 
+    def test_speiltvillingen_telles_ikke_i_gjennomslag(self):
+        """Scenario: Den samme alternative voteringen som to speilrader — én
+        tellende og én merket 'alternativ_speil' (slik analyse.py leverer
+        dem). Fasit: FrP krediteres for ETT fremmet forslag, ikke to.
+        (Tetter testhull påvist ved mutasjonstesting i den eksterne
+        gjennomgangen.)"""
+        speil = {**RAD_3541, "vid": 3542, "excluded": "alternativ_speil"}
+        resultat = self.kjor([RAD_3541, speil])
+        self.assertEqual(resultat["FrP"]["fremmet"], 1)
+
     def test_ordinaert_partiforslag_teller_for_alle_forslagsstillerne(self):
         """Votering 24893: «Forslag nr. 12 på vegne av SV, R og MDG» falt
         14–86. Fasit: fremmet=1 for SV, R og MDG; vedtatt=0; ingen andre

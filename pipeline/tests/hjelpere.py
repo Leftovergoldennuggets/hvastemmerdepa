@@ -54,7 +54,9 @@ def votering(vid, dato, antall_for, antall_mot, vedtatt, tema="Testforslag",
     }
 
 
-def skriv_lager(katalog, voteringer, stemmer_per_votering, partier=("A", "H", "SV", "Sp", "FrP")):
+def skriv_lager(katalog, voteringer, stemmer_per_votering,
+                partier=("A", "H", "SV", "Sp", "FrP"),
+                sesjon=SESJON, fra="2099-10-01", til="2100-09-30"):
     """Skriv et komplett miniatyr-rådatalager: én sesjon, én sak, gitte
     voteringer og enkeltstemmer. Returnerer katalogen (som analyse.RAW
     settes til i testen).
@@ -71,10 +73,12 @@ def skriv_lager(katalog, voteringer, stemmer_per_votering, partier=("A", "H", "S
         p.write_bytes(gzip.compress(json.dumps(innhold).encode()))
 
     gz("sesjoner.json.gz", {"sesjoner_liste": [
-        {"id": SESJON, "fra": dato_ms("2099-10-01"), "til": dato_ms("2100-09-30")}]})
-    gz(f"partier/{SESJON}.json.gz", {"partier_liste": [
+        {"id": sesjon, "fra": dato_ms(fra), "til": dato_ms(til)}]})
+    gz("allekomiteer.json.gz", {"komiteer_liste": [
+        {"id": "TESTKOM", "navn": "Testkomiteen"}]})
+    gz(f"partier/{sesjon}.json.gz", {"partier_liste": [
         {"id": p, "navn": f"Testparti {p}"} for p in partier]})
-    gz(f"saker/{SESJON}.json.gz", {"saker_liste": [
+    gz(f"saker/{sesjon}.json.gz", {"saker_liste": [
         {"id": SAK_ID, "korttittel": "Testsak", "komite": {"id": "TESTKOM"}}]})
     gz(f"voteringer/{SAK_ID}.json.gz", {"sak_votering_liste": voteringer})
     for vid, stemmer in stemmer_per_votering.items():

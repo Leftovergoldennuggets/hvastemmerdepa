@@ -28,12 +28,16 @@ Vote codes in voteringsresultat (verified against official counts):
 1 = ikke tilstede, 2 = for, 3 = mot.
 """
 
+import datetime
 import gzip
 import json
 import re
 import sys
+import zoneinfo
 from collections import Counter, defaultdict
 from pathlib import Path
+
+OSLO = zoneinfo.ZoneInfo("Europe/Oslo")
 
 ROOT = Path(__file__).resolve().parent.parent / "data"
 RAW = ROOT / "raw"
@@ -54,11 +58,14 @@ def read(path: Path):
 
 
 def date_of(ms_string):
+    """Timestamp -> the vote's date in NORWEGIAN local time. Formatting in UTC
+    would date a vote taken just after midnight one day too early (found by
+    the external review, Sept 2026) — Stortinget's late-night sittings do
+    cross midnight, and session/government boundaries compare dates."""
     if not ms_string:
         return None
     ms = int(re.search(r"-?\d+", ms_string).group())
-    import datetime
-    return datetime.datetime.fromtimestamp(ms / 1000, datetime.timezone.utc).strftime("%Y-%m-%d")
+    return datetime.datetime.fromtimestamp(ms / 1000, OSLO).strftime("%Y-%m-%d")
 
 
 def session_bounds(sesjon: str):

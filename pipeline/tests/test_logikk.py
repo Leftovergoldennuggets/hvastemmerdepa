@@ -8,6 +8,7 @@ som Stortingets API leverer (se hjelpere.py).
 
 Kjør:  python3 -m unittest discover -s pipeline/tests -v
 """
+import json
 import sys
 import tempfile
 import unittest
@@ -127,6 +128,29 @@ class TestEkskluderingerOgVern(unittest.TestCase):
             self.assertEqual(summary["counted"], 0)
             self.assertEqual(len(positions), 1)
 
+    def test_sesjonsgrensene_er_inkluderende_paa_begge_sider(self):
+        """Scenario: Fire voteringer — dagen FØR sesjonsstart, på selve
+        startdagen (1. okt.), på selve sluttdagen (30. sep.) og dagen ETTER.
+        Fasit: nøyaktig de to på grensedagene telles med. (Tetter testhull
+        påvist ved mutasjonstesting i den eksterne gjennomgangen.)"""
+        with tempfile.TemporaryDirectory() as tmp:
+            _, positions, *_ = kjor_analyse(
+                [votering(1, "2099-09-30", 1, 0, True),
+                 votering(2, "2099-10-01", 1, 0, True),
+                 votering(3, "2100-09-30", 1, 0, True),
+                 votering(4, "2100-10-01", 1, 0, True)],
+                {v: [stemme("A1", "A", 2)] for v in (1, 2, 3, 4)}, tmp)
+            self.assertEqual([r["vid"] for r in positions], [2, 3])
+
+    def test_dato_settes_i_norsk_tid_ikke_utc(self):
+        """Scenario: En votering kl. 00.30 norsk sommertid 16. juni 2023 —
+        altså 22.30 UTC den 15. juni. Fasit: datoen skal være 2023-06-16
+        (den norske datoen). UTC-formatering ville gitt 15. juni og kunne
+        plassert nattlige voteringer i feil sesjon eller regjeringsperiode.
+        (Feil funnet i den eksterne gjennomgangen, sept. 2026.)"""
+        # 2023-06-15T22:30:00Z = 1686868200000 ms
+        self.assertEqual(analyse.date_of("/Date(1686868200000+0200)/"), "2023-06-16")
+
     def test_votering_utenfor_sesjonens_datoer_droppes(self):
         """Scenario: Saker kan gå over flere sesjoner, så samme votering kan
         dukke opp i flere sesjonsfiler. En votering datert FØR testsesjonens
@@ -197,6 +221,37 @@ class TestEnighetOgSplittelser(unittest.TestCase):
             splits = resultat[4]
             self.assertEqual([(s["parti"], s["for"], s["mot"]) for s in splits],
                              [("H", 3, 2)])
+
+
+class TestRegjeringsperioder(unittest.TestCase):
+    def test_votering_havner_i_riktig_regjeringsperiode(self):
+        """Scenario: To voteringer i sesjonen 2021-2022 — én 13. oktober 2021
+        (dagen før regjeringsskiftet) og én 14. oktober (dagen Støre tok
+        over; dato fra regjeringen.no, se pipeline/regjeringer.json). Fasit:
+        den første telles i Solberg-perioden, den andre i Støre-perioden,
+        og ingen annen periode får noen. (Tetter testhull påvist ved
+        mutasjonstesting i den eksterne gjennomgangen.)"""
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = skriv_lager(
+                Path(tmp) / "raw",
+                [votering(1, "2021-10-13", 1, 0, True),
+                 votering(2, "2021-10-14", 1, 0, True)],
+                {1: [stemme("A1", "A", 2)], 2: [stemme("A1", "A", 2)]},
+                sesjon="2021-2022", fra="2021-10-01", til="2022-09-30")
+            gammel_raw, gammel_out, gammel_argv = analyse.RAW, analyse.OUT, sys.argv
+            try:
+                analyse.RAW = raw
+                analyse.OUT = Path(tmp) / "out"
+                sys.argv = ["analyse.py", "2021-2022"]
+                analyse.main()
+                eras = json.loads((analyse.OUT / "eras.json").read_text())
+            finally:
+                analyse.RAW, analyse.OUT, sys.argv = gammel_raw, gammel_out, gammel_argv
+            per_era = {(e["navn"], e["fra"]): e["voteringer"] for e in eras}
+            self.assertEqual(per_era[("Solberg", "2020-01-24")], 1)
+            self.assertEqual(per_era[("Støre", "2021-10-14")], 1)
+            self.assertEqual(sum(per_era.values()), 2,
+                             "ingen andre regjeringsperioder skal få voteringer")
 
 
 if __name__ == "__main__":
