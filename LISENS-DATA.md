@@ -10,3 +10,6 @@ Koden er MIT-lisensiert (se LICENSE). Dataene har egne vilkår:
 - Representantfotografiene er Stortingets offisielle portretter (krediteres
   "Foto: Stortinget"); partilogoene tilhører de respektive partiene og brukes
   redaksjonelt.
+- Bildet av Anders Eidesvik foran Stortinget (web/public/anders*.jpg) er tatt
+  av Simon Eidesvik og kan brukes fritt, også av medier, mot kreditering
+  "Foto: Simon Eidesvik".

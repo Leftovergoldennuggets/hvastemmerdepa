@@ -7,7 +7,7 @@ selv kan etterprøve alt, med eller uten koding. Sist oppdatert 27. august 2026.
 
 ## Hva prosjektet er
 
-[hvastemmerdepa.vercel.app](https://hvastemmerdepa.vercel.app) viser hvor ofte
+[hvastemmerde.no](https://hvastemmerde.no) viser hvor ofte
 partiene på Stortinget stemmer likt, basert på alle registrerte voteringer
 siden oktober 2011 (da elektronisk votering med enkeltstemmer startet).
 Kilden er Stortingets egen åpne datatjeneste. Målgruppen er velgere,
@@ -118,7 +118,7 @@ Du har tilgang til GitHub-repoet. Alt du trenger ligger der:
 
 Ferdige kontrollspørsmål du kan gi din Claude:
 
-1. *«Les metodesiden på hvastemmerdepa.vercel.app/#/metodikk. Regn deretter ut
+1. *«Les metodesiden på hvastemmerde.no/#/metodikk. Regn deretter ut
    Ap×Høyre-enigheten for 2023–2024 direkte fra data/computed/positions/
    2023-2024.json — uten å se på pipeline-koden — og sammenlign med tallet i
    data/computed/matrix/2023-2024.json.»* (Replikasjonstesten: får din Claude

@@ -3,7 +3,7 @@
 [![Tester](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/test.yml/badge.svg)](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/test.yml)
 [![Daglig dataoppdatering](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/oppdater.yml/badge.svg)](https://github.com/Leftovergoldennuggets/hvastemmerdepa/actions/workflows/oppdater.yml)
 
-**Nettstedet:** [hvastemmerdepa.vercel.app](https://hvastemmerdepa.vercel.app)
+**Nettstedet:** [hvastemmerde.no](https://hvastemmerde.no)
 
 Uavhengig, ikke-kommersielt samfunnsprosjekt som viser hvor ofte partiene på
 Stortinget stemmer likt – basert på alle registrerte voteringer siden oktober
@@ -62,14 +62,14 @@ trenger du ikke kjøre noe som helst:
   for/mot-stemmetall, og `matrix/<sesjon>.json` har parvise enighetstall
   (`agree` av `total` felles voteringer).
 - **Feltforklaringer** for alle filene står på nettstedets
-  [Åpne data-side](https://hvastemmerdepa.vercel.app/#/data) – inkludert
+  [Åpne data-side](https://hvastemmerde.no/#/data) – inkludert
   ekskluderingskodene og hva som telles.
 - **CSV**: hver visning på nettstedet har en «Last ned som CSV»-knapp.
 - **Rådataene** (alt fra Stortingets API, uendret, 148 MB) ligger som
   release-en [raw-seed](../../releases/tag/raw-seed) – last den ned og kjør
   `python3 pipeline/analyse.py` for å reprodusere alle tall selv.
 - **Hvordan tallene skal tolkes** (og ikke tolkes) står på nettstedets
-  [metodeside](https://hvastemmerdepa.vercel.app/#/metodikk) – kortversjon:
+  [metodeside](https://hvastemmerde.no/#/metodikk) – kortversjon:
   tallene måler hvor ofte partiene *stemte likt*, aldri hvor «enige» de er.
 
 ## Kilder og lisens

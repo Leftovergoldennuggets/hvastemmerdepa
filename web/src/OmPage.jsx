@@ -34,12 +34,18 @@ export default function OmPage() {
       <figure className="om-figur">
         <img
           src="/anders.jpg"
-          alt="Anders Eidesvik foran Stortinget"
+          alt="Anders Eidesvik i rød skjorte står med armene i kors foran Stortingsbygningen i Oslo, ved siden av en av steinløvene ved inngangen, under blå himmel"
           width="1600"
           height="1066"
           onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
         />
-        <figcaption>Anders Eidesvik foran Stortinget.</figcaption>
+        <figcaption>
+          Foto: Simon Eidesvik. Bildet kan brukes fritt, også av medier, mot
+          kreditering «Foto: Simon Eidesvik».{" "}
+          <a href="/anders-eidesvik-stortinget-foto-simon-eidesvik.jpg" download>
+            Last ned i full oppløsning (JPG, 2048 px)
+          </a>
+        </figcaption>
       </figure>
       <div className="om-tekst">
         <div>

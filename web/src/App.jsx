@@ -150,12 +150,13 @@ function HomeOm() {
       <figure className="om-figur">
         <img
           src="/anders.jpg"
-          alt="Anders Eidesvik foran Stortinget"
+          alt="Anders Eidesvik i rød skjorte står med armene i kors foran Stortingsbygningen i Oslo, ved siden av en av steinløvene ved inngangen, under blå himmel"
           width="1600"
           height="1066"
           loading="lazy"
           onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
         />
+        <figcaption>Foto: Simon Eidesvik</figcaption>
       </figure>
       <div className="om-tekst">
         <div>
