@@ -31,13 +31,17 @@ export default function OmPage() {
       </p>
 
       <h3>Hvem står bak?</h3>
-      <div className="om-person">
+      <figure className="om-figur">
         <img
-          className="om-foto"
           src="/anders.jpg"
-          alt="Anders Eidesvik"
-          onError={(e) => { e.currentTarget.style.display = "none"; }}
+          alt="Anders Eidesvik foran Stortinget"
+          width="1600"
+          height="1066"
+          onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
         />
+        <figcaption>Anders Eidesvik foran Stortinget.</figcaption>
+      </figure>
+      <div className="om-tekst">
         <div>
           <p>
             Jeg heter Anders Eidesvik og har laget dette nettstedet. Jeg har

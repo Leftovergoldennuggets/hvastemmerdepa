@@ -969,23 +969,22 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 .home-salkart .salkart { margin-bottom: 0; }
 .home-salkart:hover { opacity: 0.88; }
 
-/* Om-siden: person-seksjon med foto */
-.om-person {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  margin: 8px 0 20px;
+/* Om-siden: liggende foto i full tekstbredde, teksten under */
+.om-figur {
+  margin: 10px 0 18px;
 }
-.om-foto {
-  width: 210px;
-  max-width: 38%;
+.om-figur img {
+  display: block;
+  width: 100%;
+  height: auto;
   border-radius: 6px;
-  flex-shrink: 0;
 }
-@media (max-width: 560px) {
-  .om-person { flex-direction: column; }
-  .om-foto { width: 100%; max-width: 320px; }
+.om-figur figcaption {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  margin-top: 8px;
 }
+.om-tekst { margin-bottom: 20px; }
 
 /* Home-page gjennomslag teaser */
 .home-gj .gj-ranking { margin: 12px auto 6px; }
@@ -1098,9 +1097,11 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 }
 
 /* Home-page om-seksjon */
-.home-om .om-person {
+.home-om .om-figur,
+.home-om .om-tekst {
   max-width: 720px;
-  margin: 6px auto 0;
+  margin-left: auto;
+  margin-right: auto;
   text-align: left;
 }
-.home-om .om-foto { width: 150px; }
+.home-om .om-figur { margin-top: 14px; }

@@ -124,8 +124,10 @@ export default function PeoplePage() {
 
       <p className="count-note">
         Innvalgte representanter ved periodens start (vararepresentanter ikke
-        medregnet). Alder ved periodestart; «tid på Stortinget» er tid siden
-        representanten først ble innvalgt. Streken i kvinneandel-søylen
+        medregnet). Alder ved periodestart, regnet nøyaktig med desimaler –
+        ikke i fylte år. Medier som regner snitt av fylte år (slik NTB gjorde
+        høsten 2025) får derfor tall som ligger om lag et halvt år lavere.
+        «Tid på Stortinget» er tid siden representanten først ble innvalgt. Streken i kvinneandel-søylen
         markerer 50 %.{" · "}
         <button
           className="dl"

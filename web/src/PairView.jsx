@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { medHistorikk } from "./komiteer.js";
 import { pairSeries, loadPositions, erasData, pairEras, aggregateKomite, komiteerData, pairKey, stance, formatN, formatDate, sakUrl } from "./lib.js";
 import { cellColor, cellText, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
@@ -247,10 +248,11 @@ function useKomitePair(index, a, b) {
   useEffect(() => {
     let live = true;
     (async () => {
-      const [agg, navn] = await Promise.all([
+      const [agg, navnRaa] = await Promise.all([
         aggregateKomite(index.map((s) => s.sesjon)),
         komiteerData(),
       ]);
+      const navn = medHistorikk(navnRaa);
       const key = pairKey(a.id, b.id);
       const out = [];
       for (const [kid, m] of agg.byKomite) {

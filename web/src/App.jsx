@@ -13,6 +13,7 @@ import PeriodPicker from "./PeriodPicker.jsx";
 import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
+import { medHistorikk } from "./komiteer.js";
 import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag, fetchJSON } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 
@@ -146,14 +147,17 @@ function HomeOm() {
   return (
     <section className="party-chips home-om">
       <h2>Om prosjektet</h2>
-      <div className="om-person">
+      <figure className="om-figur">
         <img
-          className="om-foto"
           src="/anders.jpg"
-          alt="Anders Eidesvik"
+          alt="Anders Eidesvik foran Stortinget"
+          width="1600"
+          height="1066"
           loading="lazy"
-          onError={(e) => { e.currentTarget.style.display = "none"; }}
+          onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
         />
+      </figure>
+      <div className="om-tekst">
         <div>
           <p>
             Hva stemmer de? er et uavhengig, ikke-kommersielt
@@ -266,7 +270,7 @@ export default function App() {
   };
   useEffect(loadIndex, []);
   useEffect(() => { siteMeta().then(setMeta).catch(() => {}); }, []);
-  useEffect(() => { komiteerData().then(setKomiteNavn).catch(() => {}); }, []);
+  useEffect(() => { komiteerData().then((d) => setKomiteNavn(medHistorikk(d))).catch(() => {}); }, []);
 
   useEffect(() => {
     const onHash = () => { setRoute(parseHash()); window.scrollTo(0, 0); };
