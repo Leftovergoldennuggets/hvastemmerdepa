@@ -50,7 +50,7 @@ function Menu({ inline = false }) {
       </button>
       {open && (
         <div className="menu-panel" onClick={() => setOpen(false)}>
-          <a href="#/">Oversikten</a>
+          <a href="#/">Hjem</a>
           <a href="#/splittelser">Splittelser</a>
           <a href="#/gjennomslag">Gjennomslag</a>
           <a href="#/hvem">Hvem er de?</a>
