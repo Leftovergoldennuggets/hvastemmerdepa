@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
-import { siteMeta, formatN, formatDate } from "./lib.js";
+import { siteMeta, sessionsIndex, formatN, formatDate } from "./lib.js";
 
 export default function MethodPage() {
   const [meta, setMeta] = useState(null);
+  const [index, setIndex] = useState(null);
   useEffect(() => { siteMeta().then(setMeta).catch(() => {}); }, []);
+  useEffect(() => { sessionsIndex().then(setIndex).catch(() => {}); }, []);
+
+  // 2013–2014 sammenlignet med de andre fullførte sesjonene. Den siste
+  // sesjonen i indeksen er den pågående og holdes utenfor spennet, ellers
+  // ville et nytt parlamentsår med få voteringer (oktober) trekke ned minimum.
+  const avvik = index && index.length > 3 ? (() => {
+    const s1314 = index.find((s) => s.sesjon === "2013-2014");
+    const andre = index.slice(0, -1).filter((s) => s.sesjon !== "2013-2014").map((s) => s.recorded);
+    return s1314 && andre.length ? { n: s1314.recorded, min: Math.min(...andre), max: Math.max(...andre) } : null;
+  })() : null;
 
   return (
     <div className="method">
@@ -254,7 +265,9 @@ export default function MethodPage() {
       </p>
       <p>
         Én sesjon skiller seg ut i datagrunnlaget: 2013–2014 har uvanlig få
-        registrerte voteringer (284, mot 705–2 429 i andre sesjoner). Dette er
+        registrerte voteringer
+        {avvik && ` (${formatN(avvik.n)}, mot ${formatN(avvik.min)}–${formatN(avvik.max)} i de andre fullførte sesjonene)`}
+        . Dette er
         ikke manglende data, men reell parlamentarisk adferd det første året
         etter regjeringsskiftet i 2013. Dagsavisen og Holder de ord{" "}
         <a href="https://www.dagsavisen.no/nyheter/innenriks/2014/08/05/skulker-naer-en-av-to-voteringer-pa-stortinget/">
