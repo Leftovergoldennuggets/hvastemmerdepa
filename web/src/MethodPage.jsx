@@ -239,15 +239,16 @@ export default function MethodPage() {
 
       <h3>KI og menneskelig kvalitetssikring</h3>
       <p>
-        Koden er skrevet med KI-assistanse (Claude). Nettopp derfor er den
-        kontrollert i flere uavhengige lag: hver beregning egen-verifiseres
-        mot Stortingets offisielle stemmetall, tallene er kryssjekket mot det
-        uavhengige Voteringsarkivet hos Sikt og mot metoden til nettstedet
-        Holder de ord, en testsuite med fasit fra stortinget.no kjøres før
-        hver eneste publisering – og to utviklere har uavhengig gjennomgått
-        koden, og begge klarte å gjenskape de publiserte tallene fra
-        Stortingets rådata. Oppdager du noe som ser feil ut, ta gjerne
-        kontakt (se <a href="#/om">Om prosjektet</a>) – feil rettes.
+        Koden er skrevet med KI-assistanse (Claude). For å sikre at koden er
+        riktig, har jeg bygd inn flere kontrollmekanismer. Tallene verifiseres
+        mot Stortingets offisielle stemmetall, og de er kryssjekket mot det
+        uavhengige Voteringsarkivet hos Sikt. Koden er også kvalitetssjekket
+        opp mot metoden i nettstedet Holder de ords offentlige kildekode. I
+        koden ligger en testsuite med fasit fra stortinget.no som kjøres før
+        hver eneste publisering. I tillegg har to utviklere uavhengig
+        gjennomgått koden, og begge klarte å gjenskape de publiserte tallene
+        fra Stortingets rådata. Oppdager du likevel noe som ser feil ut, ta
+        gjerne kontakt (se <a href="#/om">Om prosjektet</a>). Jeg ønsker at koden skal være riktig.
       </p>
 
       <h3>Etterprøv oss</h3>
