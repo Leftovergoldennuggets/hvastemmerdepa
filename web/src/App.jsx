@@ -84,11 +84,11 @@ function HomeSalkart() {
     <section className="party-chips">
       <h2>Hvem sitter i salen?</h2>
       <p>
-        Politikk er også mennesker. Her er de {reps.length} representantene{" "}
-        {periode && `valgt for ${periode.replace("-", "–")}`} – én prikk per
-        person, farget etter parti. Trykk deg inn for å se salen fordelt på
-        kjønn, alder og erfaring, se hvor i landet de kommer fra – eller
-        finne en enkelt representant.
+        Stortinget består av folkevalgte. Her er alle {reps.length}{" "}
+        representantene{periode && ` valgt for ${periode.replace("-", "–")}`} –
+        én prikk per person, farget etter parti. Trykk deg inn for å se salen
+        fordelt på kjønn, alder og erfaring, og hvor i landet representantene
+        kommer fra.
       </p>
       <a className="home-salkart" href="#/hvem" aria-label="Se hvem representantene er">
         <Salkart representanter={reps} interactive={false} />
@@ -108,9 +108,10 @@ function HomeSplits() {
     <section className="party-chips home-splits">
       <h2>Når sprekker partiene?</h2>
       <p>
-        Partiene stemmer nesten alltid samlet – derfor er det en nyhet når de
-        ikke gjør det. De ferskeste voteringene der minst to representanter
-        brøt med sitt eget parti:
+        Hovedregelen på Stortinget er at partiene stemmer samlet. Men av og
+        til – for eksempel i samvittighetsspørsmål – sprekker et parti. Her er
+        de ferskeste voteringene der minst to representanter brøt med sitt
+        eget parti:
       </p>
       <ol className="home-splits-list">
         {splits.slice(0, 3).map((s) => {
@@ -162,11 +163,12 @@ function HomeOm() {
         <div>
           <p>
             Hva stemmer de? er et uavhengig, ikke-kommersielt
-            samfunnsprosjekt laget av Anders Eidesvik, tidligere journalist i
-            NRK, Klassekampen og Dagens Næringsliv. Målet er å gjøre
-            Stortingets voteringer like lette å lese som de er viktige – med
-            åpen metode, åpne data og lenke til kilden for hver eneste
-            votering.
+            samfunnsprosjekt laget av Anders Eidesvik. Han er tidligere
+            journalist i NRK, Klassekampen og Dagens Næringsliv. Målet er å
+            gjøre Stortingets voteringer lett tilgjengelige for folk flest,
+            slik at alle kan se hva våre folkevalgte holder på med. Prosjektet
+            har åpen kildekode og åpen metode, og dataene kan brukes fritt til
+            journalistikk eller annet, mot kreditering.
           </p>
           <p className="see-also" style={{ textAlign: "left" }}>
             <a href="#/om">Mer om prosjektet og hvem som står bak ›</a>
@@ -201,9 +203,10 @@ function HomeGjennomslag({ sessions, label }) {
       <h2>Hvem får gjennomslag?</h2>
       <p>
         Partier som ikke får viljen sin i komiteen, fremmer egne forslag i
-        salen. Her er hvor mange forslag hvert parti faktisk fikk vedtatt{" "}
-        {label} – antallet sier mer enn andelen, for opposisjonen fremmer
-        mange forslag den vet vil falle.
+        salen. Her kan du se hvor mange forslag hvert parti faktisk fikk
+        vedtatt {label}. Det viktige tallet er antallet forslag som går
+        gjennom, ikke andelen av stilte forslag, siden partier i opposisjon
+        fremmer mange forslag de vet vil falle.
       </p>
       <ol className="ranking gj-ranking">
         {ranking.map((r) => (
@@ -362,10 +365,10 @@ export default function App() {
           <p className="matrix-intro">
             Lurer du på hvor ofte Arbeiderpartiet og Høyre er på samme side?
             Eller Rødt og FrP? Matrisen under viser andelen voteringer der to
-            partier stemte likt – grønt betyr ofte, rødt sjelden. Alt er
-            regnet rett fra Stortingets egne voteringsdata, votering for
-            votering – og bare voteringer der salen delte seg, teller med:
-            enstemmige vedtak registreres ikke i voteringsanlegget.{" "}
+            partier stemte likt – grønt betyr ofte, rødt sjelden. Tallene er
+            hentet fra Stortingets egne voteringsdata og oppdateres daglig.
+            De inkluderer bare voteringer der Stortinget delte seg, siden
+            enstemmige vedtak ikke registreres i voteringsanlegget.{" "}
             <a href="#/forsta">Slik leser du tallene ›</a>
           </p>
 
@@ -461,9 +464,9 @@ export default function App() {
           <section className="party-chips">
             <h2>Utforsk ett parti</h2>
             <p>
-              Hvert parti har sin egen side: hvem det stemmer mest og minst
-              sammen med, hvordan det har endret seg gjennom regjeringene –
-              og de konkrete sakene bak tallene.
+              Nysgjerrig på hvordan partiet ditt stemmer? Trykk på partiene
+              nedenfor for å se hvordan de stemmer i konkrete saker, og ikke
+              minst hvem de er mest enige og uenige med.
             </p>
             <div className="chips-row">
               {PARTIES.filter((p) =>
