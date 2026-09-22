@@ -10,33 +10,33 @@ export default function MethodPage() {
       <h2>Metode</h2>
       <p className="lede">
         Alt på dette nettstedet er beregnet fra Stortingets egne rådata og kan
-        etterprøves. Her er hele metoden – ingen skjulte valg.
+        etterprøves. Her er hele metoden.
       </p>
 
       <h3>Datagrunnlag</h3>
       <p>
-        Kilden er{" "}
-        <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a>{" "}
-        (NLOD-lisens). Stortinget registrerer hver enkelt representants stemme
-        når voteringsanlegget brukes, og disse dataene finnes fra oktober 2011.
+        Stortinget registrerer representantenes stemmer når voteringsanlegget
+        brukes. Disse dataene finnes fra oktober 2011.
         {meta && (
           <>
-            {" "}Datagrunnlaget omfatter <strong>{formatN(meta.recorded_votes)}</strong>{" "}
-            registrerte voteringer fra sesjonen {meta.first_session} til{" "}
-            {meta.last_session}, sist oppdatert {formatDate(meta.generated)}.
+            {" "}Datagrunnlaget gjelder <strong>{formatN(meta.recorded_votes)}</strong>{" "}
+            registrerte voteringer fra sesjonene {meta.first_session} til{" "}
+            {meta.last_session}. Dataene ble sist oppdatert {formatDate(meta.generated)}.
           </>
         )}
-        {" "}Nye voteringer hentes automatisk fra API-et hver morgen og
-        publiseres først når en kontroll har bekreftet at ingenting mangler;
-        «sist oppdatert» viser når dataene sist faktisk endret seg.
+        {" "}Hver morgen hentes nye tall automatisk fra Stortingets API, og de
+        publiseres først når en kontroll har bekreftet at ingenting mangler.
+        «Sist oppdatert» refererer til når dataene sist endret seg. Kilden er{" "}
+        <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a>{" "}
+        (NLOD-lisens).
       </p>
 
       <h3>Hvilke voteringer telles?</h3>
       <p>
-        Alle voteringer der voteringsanlegget registrerte enkeltstemmer.
-        Stortinget bruker anlegget i de fleste voteringene, men enstemmige og
-        nær enstemmige avgjørelser tas ofte uten at enkeltstemmer registreres
-        – da finnes det ingen stemmedata å telle.
+        Alle voteringer der voteringsanlegget registrerer enkeltstemmer.
+        Stortinget bruker anlegget i de fleste voteringer, men enstemmige og
+        nesten enstemmige avgjørelser tas ofte uten at enkeltstemmer
+        registreres.
         {meta && (
           <>
             {" "}I datagrunnlaget gjelder det {formatN(meta.uten_anlegg ?? meta.enstemmig)}{" "}
@@ -45,48 +45,49 @@ export default function MethodPage() {
             prosentene.
           </>
         )}
-        {" "}Det er dermed Stortingets egen praksis, ikke vår vurdering, som
-        avgjør hvilke voteringer som får stemmedata.
+        {" "}Det er dermed Stortingets egen praksis som avgjør hvilke
+        voteringer som får stemmedata.
       </p>
       <p>
-        Dette har en viktig konsekvens: prosentene bygger i praksis bare på
-        voteringer der salen faktisk delte seg. Enstemmige avgjørelser tas
-        uten voteringsanlegget og inngår aldri i tallene
+        Konsekvensen er at prosentene i praksis bare bygger på voteringer der
+        salen faktisk delte seg
         {meta && meta.alle_samme_side != null && (
           <>
-            {" "}– og blant de {formatN(meta.counted_votes)} voteringene som
-            teller, endte alle deltakende partier på samme side i bare{" "}
+            : blant de {formatN(meta.counted_votes)} voteringene som teller,
+            endte alle deltakende partier på samme side i bare{" "}
             {formatN(meta.alle_samme_side)} av dem
           </>
         )}
-        . Det nettstedet måler er altså: når Stortinget var delt – hvem stemte
+        . Det nettstedet måler er altså: når Stortinget var delt, hvem stemte
         likt?
       </p>
       <p>
-        Ett unntak: voteringer over «lovens overskrift og loven i sin helhet»
-        – en lovteknisk bekreftelse på slutten av hver lovbehandling – holdes
-        utenfor, i tråd med{" "}
+        Det finnes ett unntak: voteringer over «lovens overskrift og loven i
+        sin helhet», en lovteknisk bekreftelse på slutten av hver
+        lovbehandling, holdes utenfor. Det er i tråd med{" "}
         <a href="https://data.stortinget.no/dokumentasjon-og-hjelp/kommentar-til-datagrunnlaget-for-voteringer/">
           Stortingets egne råd om statistikk på voteringsdata
         </a>.
       </p>
       <p>
-        Ved <em>alternativ votering</em> – der salen velger mellom to
-        alternativer, for eksempel komiteens innstilling og et mindretallsforslag
-        – registrerer Stortingets datatjeneste én avstemning som to speilvendte
-        voteringer (63–38 og 38–63, samme representanter). Det er én beslutning,
-        ikke to, så vi teller hendelsen én gang og holder speilbildet utenfor
+        Ved <em>alternativ votering</em>, altså at salen velger mellom to
+        alternativer, for eksempel komiteens innstilling og et
+        mindretallsforslag, registrerer Stortingets datatjeneste én avstemning
+        som to speilvendte voteringer (63–38 og 38–63, med samme
+        representanter). Siden det er én beslutning og ikke to, teller vi
+        hendelsen én gang og holder speilbildet utenfor
         {meta?.alternativ_speil ? ` (${formatN(meta.alternativ_speil)} voteringer)` : ""}.
       </p>
       <p>
-        <strong>Én votering teller én gang, uansett hvor mange forslag den
-        omfatter.</strong> For å spare tid setter presidenten ofte forslag som
-        hører sammen og ventes å få samme utfall, under ett – «forslagene
-        nr. 1–7 fra SV, R og MDG» avgjøres da i én avstemning. Vi teller
-        avstemninger, ikke forslag: én votering i referatet er én rad i
-        tallene, og alt kan etterprøves ved å telle i referatet. Statistikk
-        som i stedet teller per forslag – slik nettstedet Holder de ord
-        gjorde – vekter annerledes og gir derfor andre tall enn våre.
+        <strong>Én votering teller én gang, uavhengig av hvor mange forslag
+        den omfatter.</strong> Presidenten sparer ofte tid ved å sette forslag
+        som hører sammen, og som ventes å få samme utfall, under ett:
+        «Forslagene nr. 1–7 fra SV, R og MDG» avgjøres da i én avstemning.
+        Metoden vår teller avstemninger, ikke forslag. Én votering i referatet
+        er lik én rad i tallene, og alt kan etterprøves ved å sammenligne med
+        referatet. Teller man i stedet per forslag, slik nettstedet Holder de
+        ord gjorde, vektes voteringene annerledes, og tallene blir andre enn
+        våre.
       </p>
 
       <h3>Hva er et partis standpunkt?</h3>
@@ -246,21 +247,20 @@ export default function MethodPage() {
         <a href="https://github.com/Leftovergoldennuggets/hvastemmerdepa">
           github.com/Leftovergoldennuggets/hvastemmerdepa
         </a>
-        . Hvem som helst kan kjøre analysen på nytt fra Stortingets rådata og
-        få de samme tallene – oppskriften står i kodearkivet, sammen med
-        kvalitetskontrollhistorikken og testene. Datafilene siden bygger på
-        kan lastes ned direkte – se <a href="#/data">Åpne data</a>.
+        . Alle kan kjøre analysen på nytt fra Stortingets rådata og få de
+        samme tallene. Oppskriften ligger i kodearkivet sammen med
+        kvalitetskontrollhistorikken og testene. Datafilene siden er bygd på,
+        kan lastes ned direkte under <a href="#/data">Åpne data</a>.
       </p>
       <p>
         Én sesjon skiller seg ut i datagrunnlaget: 2013–2014 har uvanlig få
-        registrerte voteringer (284, mot 705–2 429 i andre sesjoner). Det er
-        reell parlamentarisk adferd i det første året etter regjeringsskiftet
-        i 2013, ikke manglende data – nivået ble{" "}
+        registrerte voteringer (284, mot 705–2 429 i andre sesjoner). Dette er
+        ikke manglende data, men reell parlamentarisk adferd det første året
+        etter regjeringsskiftet i 2013. Dagsavisen og Holder de ord{" "}
         <a href="https://www.dagsavisen.no/nyheter/innenriks/2014/08/05/skulker-naer-en-av-to-voteringer-pa-stortinget/">
-          målt til det samme i sanntid
+          målte nivået til det samme i sanntid
         </a>{" "}
-        av Dagsavisen og Holder de ord i august 2014, og er bekreftet mot
-        uavhengige arkiver.
+        i august 2014, og det er bekreftet mot uavhengige arkiver.
       </p>
     </div>
   );

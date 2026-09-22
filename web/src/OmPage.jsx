@@ -14,15 +14,15 @@ export default function OmPage() {
         endrer det seg med skiftende regjeringer.
       </p>
       <p>
-        Målet er at velgere, journalister og forskere enkelt skal kunne
-        ettergå hva partiene faktisk gjør – ikke bare hva de sier. Derfor er
-        åpenhet bærende: metoden er dokumentert i sin helhet, hver eneste
-        votering lenker til kilden hos stortinget.no, og all kode og alle
-        data er{" "}
+        Målet er å gjøre det enkelt for journalister, velgere og forskere å
+        ettergå hva partiene faktisk gjør, og ikke bare hva de sier. Derfor er
+        transparens avgjørende: Metoden er dokumentert i sin helhet, alle
+        voteringer lenker til kilden på stortinget.no, og all kode og alle
+        data ligger{" "}
         <a href="https://github.com/Leftovergoldennuggets/hvastemmerdepa">
-          åpne på GitHub
-        </a>{" "}
-        slik at beregningene kan reproduseres fra Stortingets rådata.
+          åpent på GitHub
+        </a>
+        , slik at beregningene kan reproduseres fra Stortingets rådata.
       </p>
       <p>
         Nettstedet oppdateres automatisk hver morgen med nye voteringer fra
