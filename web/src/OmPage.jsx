@@ -75,7 +75,7 @@ export default function OmPage() {
         </div>
       </div>
 
-      <h3>KI og menneskelig kvalitetssikring</h3>
+      <h3>Bruk av KI</h3>
       <p>
         Koden er skrevet med KI-assistanse (Claude). For å sikre at koden er
         riktig, har jeg bygd inn flere kontrollmekanismer. Tallene verifiseres
