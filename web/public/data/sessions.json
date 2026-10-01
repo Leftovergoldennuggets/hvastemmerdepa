@@ -709,13 +709,63 @@
  },
  {
   "sesjon": "2025-2026",
-  "saker": 664,
-  "voteringer": 2073,
+  "saker": 663,
+  "voteringer": 2075,
   "recorded": 1796,
   "counted": 1714,
   "alternativ_speil": 51,
-  "enstemmig": 276,
-  "uten_anlegg": 277,
+  "enstemmig": 278,
+  "uten_anlegg": 279,
+  "pending_backfill": 0,
+  "verify_mismatches": 0,
+  "partier": [
+   {
+    "id": "A",
+    "navn": "Arbeiderpartiet"
+   },
+   {
+    "id": "FrP",
+    "navn": "Fremskrittspartiet"
+   },
+   {
+    "id": "H",
+    "navn": "Høyre"
+   },
+   {
+    "id": "SV",
+    "navn": "Sosialistisk Venstreparti"
+   },
+   {
+    "id": "Sp",
+    "navn": "Senterpartiet"
+   },
+   {
+    "id": "R",
+    "navn": "Rødt"
+   },
+   {
+    "id": "MDG",
+    "navn": "Miljøpartiet De Grønne"
+   },
+   {
+    "id": "KrF",
+    "navn": "Kristelig Folkeparti"
+   },
+   {
+    "id": "V",
+    "navn": "Venstre"
+   }
+  ]
+ },
+ {
+  "sesjon": "2026-2027",
+  "saker": 136,
+  "voteringer": 0,
+  "recorded": 0,
+  "counted": 0,
+  "alternativ_speil": 0,
+  "enstemmig": 0,
+  "uten_anlegg": 0,
   "pending_backfill": 0,
   "verify_mismatches": 0,
   "partier": [
