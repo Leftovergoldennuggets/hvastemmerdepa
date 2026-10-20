@@ -56,6 +56,9 @@ def main():
             targets += [RAW / "voteringer" / f"{s['id']}.json.gz" for s in saker]
         targets += [saker_file, RAW / "partier" / f"{sesjon}.json.gz"]
 
+    # Saker som lever over sesjonsskiftet står i begge sakslistene i oktober,
+    # så samme voteringsfil kan dukke opp to ganger — slett den bare én gang.
+    targets = list(dict.fromkeys(targets))
     existing = [t for t in targets if t.exists()]
     print(f"refresh_current: {len(existing)} files to refetch "
           f"(sessions {current_sessions(today)}, periode {current_period(today)})"
@@ -64,7 +67,7 @@ def main():
         if dry:
             print(f"  would delete {t.relative_to(RAW)}")
         else:
-            t.unlink()
+            t.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":
