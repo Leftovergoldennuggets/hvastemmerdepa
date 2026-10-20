@@ -760,12 +760,12 @@
  {
   "sesjon": "2026-2027",
   "saker": 195,
-  "voteringer": 60,
+  "voteringer": 61,
   "recorded": 56,
   "counted": 56,
   "alternativ_speil": 0,
-  "enstemmig": 4,
-  "uten_anlegg": 4,
+  "enstemmig": 5,
+  "uten_anlegg": 5,
   "pending_backfill": 0,
   "verify_mismatches": 0,
   "partier": [
