@@ -90,7 +90,7 @@ export default function PeoplePage() {
               return (
                 <tr key={id}>
                   <td>
-                    <a className="party-key" href={`#/parti/${id}`}>
+                    <a className="party-key" href={`/parti/${id}`}>
                       <Logo party={p} /> {p.navn}
                     </a>
                   </td>

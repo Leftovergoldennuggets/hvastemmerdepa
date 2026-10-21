@@ -248,7 +248,7 @@ export default function MethodPage() {
         hver eneste publisering. I tillegg har to utviklere uavhengig
         gjennomgått koden, og begge klarte å gjenskape de publiserte tallene
         fra Stortingets rådata. Oppdager du likevel noe som ser feil ut, ta
-        gjerne kontakt (se <a href="#/om">Om prosjektet</a>). Jeg ønsker at koden skal være riktig.
+        gjerne kontakt (se <a href="/om">Om prosjektet</a>). Jeg ønsker at koden skal være riktig.
       </p>
 
       <h3>Etterprøv oss</h3>
@@ -262,7 +262,7 @@ export default function MethodPage() {
         . Alle kan kjøre analysen på nytt fra Stortingets rådata og få de
         samme tallene. Oppskriften ligger i kodearkivet sammen med
         kvalitetskontrollhistorikken og testene. Datafilene siden er bygd på,
-        kan lastes ned direkte under <a href="#/data">Åpne data</a>.
+        kan lastes ned direkte under <a href="/apne-data">Åpne data</a>.
       </p>
       <p>
         Én sesjon skiller seg ut i datagrunnlaget: 2013–2014 har uvanlig få

@@ -89,7 +89,7 @@ export default function PartyView({ index, party }) {
             <li key={r.other.id}>
               <a
                 className="rank-row"
-                href={`#/par/${party.id}/${r.other.id}`}
+                href={`/par/${party.id}/${r.other.id}`}
                 onMouseMove={(e) => setTip({ x: e.clientX, y: e.clientY, ...r })}
                 onMouseLeave={() => setTip(null)}
               >

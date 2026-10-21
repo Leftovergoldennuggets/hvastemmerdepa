@@ -118,7 +118,7 @@ Du har tilgang til GitHub-repoet. Alt du trenger ligger der:
 
 Ferdige kontrollspørsmål du kan gi din Claude:
 
-1. *«Les metodesiden på hvastemmerde.no/#/metodikk. Regn deretter ut
+1. *«Les metodesiden på hvastemmerde.no/metodikk. Regn deretter ut
    Ap×Høyre-enigheten for 2023–2024 direkte fra data/computed/positions/
    2023-2024.json — uten å se på pipeline-koden — og sammenlign med tallet i
    data/computed/matrix/2023-2024.json.»* (Replikasjonstesten: får din Claude

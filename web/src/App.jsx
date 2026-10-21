@@ -16,24 +16,38 @@ import Salkart from "./Salkart.jsx";
 import { medHistorikk } from "./komiteer.js";
 import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag, fetchJSON } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
+import { parsePath, pathFromLegacyHash, seo, SITE } from "./routes.js";
 
-// Hash routing keeps every view shareable: #/par/R/FrP and #/parti/R are permalinks.
-function parseHash() {
-  const h = window.location.hash;
-  if (h.startsWith("#/metodikk")) return { view: "method" };
-  if (h.startsWith("#/forsta")) return { view: "forsta" };
-  if (h.startsWith("#/om")) return { view: "om" };
-  if (h.startsWith("#/data")) return { view: "data" };
-  if (h.startsWith("#/splittelser")) return { view: "splits" };
-  if (h.startsWith("#/hvem")) return { view: "people" };
-  if (h.startsWith("#/gjennomslag")) return { view: "gjennomslag" };
-  const party = h.match(/^#\/parti\/([\wÆØÅæøå]+)/);
-  if (party) return { view: "party", party: partyOrFallback(party[1]) };
-  const pair = h.match(/^#\/par\/([\wÆØÅæøå]+)\/([\wÆØÅæøå]+)/);
-  if (pair && pair[1] !== pair[2]) {
-    return { view: "pair", a: partyOrFallback(pair[1]), b: partyOrFallback(pair[2]) };
-  }
-  return { view: "matrix" };
+// Real paths (/par/R/FrP, /parti/R) so every view is a permalink that search
+// engines index on its own. Old #/-links are rewritten in place on load.
+function initialRoute() {
+  const legacy = pathFromLegacyHash(window.location.hash);
+  if (legacy) window.history.replaceState(null, "", legacy);
+  return parsePath(window.location.pathname);
+}
+
+function navigate(path) {
+  if (path !== window.location.pathname) window.history.pushState(null, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
+// Internal links are plain <a href="/…">; clicks on them are handled here
+// instead of reloading the page. Data files, images and anything opened in a
+// new tab or with a modifier key are left to the browser.
+function interceptLink(e) {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest && e.target.closest("a[href]");
+  if (!a || a.target || a.hasAttribute("download")) return;
+  const url = new URL(a.href, window.location.href);
+  if (url.origin !== window.location.origin) return;
+  if (/^\/(data|fotos|logos)\//.test(url.pathname) || /\.\w+$/.test(url.pathname)) return;
+  e.preventDefault();
+  navigate(url.pathname);
+}
+
+function setHead(selector, attr, value) {
+  const el = document.head.querySelector(selector);
+  if (el) el.setAttribute(attr, value);
 }
 
 function Menu({ inline = false }) {
@@ -50,14 +64,14 @@ function Menu({ inline = false }) {
       </button>
       {open && (
         <div className="menu-panel" onClick={() => setOpen(false)}>
-          <a href="#/">Hjem</a>
-          <a href="#/splittelser">Splittelser</a>
-          <a href="#/gjennomslag">Gjennomslag</a>
-          <a href="#/hvem">Hvem er de?</a>
-          <a href="#/forsta">Hvordan forstå tallene</a>
-          <a href="#/metodikk">Metode</a>
-          <a href="#/data">Åpne data</a>
-          <a href="#/om">Om prosjektet</a>
+          <a href="/">Hjem</a>
+          <a href="/splittelser">Splittelser</a>
+          <a href="/gjennomslag">Gjennomslag</a>
+          <a href="/hvem">Hvem er de?</a>
+          <a href="/forsta">Hvordan forstå tallene</a>
+          <a href="/metodikk">Metode</a>
+          <a href="/apne-data">Åpne data</a>
+          <a href="/om">Om prosjektet</a>
         </div>
       )}
     </nav>
@@ -90,11 +104,11 @@ function HomeSalkart() {
         fordelt på kjønn, alder og erfaring, og hvor i landet representantene
         kommer fra.
       </p>
-      <a className="home-salkart" href="#/hvem" aria-label="Se hvem representantene er">
+      <a className="home-salkart" href="/hvem" aria-label="Se hvem representantene er">
         <Salkart representanter={reps} interactive={false} />
       </a>
       <p className="see-also">
-        <a href="#/hvem">Se hvem de er – kjønn, alder og erfaring ›</a>
+        <a href="/hvem">Se hvem de er – kjønn, alder og erfaring ›</a>
       </p>
     </section>
   );
@@ -118,7 +132,7 @@ function HomeSplits() {
           const p = partyOrFallback(s.parti);
           return (
             <li key={`${s.vid}-${s.parti}`}>
-              <a href="#/splittelser">
+              <a href="/splittelser">
                 <span className="hs-dato">{s.dato ? formatDate(s.dato) : ""}</span>
                 <span className="hs-parti">
                   <span className="logo-tile" style={{ width: 22, height: 22 }}>
@@ -138,7 +152,7 @@ function HomeSplits() {
         })}
       </ol>
       <p className="see-also">
-        <a href="#/splittelser">Alle splittelser siden 2011 ›</a>
+        <a href="/splittelser">Alle splittelser siden 2011 ›</a>
       </p>
     </section>
   );
@@ -171,7 +185,7 @@ function HomeOm() {
             journalistikk eller annet, mot kreditering.
           </p>
           <p className="see-also" style={{ textAlign: "left" }}>
-            <a href="#/om">Mer om prosjektet og hvem som står bak ›</a>
+            <a href="/om">Mer om prosjektet og hvem som står bak ›</a>
           </p>
         </div>
       </div>
@@ -211,7 +225,7 @@ function HomeGjennomslag({ sessions, label }) {
       <ol className="ranking gj-ranking">
         {ranking.map((r) => (
           <li key={r.party.id}>
-            <a className="gj-row" href="#/gjennomslag">
+            <a className="gj-row" href="/gjennomslag">
               <span className="gj-label">
                 <span className="logo-tile" style={{ width: 26, height: 26 }}>
                   {r.party.logo ? (
@@ -237,7 +251,7 @@ function HomeGjennomslag({ sessions, label }) {
         ))}
       </ol>
       <p className="see-also">
-        <a href="#/gjennomslag">Hele bildet – og hvorfor tallene er så lave ›</a>
+        <a href="/gjennomslag">Hele bildet – og hvorfor tallene er så lave ›</a>
       </p>
     </section>
   );
@@ -257,7 +271,7 @@ function Credit({ meta, full }) {
 
 export default function App() {
   const [index, setIndex] = useState(null);
-  const [route, setRoute] = useState(parseHash);
+  const [route, setRoute] = useState(initialRoute);
   const [meta, setMeta] = useState(null);
   const { periods, selection, setSelection, selectedSessions, label, totalVotes } =
     useTimeSelection(index);
@@ -277,10 +291,27 @@ export default function App() {
   useEffect(() => { komiteerData().then((d) => setKomiteNavn(medHistorikk(d))).catch(() => {}); }, []);
 
   useEffect(() => {
-    const onHash = () => { setRoute(parseHash()); window.scrollTo(0, 0); };
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
+    const onPop = () => { setRoute(parsePath(window.location.pathname)); window.scrollTo(0, 0); };
+    window.addEventListener("popstate", onPop);
+    document.addEventListener("click", interceptLink);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      document.removeEventListener("click", interceptLink);
+    };
   }, []);
+
+  // Keep the tab title and share tags in step with the view. The prerendered
+  // HTML already has the right values on first load; this covers in-app
+  // navigation.
+  useEffect(() => {
+    const s = seo(route);
+    document.title = s.title;
+    setHead('meta[name="description"]', "content", s.description);
+    setHead('link[rel="canonical"]', "href", SITE + s.path);
+    setHead('meta[property="og:url"]', "content", SITE + s.path);
+    setHead('meta[property="og:title"]', "content", s.title);
+    setHead('meta[property="og:description"]', "content", s.description);
+  }, [route]);
 
   useEffect(() => {
     if (!selectedSessions.length) return;
@@ -308,14 +339,14 @@ export default function App() {
     <div className="shell">
       {route.view !== "matrix" ? (
         <div className="topbar">
-          <a href="#/">← Til forsiden</a>
+          <a href="/">← Til forsiden</a>
           <Menu inline />
         </div>
       ) : (
         <Menu />
       )}
       <header className="masthead">
-        <h1><a href="#/">Hva stemmer de?</a></h1>
+        <h1><a href="/">Hva stemmer de?</a></h1>
       </header>
 
       {!index || !selection ? (
@@ -369,7 +400,7 @@ export default function App() {
             hentet fra Stortingets egne voteringsdata og oppdateres daglig.
             De inkluderer bare voteringer der Stortinget delte seg, siden
             enstemmige vedtak ikke registreres i voteringsanlegget.{" "}
-            <a href="#/forsta">Slik leser du tallene ›</a>
+            <a href="/forsta">Slik leser du tallene ›</a>
           </p>
 
           <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
@@ -392,15 +423,15 @@ export default function App() {
 
           <p className="tap-hint">
             Trykk på en rute for å sammenligne to partier – prøv f.eks.{" "}
-            <a href="#/par/R/FrP">Rødt × FrP</a> eller{" "}
-            <a href="#/par/A/H">Ap × Høyre</a>.
+            <a href="/par/R/FrP">Rødt × FrP</a> eller{" "}
+            <a href="/par/A/H">Ap × Høyre</a>.
           </p>
 
           {shownMatrix ? (
             <Matrix
               matrix={shownMatrix}
               label={tema ? `${label} (${komiteNavn[tema] || tema})` : label}
-              onSelect={(a, b) => { window.location.hash = `/par/${a.id}/${b.id}`; }}
+              onSelect={(a, b) => navigate(`/par/${a.id}/${b.id}`)}
             />
           ) : loadError ? (
             <div className="loading">
@@ -472,7 +503,7 @@ export default function App() {
               {PARTIES.filter((p) =>
                 matrix && [...matrix.keys()].some((k) => k.split("|").includes(p.id))
               ).map((p) => (
-                <a key={p.id} className="party-chip" href={`#/parti/${p.id}`}>
+                <a key={p.id} className="party-chip" href={`/parti/${p.id}`}>
                   <span className="logo-tile" style={{ width: 24, height: 24 }}>
                     <img src={p.logo} alt="" loading="lazy" />
                   </span>

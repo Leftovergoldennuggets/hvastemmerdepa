@@ -65,7 +65,7 @@ export default function Matrix({ matrix, label, onSelect }) {
               <th aria-hidden="true"></th>
               {cols.map((p) => (
                 <th key={p.id} scope="col">
-                  <a className="party-key col" href={`#/parti/${p.id}`}>
+                  <a className="party-key col" href={`/parti/${p.id}`}>
                     <Logo party={p} />
                     {p.kort}
                   </a>
@@ -77,7 +77,7 @@ export default function Matrix({ matrix, label, onSelect }) {
             {rows.map((rowP, ri) => (
               <tr key={rowP.id}>
                 <th scope="row">
-                  <a className="party-key" href={`#/parti/${rowP.id}`}>
+                  <a className="party-key" href={`/parti/${rowP.id}`}>
                     <Logo party={rowP} />
                     <span className="party-name">{rowP.kort}</span>
                   </a>

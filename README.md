@@ -62,14 +62,14 @@ trenger du ikke kjøre noe som helst:
   for/mot-stemmetall, og `matrix/<sesjon>.json` har parvise enighetstall
   (`agree` av `total` felles voteringer).
 - **Feltforklaringer** for alle filene står på nettstedets
-  [Åpne data-side](https://hvastemmerde.no/#/data) – inkludert
+  [Åpne data-side](https://hvastemmerde.no/apne-data) – inkludert
   ekskluderingskodene og hva som telles.
 - **CSV**: hver visning på nettstedet har en «Last ned som CSV»-knapp.
 - **Rådataene** (alt fra Stortingets API, uendret, 148 MB) ligger som
   release-en [raw-seed](../../releases/tag/raw-seed) – last den ned og kjør
   `python3 pipeline/analyse.py` for å reprodusere alle tall selv.
 - **Hvordan tallene skal tolkes** (og ikke tolkes) står på nettstedets
-  [metodeside](https://hvastemmerde.no/#/metodikk) – kortversjon:
+  [metodeside](https://hvastemmerde.no/metodikk) – kortversjon:
   tallene måler hvor ofte partiene *stemte likt*, aldri hvor «enige» de er.
 
 ## Kilder og lisens

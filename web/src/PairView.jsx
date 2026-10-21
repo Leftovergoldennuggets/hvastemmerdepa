@@ -542,9 +542,9 @@ export default function PairView({ index, a, b }) {
           </p>
         )}
         <p className="see-also">
-          <a href={`#/parti/${a.id}`}>Hvem stemmer {a.kort} med? →</a>
+          <a href={`/parti/${a.id}`}>Hvem stemmer {a.kort} med? →</a>
           {" · "}
-          <a href={`#/parti/${b.id}`}>Hvem stemmer {b.kort} med? →</a>
+          <a href={`/parti/${b.id}`}>Hvem stemmer {b.kort} med? →</a>
         </p>
       </div>
       {series ? <TimeSeries series={series} a={a} b={b} /> : <div className="loading">Laster …</div>}

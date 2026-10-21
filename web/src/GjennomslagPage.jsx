@@ -69,7 +69,7 @@ export default function GjennomslagPage({ index }) {
         <ol className="ranking gj-ranking">
           {ranking.map((r) => (
             <li key={r.party.id}>
-              <a className="gj-row" href={`#/parti/${r.party.id}`}>
+              <a className="gj-row" href={`/parti/${r.party.id}`}>
                 <span className="gj-label">
                   <Logo party={r.party} />
                   <span>
@@ -138,7 +138,7 @@ export default function GjennomslagPage({ index }) {
           politikken deres ligger allerede i komitéinnstillingene som vedtas.
           Tallene måler derfor først og fremst hvor ofte et parti vinner frem
           når det utfordrer flertallet, og må leses sammen med hvem som satt i
-          regjering. Detaljene står på <a href="#/metodikk">metodesiden</a>.
+          regjering. Detaljene står på <a href="/metodikk">metodesiden</a>.
         </p>
         <p>
           Forskjellen på flertalls- og mindretallsregjering er dramatisk: I

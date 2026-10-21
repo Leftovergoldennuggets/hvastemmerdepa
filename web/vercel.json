@@ -1,4 +1,5 @@
 {
+  "cleanUrls": true,
   "headers": [
     {
       "source": "/(.*)",
@@ -55,6 +56,12 @@
       ],
       "destination": "https://hvastemmerde.no/$1",
       "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!data/|assets/|fotos/|logos/|_vercel/).*)",
+      "destination": "/index.html"
     }
   ]
 }

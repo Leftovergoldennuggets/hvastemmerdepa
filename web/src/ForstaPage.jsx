@@ -50,7 +50,7 @@ export default function ForstaPage() {
 
       <p>
         Vil du vite nøyaktig hvordan alt beregnes?{" "}
-        <a href="#/metodikk">Les hele metoden</a>.
+        <a href="/metodikk">Les hele metoden</a>.
       </p>
     </div>
   );

@@ -87,7 +87,7 @@ export default function DataPage() {
         (NLOD-lisens; Stortinget er kilde). Våre beregnede filer kan
         gjenbrukes fritt med kreditering av både Stortinget (rådata) og
         dette nettstedet (beregningene). Metoden er dokumentert på{" "}
-        <a href="#/metodikk">metodesiden</a>, og alle metodeendringer føres i
+        <a href="/metodikk">metodesiden</a>, og alle metodeendringer føres i
         prosjektets endringslogg.
         {meta && (
           <> Datagrunnlaget dekker {formatN(meta.recorded_votes)} registrerte

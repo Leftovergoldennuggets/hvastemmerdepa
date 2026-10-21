@@ -108,9 +108,21 @@ export default function OmPage() {
         brukt under <a href="https://data.norge.no/nlod/no/2.0">NLOD-lisensen</a>.
         Partilogoene tilhører de respektive partiene og brukes redaksjonelt.
       </p>
+
+      <h3>Personvern</h3>
       <p>
-        Se også: <a href="#/metodikk">Metode</a> ·{" "}
-        <a href="#/forsta">Hvordan forstå tallene</a>
+        Nettstedet bruker ikke informasjonskapsler (cookies), og det er ingen
+        sporing fra Google, Meta eller annonsenettverk. For å vite hvor mange
+        som bruker siden, teller jeg sidevisninger med Vercel Web Analytics.
+        Verktøyet registrerer hvilke sider som besøkes, hvilken side
+        besøkende kom fra, land og type enhet, men lagrer ikke IP-adresser og
+        kjenner ikke igjen enkeltbesøkende fra dag til dag. Som for alle
+        nettsteder behandler driftsleverandøren (Vercel) teknisk informasjon
+        som IP-adresse for å kunne levere sidene.
+      </p>
+      <p>
+        Se også: <a href="/metodikk">Metode</a> ·{" "}
+        <a href="/forsta">Hvordan forstå tallene</a>
       </p>
     </div>
   );
