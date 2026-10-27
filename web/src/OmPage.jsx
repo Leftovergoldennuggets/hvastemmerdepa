@@ -77,16 +77,20 @@ export default function OmPage() {
 
       <h3>Bruk av KI</h3>
       <p>
-        Koden er skrevet med KI-assistanse (Claude). For å sikre at koden er
-        riktig, har jeg bygd inn flere kontrollmekanismer. Tallene verifiseres
-        mot Stortingets offisielle stemmetall, og de er kryssjekket mot det
-        uavhengige Voteringsarkivet hos Sikt. Koden er også kvalitetssjekket
-        opp mot metoden i nettstedet Holder de ords offentlige kildekode. I
-        koden ligger en testsuite med fasit fra stortinget.no som kjøres før
-        hver eneste publisering. I tillegg har to utviklere uavhengig
-        gjennomgått koden, og begge klarte å gjenskape de publiserte tallene
-        fra Stortingets rådata. Oppdager du likevel noe som ser feil ut, ta
-        gjerne kontakt. Jeg ønsker at koden skal være riktig.
+        Koden er skrevet med KI-assistanse (Claude). For å sikre at tallene
+        er riktige, har jeg bygd inn flere kontrollmekanismer. Tallene
+        verifiseres mot Stortingets offisielle stemmetall, og datagrunnlaget
+        er kryssjekket mot det uavhengige Voteringsarkivet hos Sikt. Metoden
+        er sjekket opp mot Holder de ords åpne kildekode. I koden ligger en
+        testsuite der fasiten kommer fra stortinget.no og fra fiktive
+        eksempler som kan regnes for hånd, og den kjøres før hver eneste
+        publisering. I tillegg har en uavhengig utvikler kjørt hele
+        beregningen på nytt fra Stortingets rådata, uten min medvirkning, og
+        fått nøyaktig de samme tallene som nettstedet viser; rapporten ligger
+        åpent i kodearkivet. To andre utviklere har gått gjennom koden og
+        gitt innspill som er fulgt opp, blant annet forslaget om testsuiten.
+        Oppdager du likevel noe som ser feil ut, ta gjerne kontakt. Jeg
+        ønsker at koden skal være riktig.
       </p>
 
       <h3>Takk og inspirasjon</h3>

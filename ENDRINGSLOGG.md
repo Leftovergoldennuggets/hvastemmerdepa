@@ -3,6 +3,20 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-10-27 — Presisering av den menneskelige kvalitetssikringen
+
+- **Rettet (kun tekst, Om-siden og metodesiden):** nettstedet sa at «to
+  utviklere uavhengig gjennomgått koden, og begge klarte å gjenskape de
+  publiserte tallene». Det var upresist. Én uavhengig utvikler (gjennomgang
+  #2, 31. aug., RAPPORT-KODEGJENNOMGANG.md) kjørte hele beregningen på nytt
+  fra rådata og reproduserte tallene byte-identisk. Kodegjennomgang #1
+  (19. aug.) ga tre innspill om kodehygiene og dokumentasjon som ble fulgt
+  opp, men validerte ikke beregningen; gjennomgåeren sa selv at tiden ikke
+  strakk til. En tredje utvikler foreslo testsuiten (issue #6) uten å
+  gjennomgå beregningen. Setningen i innslaget 13. sep. nedenfor («to
+  uavhengige gjennomganger, begge reproduserte tallene») skal derfor leses
+  som: én gjennomgang reproduserte tallene. Ingen tall er berørt.
+
 ## 2026-10-27 — Verifiseringstallet på metodesiden var én for høyt
 
 - **Rettet (publish.py, kun metadata):** metodesiden regner «stemmer
