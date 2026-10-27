@@ -46,7 +46,11 @@ for s in sessions:
     for row in json.loads((SRC / "positions" / f"{s['sesjon']}.json").read_text()):
         if row["verified"] is False:
             mismatches.append({"vid": row["vid"], "dato": row["dato"], "tittel": row["tittel"]})
-        if row["excluded"] == "data_pending":
+        # verified is None exactly when the API returned no individual votes.
+        # Test on that, not on excluded == "data_pending": a mirror twin of
+        # such a vote is excluded as "alternativ_speil" instead, yet it can
+        # no more be verified than its twin (votering 21554, found Oct 2026).
+        if row["verified"] is None:
             pending.append({"vid": row["vid"], "dato": row["dato"], "tittel": row["tittel"]})
         if not row["excluded"]:
             for parti, (f, m) in row["partier"].items():

@@ -3,7 +3,7 @@
 Dette dokumentet er skrevet for deg som skal vurdere prosjektet uten å kjenne
 det fra før. Det forklarer hva nettstedet gjør, hvilke metodevalg som er tatt
 og hvorfor, hvilke kontroller som er gjennomført, og — viktigst — hvordan du
-selv kan etterprøve alt, med eller uten koding. Sist oppdatert 27. august 2026.
+selv kan etterprøve alt, med eller uten koding. Sist oppdatert 27. oktober 2026.
 
 ## Hva prosjektet er
 
@@ -48,7 +48,7 @@ metoden føres i [ENDRINGSLOGG.md](ENDRINGSLOGG.md).
 
 | Når | Kontroll | Resultat |
 |---|---|---|
-| Løpende, hver kjøring | **Egen-verifisering**: for hver votering summeres enkeltstemmene og sammenlignes med Stortingets offisielle for/mot-tall | 19 605 av 19 620 stemmer eksakt; de 3 avvikene (mai 2025, 1–2 stemmer) og 11 voteringer med tomme individdata er opplyst på metodesiden |
+| Løpende, hver kjøring | **Egen-verifisering**: for hver votering summeres enkeltstemmene og sammenlignes med Stortingets offisielle for/mot-tall | 19 661 av 19 676 stemmer eksakt (okt. 2026); de 3 avvikene (mai 2025, 1–2 stemmer) og 12 voteringer med tomme individdata er opplyst på metodesiden |
 | 2. juli 2026 | **Stemmekodene verifisert empirisk** (1 = ikke til stede, 2 = for, 3 = mot) mot offisielle tall | Bekreftet over samtlige 3,3 mill. enkeltstemmer; kun kodene 1/2/3 forekommer |
 | 31. aug 2026 | **Uavhengig gjennomgang #2** (ekstern utvikler): full re-kjøring fra rådata, mutasjonstesting, API-stikkprøver, hosting-målinger (RAPPORT-KODEGJENNOMGANG.md) | «Tallene på nettstedet er riktige» — byte-identisk reproduksjon; 7/7 stikkprøver stemte; funnene gjaldt fremtidig drift og er fulgt opp (se ENDRINGSLOGG) |
 | 22.–23. juli 2026 | **Full revisjon** av kode og data ([AUDIT.md](AUDIT.md)): alle funn etterprøvd empirisk, rangert etter alvor | Hovedfunn: speilvoteringer ble telt dobbelt (rettet samme dag; effekt ≤ 1 prosentpoeng), gjennomslag manglet én forslagsform (rettet), tre faktafeil på metodesiden (rettet). Alt dokumentert med målt effekt |
@@ -138,7 +138,7 @@ Ferdige kontrollspørsmål du kan gi din Claude:
 - **3 voteringer** (mai 2025) der enkeltstemmene ikke summerer til de
   offisielle tallene (avvik 1–2 stemmer). Ligger i Stortingets kildedata;
   opplyst på metodesiden; spørsmål sendt Stortinget.
-- **11 voteringer** har offisielle tall, men tomme enkeltstemme-data i API-et
+- **12 voteringer** har offisielle tall, men tomme enkeltstemme-data i API-et
   — inkludert de politisk følsomme Palestina-voteringene 16. nov 2023. De
   holdes utenfor og er listet på metodesiden; årsaken er et åpent spørsmål
   til Stortinget.

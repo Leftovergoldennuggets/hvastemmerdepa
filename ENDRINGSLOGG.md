@@ -3,6 +3,22 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-10-27 — Verifiseringstallet på metodesiden var én for høyt
+
+- **Rettet (publish.py, kun metadata):** metodesiden regner «stemmer
+  eksakt» som registrerte voteringer minus avvik minus voteringer uten
+  individdata. Listen over voteringer uten individdata (`data_pending` i
+  meta.json) ble bygget av ekskluderingskoden, og votering 21554 (16. nov.
+  2023, speiltvilling av 21553 i Palestina-saken) falt utenfor: den mangler
+  enkeltstemmer, men er ekskludert som `alternativ_speil`, som har forrang.
+  Listen bygges nå av `verified`-feltet (tomt = ikke verifiserbar) og
+  omfatter 12 voteringer, ikke 11. Verifiseringstallet blir dermed 19 661
+  av 19 676 (før: 19 662). Ingen enighetstall, matriser eller
+  ekskluderinger er berørt — raden var allerede holdt utenfor prosentene.
+- Funnet ved en uavhengig omregning av alle publiserte tall fra
+  positions-filene (27. okt.): alle 16 matriser, regjeringsperioder,
+  splittelser og øvrige meta-tall ble reprodusert eksakt.
+
 ## 2026-09-13 — Oppfølging av uavhengig gjennomgang #2 (RAPPORT-KODEGJENNOMGANG.md)
 
 Gjennomgangen (31. aug) reproduserte alle tall byte-identisk fra rådata og
