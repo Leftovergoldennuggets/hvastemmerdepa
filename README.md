@@ -28,9 +28,14 @@ Tester: `python3 -m unittest discover -s pipeline/tests`
 ```
 pipeline/fetch.py     Laster ned alle rådata (gjenopptakbar; respekterer
                       API-grensen på 100 kall/min – FETCH_RATE=900 med fritak)
-pipeline/analyse.py   Beregner partistandpunkter, enighetsmatriser og
+pipeline/analyse.py   Beregner partistandpunkter, «stemte likt»-matriser og
                       regjeringsperiode-tall, med verifisering mot offisielle
                       stemmetall
+pipeline/analyse_gjennomslag.py  Partienes forslag i salen: til votering,
+                      vedtatt, per tema, og listen over vedtatte forslag
+pipeline/analyse_for_mot.py      Bryter «stemte likt» ned i begge for / begge
+                      mot / ulikt per type votering; stopper hvis summen ikke
+                      er lik matrisen
 pipeline/publish.py   Kopierer beregnede data + metadata inn i nettstedet
 web/                  Nettstedet (React + Vite, ingen backend – ren statisk side)
 .github/workflows/    Daglig auto-oppdatering: delta-henting, omregning,
@@ -43,7 +48,12 @@ data/computed/        Beregnede data (gjenskapes med analyse.py)
 
 ```bash
 python3 pipeline/fetch.py      # ~7 timer innenfor API-grensen (én gang)
+python3 pipeline/fetch_personer.py
+python3 pipeline/fetch_fotos.py
 python3 pipeline/analyse.py
+python3 pipeline/analyse_personer.py
+python3 pipeline/analyse_gjennomslag.py
+python3 pipeline/analyse_for_mot.py
 python3 pipeline/publish.py
 cd web && npm install && npm run dev
 ```
@@ -59,8 +69,9 @@ trenger du ikke kjøre noe som helst:
 - **Ferdig beregnede tall** ligger i [`web/public/data/`](web/public/data)
   (samme filer serveres live under `/data/` på nettstedet). Viktigst:
   `positions/<sesjon>.json` har én rad per votering med hvert partis interne
-  for/mot-stemmetall, og `matrix/<sesjon>.json` har parvise enighetstall
-  (`agree` av `total` felles voteringer).
+  for/mot-stemmetall, `matrix/<sesjon>.json` har parvise «stemte
+  likt»-tall (`agree` av `total` felles voteringer), og
+  `for_mot/<sesjon>.json` deler dem opp i begge for / begge mot / ulikt.
 - **Feltforklaringer** for alle filene står på nettstedets
   [Åpne data-side](https://hvastemmerde.no/apne-data) – inkludert
   ekskluderingskodene og hva som telles.

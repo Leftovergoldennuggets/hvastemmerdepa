@@ -82,6 +82,9 @@ jobs:
           python3 pipeline/analyse.py
           python3 pipeline/analyse_personer.py
           python3 pipeline/analyse_gjennomslag.py
+          # Bryter «stemte likt» ned i begge for / begge mot / ulikt og
+          # stopper jobben hvis summen ikke stemmer med matrisen.
+          python3 pipeline/analyse_for_mot.py
 
       - name: Fornuftssjekk mot forrige publisering
         run: python3 pipeline/check_update.py

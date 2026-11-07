@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { medHistorikk } from "./komiteer.js";
-import { pairSeries, loadPositions, erasData, pairEras, aggregateKomite, komiteerData, pairKey, stance, formatN, formatDate, sakUrl } from "./lib.js";
+import { pairSeries, pairForMot, voteTypes, periodOf, loadPositions, erasData, pairEras, aggregateKomite, komiteerData, pairKey, stance, formatN, formatDate, sakUrl } from "./lib.js";
 import { cellColor, cellText, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 
@@ -271,6 +271,11 @@ function useKomitePair(index, a, b) {
 }
 
 const pctStr = (p) => p.toFixed(0);
+
+// Not policy areas: the presidency (procedural matters), the election
+// committee and one-off special committees. Shown in the full table, but
+// never in the one-line summary at the top.
+const IKKE_TEMA = new Set(["PRES", "VALG", "SÆRKOM", "KOR", "EOS"]);
 const senkNavn = (navn) => navn.charAt(0).toLowerCase() + navn.slice(1);
 
 function KomiteTable({ rows }) {
@@ -278,7 +283,7 @@ function KomiteTable({ rows }) {
   return (
     <Fold
       title="Tema for tema"
-      hint="hvor de er mest og minst enige, etter fagkomité"
+      hint="hvor de oftest og sjeldnest stemte likt, etter fagkomité"
     >
       <section className="era-table">
         <ol>
@@ -299,6 +304,131 @@ function KomiteTable({ rows }) {
       </section>
     </Fold>
   );
+}
+
+/* «Stemte likt» split into its parts: did they vote the same by both
+   voting FOR, or by both voting AGAINST (typically a third party's
+   proposal)? From pipeline/analyse_for_mot.py, whose sums are checked
+   against the matrix every night. Alternative voteringer are their own
+   part: there the chamber chooses between two alternatives, so both sides
+   vote for something. */
+function forMotSum(rows) {
+  const t = { bf: 0, bm: 0, u: 0, altLikt: 0, altUlikt: 0 };
+  for (const r of rows) {
+    for (const k of ["innstilling", "forslag", "annet"]) {
+      t.bf += r[k][0]; t.bm += r[k][1]; t.u += r[k][2];
+    }
+    t.altLikt += r.alternativ[0]; t.altUlikt += r.alternativ[1];
+  }
+  t.total = t.bf + t.bm + t.u + t.altLikt + t.altUlikt;
+  return t;
+}
+
+const DELER = [
+  { key: "bf", navn: "Begge for", farge: "#14684F", tekst: "#FFFFFF" },
+  { key: "bm", navn: "Begge mot", farge: "#62A68D", tekst: "#191715" },
+  { key: "altLikt", navn: "Valgte samme alternativ", farge: "#BFD8CE", tekst: "#191715" },
+  { key: "ulikt", navn: "Stemte ulikt", farge: "#E8E6E1", tekst: "#191715" },
+];
+
+const pct1 = (x) => x.toFixed(0);
+
+function ForMotBar({ t, label }) {
+  const verdier = { ...t, ulikt: t.u + t.altUlikt };
+  return (
+    <div
+      className="fm-bar"
+      role="img"
+      aria-label={`${label}: ` + DELER.map((d) =>
+        `${d.navn.toLowerCase()} ${pct1((100 * verdier[d.key]) / t.total)} %`).join(", ")}
+    >
+      {DELER.map((d) => {
+        const andel = (100 * verdier[d.key]) / t.total;
+        if (!verdier[d.key]) return null;
+        return (
+          <span
+            key={d.key}
+            className="fm-del"
+            style={{ flexGrow: verdier[d.key], background: d.farge, color: d.tekst }}
+            title={`${d.navn}: ${formatN(verdier[d.key])} av ${formatN(t.total)} voteringer (${andel.toFixed(1).replace(".", ",")} %)`}
+          >
+            {andel >= 9 ? `${pct1(andel)} %` : ""}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+function ForMotFold({ rows, a, b }) {
+  if (!rows) return null;
+  const perioder = new Map();
+  for (const r of rows) {
+    const p = periodOf(r.sesjon);
+    if (!perioder.has(p)) perioder.set(p, []);
+    perioder.get(p).push(r);
+  }
+  const linjer = [...perioder.entries()]
+    .map(([p, rs]) => ({ p, t: forMotSum(rs) }))
+    .filter((x) => x.t.total > 0)
+    .reverse();
+  if (!linjer.length) return null;
+  return (
+    <Fold
+      title="For eller mot?"
+      hint="stemte de likt ved å stemme for – eller ved å stemme ned noe sammen?"
+      defaultOpen
+    >
+      <section className="fm">
+        <p className="votelist-intro">
+          Å stemme likt kan bety at begge stemte for, eller at begge stemte
+          mot – ofte mot et forslag fra et tredje parti. Stolpene viser
+          hvordan voteringene der begge tok standpunkt, fordeler seg i hver
+          stortingsperiode, nyeste øverst.
+        </p>
+        <ul className="fm-legend" aria-hidden="true">
+          {DELER.map((d) => (
+            <li key={d.key}><span style={{ background: d.farge }} />{d.navn}</li>
+          ))}
+        </ul>
+        <ol className="fm-list">
+          {linjer.map(({ p, t }) => (
+            <li key={p}>
+              <span className="fm-periode">{p}</span>
+              <ForMotBar t={t} label={`${a.kort} og ${b.kort} ${p}`} />
+              <span className="fm-n">{formatN(t.total)}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="empty-note">
+          Tallet til høyre er antall voteringer der begge partiene tok
+          standpunkt. Ved alternativ votering velger salen mellom to forslag,
+          så der stemmer begge sider for noe – de vises for seg. Hold pekeren
+          over en del av stolpen for de nøyaktige tallene.
+        </p>
+      </section>
+    </Fold>
+  );
+}
+
+function StandpunktInnhold({ r, a, b }) {
+  if (r.alt) {
+    return (
+      <span className="vote-varierer">
+        {r.sa === r.sb ? "valgte samme alternativ" : "valgte ulike alternativer"}
+      </span>
+    );
+  }
+  return (
+    <>
+      <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
+      <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
+    </>
+  );
+}
+
+function Standpunkt(props) {
+  return <div className="vote-stances"><StandpunktInnhold {...props} /></div>;
 }
 
 function VoteList({ index, a, b }) {
@@ -324,7 +454,9 @@ function VoteList({ index, a, b }) {
       while (n < newestFirst.length) {
         const matching = have.filter((r) => r.match[filter]).length;
         if (matching >= visible + 1) break;
-        const positions = await loadPositions(newestFirst[n]);
+        const [positions, typer] = await Promise.all([
+          loadPositions(newestFirst[n]), voteTypes(newestFirst[n]),
+        ]);
         n += 1;
         const extra = positions
           .filter((r) => !r.excluded)
@@ -332,7 +464,17 @@ function VoteList({ index, a, b }) {
             const sa = stance(r, a.id);
             const sb = stance(r, b.id);
             if (sa === null || sb === null) return null;
-            return { ...r, sa, sb, match: { uenige: sa !== sb, enige: sa === sb } };
+            // In an alternativ votering both sides vote FOR one of two
+            // alternatives; the API's for/mot side is arbitrary, so these
+            // rows never count as «begge for» or «begge mot».
+            const alt = typer.get(r.vid) === "alternativ";
+            return {
+              ...r, sa, sb, alt,
+              match: {
+                uenige: sa !== sb, enige: sa === sb,
+                beggeFor: !alt && sa && sb, beggeMot: !alt && !sa && !sb,
+              },
+            };
           })
           .filter(Boolean)
           .sort((x, y) => (y.dato || "").localeCompare(x.dato || ""));
@@ -363,7 +505,7 @@ function VoteList({ index, a, b }) {
     try {
       const out = [];
       for (const sesjon of newestFirst) {
-        const positions = await loadPositions(sesjon);
+        const [positions, typer] = await Promise.all([loadPositions(sesjon), voteTypes(sesjon)]);
         for (const r of positions) {
           if (r.excluded) continue;
           const sa = stance(r, a.id);
@@ -371,16 +513,19 @@ function VoteList({ index, a, b }) {
           if (sa === null || sb === null) continue;
           out.push([
             r.dato || "", sesjon, r.sak, r.tittel || "", r.vid, r.tema || "",
+            typer.get(r.vid) || "",
             sa ? "for" : "mot", sb ? "for" : "mot",
-            sa === sb ? "enige" : "uenige", sakUrl(r.sak),
+            sa === sb ? "likt" : "ulikt", sakUrl(r.sak),
           ]);
         }
       }
       out.sort((x, y) => String(y[0]).localeCompare(String(x[0])));
+      // votering_type «alternativ»: for/mot then refers to the API's two
+      // mirrored alternatives, not to support or opposition.
       downloadCsv(
         `voteringer-${a.kort}-${b.kort}.csv`.toLowerCase(),
-        ["dato", "sesjon", "sak_id", "sak", "votering_id", "votering_tema",
-         a.kort.toLowerCase(), b.kort.toLowerCase(), "resultat", "lenke"],
+        ["dato", "sesjon", "sak_id", "sak", "votering_id", "votering_tema", "votering_type",
+         a.kort.toLowerCase(), b.kort.toLowerCase(), "stemte", "lenke"],
         out
       );
     } finally {
@@ -391,14 +536,15 @@ function VoteList({ index, a, b }) {
   return (
     <Fold
       title="Voteringene, én for én"
-      hint="hva uenigheten faktisk handler om"
+      hint="hva de stemte likt og ulikt om"
       defaultOpen
     >
     <section className="votelist">
       <p className="votelist-intro">
         Hver rad er én votering i stortingssalen, nyeste først. Kolonnen til
-        høyre viser hva hvert av partiene stemte. Trykk på saken for å lese
-        den hos stortinget.no.
+        høyre viser hva hvert av partiene stemte. Ved alternativ votering,
+        der salen velger mellom to forslag, står det om de valgte samme
+        alternativ. Trykk på saken for å lese den hos stortinget.no.
       </p>
       <div className="filter-tabs">
         <button className={`tab${filter === "uenige" ? " active" : ""}`} onClick={() => setFilter("uenige")}>
@@ -406,6 +552,12 @@ function VoteList({ index, a, b }) {
         </button>
         <button className={`tab${filter === "enige" ? " active" : ""}`} onClick={() => setFilter("enige")}>
           Der de stemte likt
+        </button>
+        <button className={`tab${filter === "beggeFor" ? " active" : ""}`} onClick={() => setFilter("beggeFor")}>
+          Begge for
+        </button>
+        <button className={`tab${filter === "beggeMot" ? " active" : ""}`} onClick={() => setFilter("beggeMot")}>
+          Begge mot
         </button>
         <button className="dl right" onClick={exportAll} disabled={exporting}>
           {exporting ? "Henter alle voteringer …" : "Last ned alle som CSV"}
@@ -424,14 +576,12 @@ function VoteList({ index, a, b }) {
                   <a href={sakUrl(r.sak)} target="_blank" rel="noreferrer">{r.tittel}</a>
                   <div className="vote-tema">{r.tema}</div>
                 </div>
-                <div className="vote-stances">
-                  <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
-                  <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
-                </div>
+                <Standpunkt r={r} a={a} b={b} />
               </li>
             );
           }
-          const ensartet = g.rows.every((r) => r.sa === g.rows[0].sa && r.sb === g.rows[0].sb);
+          const ensartet = g.rows.every((r) =>
+            r.sa === g.rows[0].sa && r.sb === g.rows[0].sb && r.alt === g.rows[0].alt);
           return (
             <li key={`sak-${g.sak}-${g.rows[0].vid}`}>
               <details className="vote-group">
@@ -455,10 +605,7 @@ function VoteList({ index, a, b }) {
                     </div>
                     <div className="vote-stances">
                       {ensartet ? (
-                        <>
-                          <span><strong>{a.kort}</strong> <em className={g.rows[0].sa ? "stem-for" : "stem-mot"}>{g.rows[0].sa ? "for" : "mot"}</em></span>
-                          <span><strong>{b.kort}</strong> <em className={g.rows[0].sb ? "stem-for" : "stem-mot"}>{g.rows[0].sb ? "for" : "mot"}</em></span>
-                        </>
+                        <StandpunktInnhold r={g.rows[0]} a={a} b={b} />
                       ) : (
                         <span className="vote-varierer">varierer</span>
                       )}
@@ -472,10 +619,7 @@ function VoteList({ index, a, b }) {
                       <div className="vote-main">
                         <div className="vote-tema">{r.tema}</div>
                       </div>
-                      <div className="vote-stances">
-                        <span><strong>{a.kort}</strong> <em className={r.sa ? "stem-for" : "stem-mot"}>{r.sa ? "for" : "mot"}</em></span>
-                        <span><strong>{b.kort}</strong> <em className={r.sb ? "stem-for" : "stem-mot"}>{r.sb ? "for" : "mot"}</em></span>
-                      </div>
+                      <Standpunkt r={r} a={a} b={b} />
                     </li>
                   ))}
                 </ol>
@@ -505,7 +649,20 @@ function VoteList({ index, a, b }) {
 
 export default function PairView({ index, a, b }) {
   const [series, setSeries] = useState(null);
+  const [forMot, setForMot] = useState(null);
   const komiteRows = useKomitePair(index, a, b);
+
+  useEffect(() => {
+    let live = true;
+    setForMot(null);
+    pairForMot(index, a.id, b.id)
+      .then((r) => live && setForMot(r))
+      .catch(() => live && setForMot(null));
+    return () => { live = false; };
+  }, [index, a.id, b.id]);
+  const fmTotal = forMot ? forMotSum(forMot) : null;
+  // One-line committee summary: policy committees only, all years pooled.
+  const temaLinje = komiteRows ? komiteRows.filter((r) => !IKKE_TEMA.has(r.kid)) : null;
 
   useEffect(() => {
     let live = true;
@@ -529,16 +686,25 @@ export default function PairView({ index, a, b }) {
         {overall && overall.total > 0 && (
           <p>
             Har stemt likt i <strong>{((100 * overall.agree) / overall.total).toFixed(1).replace(".", ",")} %</strong>{" "}
-            av {formatN(overall.total)} felles voteringer siden {firstYear}.
+            av {formatN(overall.total)} felles voteringer siden {firstYear}
+            {fmTotal && fmTotal.total === overall.total ? (
+              <>
+                : begge for i {pctStr((100 * fmTotal.bf) / fmTotal.total)} %,
+                begge mot i {pctStr((100 * fmTotal.bm) / fmTotal.total)} %
+                {fmTotal.altLikt > 0 && (
+                  <>, samme alternativ i {pctStr((100 * fmTotal.altLikt) / fmTotal.total)} %</>
+                )}.
+              </>
+            ) : "."}
           </p>
         )}
-        {komiteRows && komiteRows.length >= 3 && (
+        {temaLinje && temaLinje.length >= 3 && (
           <p className="pair-tema">
-            Mest uenige i {senkNavn(komiteRows[komiteRows.length - 1].navn)}{" "}
-            ({pctStr(komiteRows[komiteRows.length - 1].pct)} %) og{" "}
-            {senkNavn(komiteRows[komiteRows.length - 2].navn)}{" "}
-            ({pctStr(komiteRows[komiteRows.length - 2].pct)} %) · mest enige i{" "}
-            {senkNavn(komiteRows[0].navn)} ({pctStr(komiteRows[0].pct)} %)
+            Alle år samlet: sjeldnest likt i {senkNavn(temaLinje[temaLinje.length - 1].navn)}{" "}
+            ({pctStr(temaLinje[temaLinje.length - 1].pct)} %) og{" "}
+            {senkNavn(temaLinje[temaLinje.length - 2].navn)}{" "}
+            ({pctStr(temaLinje[temaLinje.length - 2].pct)} %) · oftest likt i{" "}
+            {senkNavn(temaLinje[0].navn)} ({pctStr(temaLinje[0].pct)} %)
           </p>
         )}
         <p className="see-also">
@@ -548,6 +714,7 @@ export default function PairView({ index, a, b }) {
         </p>
       </div>
       {series ? <TimeSeries series={series} a={a} b={b} /> : <div className="loading">Laster …</div>}
+      <ForMotFold rows={forMot} a={a} b={b} />
       <EraTable a={a} b={b} />
       <KomiteTable rows={komiteRows} />
       <VoteList index={index} a={a} b={b} />

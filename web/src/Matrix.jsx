@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { PARTIES, PARTY_BY_ID, partyOrFallback, cellColor, cellText, DIVERGING } from "./parties.js";
 import { pairKey, formatN } from "./lib.js";
+import { beskrivPar, maalingOrd } from "./maaling.js";
 import { useTweenedMatrix } from "./useTweenedMatrix.js";
 
 const THIN_N = 50; // below this many shared votes, the percentage is noisy
@@ -17,17 +18,14 @@ function Logo({ party, size = 26 }) {
   );
 }
 
-function Tooltip({ tip }) {
+function Tooltip({ tip, maaling }) {
   if (!tip) return null;
   const { x, y, a, b, agree, total, label } = tip;
   const pct = (100 * agree) / total;
   return (
     <div className="tooltip" style={{ left: Math.min(x + 14, window.innerWidth - 300), top: y + 16 }}>
       <div className="pct">{pct.toFixed(1).replace(".", ",")} %</div>
-      <div>
-        {a.navn} og {b.navn} stemte likt i {formatN(agree)} av {formatN(total)}{" "}
-        voteringer {label}.
-      </div>
+      <div>{beskrivPar(maaling, a.navn, b.navn, agree, total, label, formatN)}</div>
       {total < THIN_N && (
         <div className="muted">Få felles voteringer – tolk med varsomhet.</div>
       )}
@@ -35,7 +33,7 @@ function Tooltip({ tip }) {
   );
 }
 
-export default function Matrix({ matrix, label, onSelect }) {
+export default function Matrix({ matrix, label, onSelect, maaling = "likt" }) {
   const [tip, setTip] = useState(null);
   const shown = useTweenedMatrix(matrix);
 
@@ -59,7 +57,7 @@ export default function Matrix({ matrix, label, onSelect }) {
           continues past the right edge; matrix-scroll does the scrolling */}
       <div className="matrix-wrap">
       <div className="matrix-scroll">
-        <table className="matrix" aria-label={`Andel voteringer der partiene stemte likt, ${label}`}>
+        <table className="matrix" aria-label={`Andel voteringer der partiene stemte ${maalingOrd(maaling)}, ${label}`}>
           <thead>
             <tr>
               <th aria-hidden="true"></th>
@@ -96,7 +94,7 @@ export default function Matrix({ matrix, label, onSelect }) {
                       style={{ background: cellColor(pct), color: cellText(pct) }}
                       role="button"
                       tabIndex={0}
-                      aria-label={`${rowP.navn} og ${colP.navn}: ${Math.round(pct)} prosent`}
+                      aria-label={`${rowP.navn} og ${colP.navn}: ${Math.round(pct)} prosent stemte ${maalingOrd(maaling)}`}
                       onClick={() => onSelect?.(rowP, colP)}
                       onKeyDown={(e) => e.key === "Enter" && onSelect?.(rowP, colP)}
                       onMouseMove={(e) =>
@@ -115,15 +113,15 @@ export default function Matrix({ matrix, label, onSelect }) {
       </div>
       </div>
       <div className="ramp-legend">
-        <span>Oftest uenige</span>
+        <span>Sjelden {maalingOrd(maaling)}</span>
         <span className="bar">
           {DIVERGING.map((c) => (
             <span key={c} style={{ background: c }} />
           ))}
         </span>
-        <span>Oftest enige</span>
+        <span>Oftest {maalingOrd(maaling)}</span>
       </div>
-      <Tooltip tip={tip} />
+      <Tooltip tip={tip} maaling={maaling} />
     </>
   );
 }

@@ -1105,3 +1105,103 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
   text-align: left;
 }
 .home-om .om-figur { margin-top: 14px; }
+
+/* Måling og utvalg: «Stemte likt / for det samme / mot det samme» og
+   «Alle voteringer / Komiteens innstilling / Partienes forslag» (nov. 2026) */
+.maaling {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: -14px 0 26px;
+}
+.maaling-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 20px;
+  row-gap: 4px;
+}
+.maaling-row .tab { font-size: 14.5px; }
+.maaling-label {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  min-width: 92px;
+  text-align: right;
+}
+.maaling-hjelp {
+  max-width: 600px;
+  margin-top: 6px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-secondary);
+}
+.maaling-hjelp strong { color: var(--ink); font-weight: 600; }
+@media (max-width: 560px) {
+  .maaling-label { min-width: 0; flex-basis: 100%; text-align: center; }
+}
+
+/* Par-siden: «For eller mot?» — én hel stolpe per stortingsperiode */
+.fm-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 13px;
+  color: var(--ink-secondary);
+  margin: 4px 0 14px;
+}
+.fm-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.fm-legend span { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.fm-list { list-style: none; }
+.fm-list li {
+  display: grid;
+  grid-template-columns: 92px 1fr 56px;
+  gap: 14px;
+  align-items: center;
+  padding: 7px 0;
+}
+.fm-periode { font-size: 14px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.fm-n {
+  font-size: 13px;
+  color: var(--ink-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.fm-bar { display: flex; gap: 2px; height: 26px; }
+.fm-del {
+  display: flex;
+  align-items: center;
+  padding-left: 7px;
+  min-width: 0;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 560px) {
+  .fm-list li { grid-template-columns: 84px 1fr 44px; gap: 8px; }
+  .fm-periode { font-size: 13px; white-space: nowrap; }
+  .fm-del { font-size: 11.5px; padding-left: 4px; }
+}
+
+/* Gjennomslag: tema og listen over vedtatte forslag */
+.home-gj .gj-tema { margin: 14px 0 4px; }
+.gj-antall { font-size: 13.5px; color: var(--ink-muted); align-self: center; }
+.gj-partier { flex-wrap: wrap; justify-content: flex-end; gap: 6px 12px; white-space: normal; }
+.gj-parti { display: inline-flex; align-items: center; gap: 5px; font-weight: 600; color: var(--ink); }
+.gj-vedtatt .vote-row { grid-template-columns: 130px 1fr minmax(90px, auto); }
+@media (max-width: 560px) {
+  .gj-vedtatt .vote-row { grid-template-columns: 1fr; }
+  .gj-partier { justify-content: flex-start; }
+}
+
+/* Smale skjermer: tema-menyen skal ikke skyve «Tema»-etiketten ut av bildet */
+@media (max-width: 480px) {
+  .tema-row select { max-width: calc(100vw - 110px); }
+}

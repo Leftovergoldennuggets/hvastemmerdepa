@@ -36,7 +36,9 @@ export default function MethodPage() {
           </>
         )}
         {" "}Hver morgen hentes nye tall automatisk fra Stortingets API, og de
-        publiseres først når en kontroll har bekreftet at ingenting mangler.
+        publiseres først etter en automatisk kontroll av at ingen tidligere
+        publiserte tall har forsvunnet eller blitt umulige, og at alle
+        delsummer stemmer.
         «Sist oppdatert» refererer til når dataene sist endret seg. Kilden er{" "}
         <a href="https://data.stortinget.no">Stortingets tjeneste for åpne data</a>{" "}
         (NLOD-lisens).
@@ -52,8 +54,11 @@ export default function MethodPage() {
           <>
             {" "}I datagrunnlaget gjelder det {formatN(meta.uten_anlegg ?? meta.enstemmig)}{" "}
             avgjørelser ({formatN(meta.enstemmig)} enstemmig vedtatt, resten
-            nær enstemmige som «vedtatt mot 1 stemme»); disse holdes utenfor
-            prosentene.
+            avgjort uten anlegget med opptelling, typisk «vedtatt mot 1
+            stemme»); disse holdes utenfor prosentene. Ett unntak er verdt å
+            kjenne til: Under koronapandemien i mars og april 2020 ble 46
+            avgjørelser med minst fem stemmer på tapersiden tatt uten
+            voteringsanlegget, de fleste om de økonomiske krisetiltakene. De mangler derfor i tallene for sesjonen 2019–2020.
           </>
         )}
         {" "}Det er dermed Stortingets egen praksis som avgjør hvilke
@@ -117,11 +122,11 @@ export default function MethodPage() {
         inngår ikke i partistatistikken.
       </p>
 
-      <h3>Hva betyr «enige»?</h3>
+      <h3>Hva betyr «stemte likt»?</h3>
       <p>
-        To partier er enige i en votering når begge har samme standpunkt –
-        begge for, eller begge mot. Prosenten er antall voteringer der de var
-        enige, delt på antall voteringer der begge deltok. Merk at Stortinget
+        To partier stemte likt i en votering når begge har samme standpunkt –
+        begge for, eller begge mot. Prosenten er antall voteringer der de
+        stemte likt, delt på antall voteringer der begge deltok. Merk at Stortinget
         sjelden er fulltallig: utbyttingsordningen holder styrkeforholdet
         mellom de større partiene riktig, men for partier med én eller få
         representanter betyr fravær at partiet står uten standpunkt i
@@ -129,6 +134,69 @@ export default function MethodPage() {
         deltok for eksempel bare i 56 prosent av voteringene i 2013–2014, og
         Pasientfokus i om lag 70 prosent – tallene deres bygger altså på de
         voteringene de deltok i.
+      </p>
+
+      <h3>For eller mot?</h3>
+      <p>
+        «Stemte likt» teller både når begge partiene stemte for, og når begge
+        stemte mot. Det er ikke det samme. Nesten tre av fire voteringer
+        gjelder forslag som partier fremmer i salen, oftest fra mindretallet,
+        og dem stemmer de største partiene ofte ned sammen. To partier kan
+        dermed stemme likt svært ofte uten å ha stemt for de samme
+        forslagene. Etter innspill fra lesere viser nettstedet derfor tre
+        målinger:
+      </p>
+      <p>
+        <strong>Stemte likt:</strong> av voteringene der begge partiene tok
+        standpunkt, andelen der de stemte likt – begge for eller begge mot.
+        <br />
+        <strong>Stemte for det samme:</strong> av voteringene der minst ett av
+        partiene stemte for, andelen der begge stemte for.
+        <br />
+        <strong>Stemte mot det samme:</strong> av voteringene der minst ett av
+        partiene stemte mot, andelen der begge stemte mot.
+      </p>
+      <p>
+        «Stemte likt» er alltid minst like høyt som hver av de to andre,
+        fordi det teller begge typer likhet. Grunnlaget for de to siste
+        varierer fra par til par, og det nøyaktige antallet vises når du
+        holder pekeren over en rute.
+      </p>
+      <p>
+        Hver votering får også en type, lest ut av Stortingets egen
+        beskrivelse av den. <em>Partienes forslag</em> er voteringer over
+        forslag som navngir partiene bak («Forslag nr. 3 på vegne av FrP»);
+        de telles også på gjennomslag-siden. <em>Komiteens
+        innstilling</em> er voteringer over komiteens tilråding eller deler av
+        den: romertall, bokstavpunkter, lovparagrafer og budsjettrammer.
+        Rundt hver femte votering er av denne typen, og ni av ti av dem ender
+        med vedtak. <em>Alternativ votering</em> og <em>annet</em> –
+        prosedyrevoteringer som behandlingsmåte og tilbakesending til
+        komiteen, og forslag fra enkeltrepresentanter – er bare med når
+        bryteren står på «alle voteringer». Annet utgjør under én prosent.
+      </p>
+      <p>
+        Ved alternativ votering velger salen mellom to alternativer, for
+        eksempel komiteens innstilling og et mindretallsforslag. Da stemmer
+        begge sider for noe, og hvilken side Stortingets data kaller «for»,
+        varierer fra votering til votering. Slike voteringer teller derfor i
+        «stemte likt» – valgte partiene samme alternativ? – men ikke i «for
+        det samme» eller «mot det samme». De utgjør om lag sju prosent av alle
+        voteringer siden 2011, og færre i de siste årene.
+      </p>
+      <p>
+        Én begrensning gjenstår: «for» betyr for det som ble satt under
+        votering. Noen innstillinger går ut på å avvise et forslag, for
+        eksempel «Dokument 8:41 S (2025–2026) … vedtas ikke». Da er en stemme
+        for innstillingen i praksis et nei til forslaget. Det står ikke i
+        voteringsbeskrivelsen og kan ikke skilles ut automatisk.
+      </p>
+      <p>
+        Nedbrytningen er en ren oppdeling av de samme tallene: For hvert
+        partipar, hver sesjon og hver komité er summen av «begge for», «begge
+        mot» og «samme alternativ» nøyaktig lik antallet voteringer der de
+        stemte likt. Det kontrolleres automatisk hver natt, og publiseringen
+        stopper hvis det ikke stemmer.
       </p>
 
       <h3>Gjennomslag: partienes egne forslag</h3>
@@ -143,7 +211,9 @@ export default function MethodPage() {
         vant. Ved alternativ votering regnes forslaget som vedtatt når
         forslagsstillernes side vant en votering med stemmer på begge sider.
         Forslag fremmet av flere partier sammen telles for hvert av partiene.
-        Rundt hundre voteringer gjelder forslag fra enkeltrepresentanter
+        Tallene kan filtreres på tema (fagkomiteen som behandlet saken), og
+        hver votering som endte med vedtak er listet med lenke til saken, så
+        hvert tall kan kontrolleres. Rundt hundre voteringer gjelder forslag fra enkeltrepresentanter
         eller presidentskapet, eller lar seg ikke entydig knytte til partier;
         de holdes utenfor.
       </p>
@@ -232,9 +302,12 @@ export default function MethodPage() {
         i etterkant og kan gi enkeltavvik.
       </p>
       <p>
-        Regjeringsdeltakelse forklarer mye: partier i regjering stemmer nesten
-        alltid likt, og opposisjonspartier stemmer oftere mot. Derfor viser
-        partisidene tallene brutt ned per regjeringsperiode.
+        Regjeringsdeltakelse forklarer mye: partier som sitter i regjering
+        sammen, stemmer nesten alltid likt. Fordi de fleste voteringene
+        gjelder forslag fra mindretallet, stemmer regjeringspartiene mot i de
+        fleste voteringer, mens opposisjonspartiene oftere stemmer for. Derfor
+        viser partisidene tallene brutt ned per regjeringsperiode og fordelt
+        på for og mot.
       </p>
 
       <h3>Bruk av KI</h3>

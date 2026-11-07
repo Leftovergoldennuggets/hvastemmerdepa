@@ -3,6 +3,104 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-11-07 — For eller mot: «stemte likt» brutt ned, gjennomslag per tema og tre rettelser
+
+Etter å ha mottatt innspill fra lesere har jeg oppdatert nettstedet slik:
+
+- **Nytt – «stemte for det samme» og «stemte mot det samme»
+  (ny `pipeline/analyse_for_mot.py`):** «Stemte likt» teller både når
+  begge partiene stemte for og når begge stemte mot. Nesten tre av fire
+  voteringer gjelder forslag som partier fremmer i salen, oftest fra
+  mindretallet, og dem stemmer de største partiene ofte ned sammen. Et
+  høyt «stemte likt»-tall kan derfor i hovedsak bety at to partier har
+  stemt ned de samme forslagene. Eksempel: Ap og Høyre stemte likt i
+  70,6 % av voteringene i perioden 2025–2029 (per 7. nov. 2026), men begge
+  stemte for i bare 14 % av dem og begge mot i 54 %. Matrisen og
+  partisidene har nå brytere for de tre målingene og for å se bare
+  komiteens innstilling eller bare partienes forslag. Par-sidene viser
+  fordelingen per stortingsperiode, og voteringslisten kan filtreres på
+  «begge for» og «begge mot».
+  - Typen votering leses av Stortingets voteringsbeskrivelse. Partienes
+    forslag tolkes med gjennomslag-koden, slik at begrepet betyr det
+    samme overalt.
+  - Alternative voteringer holdes utenfor «for» og «mot», men teller i
+    «stemte likt» som før. Der velger salen mellom to alternativer, og
+    hvilken side API-et kaller «for», varierer: målt er den beholdte
+    tvillingen vinnersiden i 929 og tapersiden i 368 av 1 297 tilfeller.
+    Å ta dem med ville flyttet for eksempel Ap × Høyre 2021–2025 fra 35,6
+    til 42,5 % «for det samme», bare av den tilfeldigheten.
+  - Kjent begrensning, opplyst på metodesiden: «for» en innstilling kan
+    bety å avvise et forslag («… vedtas ikke», f.eks. sak 105513).
+  - **Kontroll:** For hvert partipar, hver sesjon og hver komité må begge
+    for + begge mot + likt i alternative voteringer bli nøyaktig lik
+    `agree` i den verifiserte matrisen, og summen av alle celler lik
+    `total`. Ellers stopper den daglige jobben før publisering.
+    Eksisterende datafiler (matrix, matrix_komite, positions, eras,
+    splits) er byte for byte uendret. Standardvisningen («stemte likt»,
+    alle voteringer) leser fortsatt de samme filene som før.
+- **Nytt – gjennomslag per tema og listen over vedtatte forslag
+  (`analyse_gjennomslag.py`):** Gjennomslag kan filtreres på fagkomité.
+  Hver votering der et partiforslag ble vedtatt (769 siden 2011) er
+  listet med lenke til saken, så hvert tall kan kontrolleres.
+- **Rettet (analyse_gjennomslag.py) – to forslag var feilaktig talt som
+  vedtatt:** Ved alternativ votering avgjøres utfallet av hvilken side
+  forslagsstillerne stemte på, ikke av vedtatt-flagget. Den kontrollen
+  gjaldt bare beskrivelser med «… fra», ikke «… på vegne av». To slike
+  voteringer ble derfor talt som vedtatt selv om forslaget falt. Begge er
+  kontrollert mot stortinget.no:
+  - votering 17718, 28.10.2021: «forslaget i proposisjonen bifalt med 69
+    mot 28 stemmer» over forslaget fra H og V
+  - votering 25700, 6.6.2025: «Representantforslaget ble ikke vedtatt»,
+    forslag fra SV, R, V og KrF
+
+  Seks tall er endret: 2021–2022 H 7→6 og V 6→5; 2024–2025 KrF 5→4, R
+  17→16, SV 31→30 og V 12→11. Ingen andre tall er berørt. Testen som
+  låser rettelsen bruker de to ekte voteringene.
+- **Rettet (kun tekst) – «fri votering» betydde noe annet:** Splittelsessiden
+  merket voteringer med «fri votering – partilinjen formelt opphevet».
+  Ifølge Stortingets API-dokumentasjon betyr `fri_votering` at «voteringen
+  er relatert til … saken som helhet». Det markerer ikke
+  samvittighetsvoteringer; de 36 voteringene om abortloven i desember 2024
+  har for eksempel feltet satt til false. Merket og CSV-kolonnen er
+  fjernet, og Åpne data-siden forklarer feltet riktig. Innslaget
+  2026-07-23 nedenfor («bare 5 av 676 splittelser skjedde i formelt frie
+  voteringer») bygde på samme misforståelse og er ikke riktig.
+- **Rettet (kun tekst) – andre formuleringer:**
+  - Metodesiden sa at opposisjonspartier «stemmer oftere mot». Det er
+    omvendt: Regjeringspartiene stemmer mot i de fleste voteringer.
+  - Forstå-siden forklarte lave tall med brede forlik, men enstemmige
+    vedtak er nesten aldri med i dataene. Den sa også at tall under 40
+    prosent er sjeldne, men det varierer mye mellom perioder.
+  - Gjennomslag-siden sa «over 2 000 forslag» for opposisjonen i
+    2011–2013. 2 067 var summen av hvert partis forslag, der fellesforslag
+    teller én gang per parti. Det riktige er nesten 1 200 voteringer.
+    «Fremmet» er endret til «til votering», siden tallene teller
+    voteringer.
+  - «Brøt med sitt eget parti» er endret til «stemte mot flertallet i
+    sitt eget parti».
+  - Splittelsessiden oppgir nå både tilfeller (677) og voteringer (618).
+  - Ordet «enige» er byttet ut med «stemte likt» i fargeforklaringen og på
+    metodesiden.
+  - Metodesiden sa at alle avgjørelser uten voteringsanlegget var
+    enstemmige eller nesten enstemmige. Men i mars og april 2020
+    (koronapandemien) ble 46 avgjørelser med minst fem stemmer på
+    tapersiden tatt uten anlegget, de fleste om de økonomiske
+    krisetiltakene. Det står nå på metodesiden.
+  - Om-siden sa at «alt som vedtas i Norge» vedtas på Stortinget. Det står
+    nå at alle lover og hele statsbudsjettet vedtas der.
+  - Metodesiden sa at den daglige kontrollen bekrefter at «ingenting
+    mangler». Den kontrollerer at publiserte tall ikke forsvinner eller
+    blir umulige, og at delsummene stemmer. Den kan ikke oppdage nye
+    voteringer som mangler.
+  - Beskrivelsen for søkemotorer sa «alle voteringer siden 2011». Den sier
+    nå «alle registrerte voteringer».
+- **Tester:** 42 (før 30). Nye tester bruker fiktive voteringer der fasiten
+  kan telles for hånd, og ekte voteringer kontrollert mot stortinget.no. Ved
+  bevisst innlagte feil (mutasjoner) i ny kode slo testene ut i alle fem
+  tilfellene.
+- **Ikke uavhengig verifisert ennå:** Endringene i `pipeline/` og
+  `web/src/lib.js` er ikke gjennomgått av en ekstern utvikler.
+
 ## 2026-10-27 — Presisering av den menneskelige kvalitetssikringen
 
 - **Rettet (kun tekst, Om-siden og metodesiden):** nettstedet sa at «to

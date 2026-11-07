@@ -19,8 +19,12 @@ shutil.copy(SRC / "komiteer.json", DST / "komiteer.json")
 shutil.copy(SRC / "splits.json", DST / "splits.json")
 shutil.copy(SRC / "personer.json", DST / "personer.json")
 shutil.copy(SRC / "gjennomslag.json", DST / "gjennomslag.json")
+shutil.copy(SRC / "gjennomslag_komite.json", DST / "gjennomslag_komite.json")
+shutil.copy(SRC / "gjennomslag_vedtatt.json", DST / "gjennomslag_vedtatt.json")
 shutil.copytree(SRC / "matrix", DST / "matrix", dirs_exist_ok=True)
 shutil.copytree(SRC / "matrix_komite", DST / "matrix_komite", dirs_exist_ok=True)
+shutil.copytree(SRC / "for_mot", DST / "for_mot", dirs_exist_ok=True)
+shutil.copytree(SRC / "for_mot_komite", DST / "for_mot_komite", dirs_exist_ok=True)
 shutil.copytree(SRC / "positions", DST / "positions", dirs_exist_ok=True)
 fotos = ROOT / "data" / "raw" / "fotos"
 if fotos.exists():

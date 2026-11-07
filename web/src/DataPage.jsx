@@ -8,12 +8,16 @@ import { siteMeta, formatN } from "./lib.js";
 const FILES = [
   ["meta.json", "Nøkkeltall: antall voteringer, sesjonsspenn, sist oppdatert, kjente avvik"],
   ["sessions.json", "Én rad per sesjon: antall saker, voteringer, talte voteringer, partier"],
-  ["matrix/<sesjon>.json", "Parvis enighet per sesjon: par, antall enige, antall felles voteringer"],
+  ["matrix/<sesjon>.json", "Parvis «stemte likt» per sesjon: par, antall voteringer med samme standpunkt, antall felles voteringer"],
   ["matrix_komite/<sesjon>.json", "Samme tall brutt ned per fagkomité (tema)"],
   ["positions/<sesjon>.json", "Én rad per votering: dato, sak, resultat og hvert partis stemmetall"],
-  ["eras.json", "Enighetsmatriser per regjeringsperiode"],
-  ["splits.json", "Alle voteringer der minst to representanter brøt med eget parti"],
-  ["gjennomslag.json", "Partiforslag til votering og vedtak, per parti per sesjon"],
+  ["for_mot/<sesjon>.json", "«Stemte likt» brutt ned: begge for, begge mot og ulikt per par og type votering, og typen for hver votering"],
+  ["for_mot_komite/<sesjon>.json", "Samme nedbrytning per fagkomité (tema)"],
+  ["eras.json", "«Stemte likt»-matriser per regjeringsperiode"],
+  ["splits.json", "Alle voteringer der minst to representanter stemte mot flertallet i eget parti"],
+  ["gjennomslag.json", "Voteringer over partiforslag og hvor mange som endte med vedtak, per parti per sesjon"],
+  ["gjennomslag_komite.json", "Samme tall per fagkomité (tema)"],
+  ["gjennomslag_vedtatt.json", "Hver votering der et partiforslag ble vedtatt: dato, sak, beskrivelse, forslagsstillere"],
   ["personer.json", "Representantene per stortingsperiode: parti, kjønn, alder, fylke, komiteer, CV"],
   ["komiteer.json", "Komité-id → offisielt navn"],
 ];
@@ -66,6 +70,18 @@ export default function DataPage() {
         Prosenten på nettstedet er <code>agree/total</code>.
       </p>
       <p>
+        <strong>for_mot</strong>: for hvert par og hver type votering (
+        <code>innstilling</code>, <code>forslag</code>, <code>annet</code>)
+        tre tall: <code>[begge for, begge mot, ulikt]</code>. For{" "}
+        <code>alternativ</code> (alternativ votering) er det to tall,{" "}
+        <code>[likt, ulikt]</code>, fordi begge sider der stemmer for noe.
+        Summen av begge for, begge mot og likt i alternative voteringer er
+        alltid nøyaktig lik <code>agree</code> i matrix – det kontrolleres
+        hver natt, og publiseringen stopper hvis det ikke stemmer.{" "}
+        <code>typer</code> viser hvilken type hver votering (<code>vid</code>)
+        fikk.
+      </p>
+      <p>
         <strong>positions</strong>: én rad per votering, med{" "}
         <code>partier</code> som partiets interne stemmetall{" "}
         <code>[for, mot]</code>. Radene som holdes utenfor statistikken har{" "}
@@ -73,9 +89,12 @@ export default function DataPage() {
         overskrift»-bekreftelser), <code>alternativ_speil</code> (speilbildet
         av en alternativ votering – API-et eksporterer én avstemning som to
         speilvendte voteringer), eller <code>data_pending</code> (API-et
-        mangler individdata). <code>fri</code> markerer voteringer Stortinget
-        selv har registrert som frie (partilinjen opphevet), og{" "}
-        <code>verified</code> om summen av enkeltstemmene stemmer eksakt med
+        mangler individdata). <code>fri</code> er Stortingets felt{" "}
+        <code>fri_votering</code>, som ifølge API-dokumentasjonen betyr at
+        voteringen gjelder saken som helhet og ikke enkeltforslag. Det
+        markerer <em>ikke</em> samvittighetsvoteringer der partilinjen er
+        opphevet. <code>verified</code> sier
+        om summen av enkeltstemmene stemmer eksakt med
         Stortingets offisielle stemmetall. <code>vid</code> og{" "}
         <code>sak</code> peker til votering og sak hos stortinget.no.
       </p>

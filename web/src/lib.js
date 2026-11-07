@@ -116,6 +116,102 @@ export async function aggregateKomite(sesjonIds) {
   return { counts, byKomite };
 }
 
+// «Stemte likt» broken down into begge for / begge mot / ulikt per vote type
+// (pipeline/analyse_for_mot.py — which stops the daily job unless the
+// breakdown sums exactly to the verified matrix). Summed over sessions,
+// optionally for one committee. Shape per pair:
+//   { innstilling: [for, mot, ulikt], forslag: [...], annet: [...],
+//     alternativ: [likt, ulikt] }
+const TOM_FOR_MOT = () => ({
+  innstilling: [0, 0, 0], forslag: [0, 0, 0], annet: [0, 0, 0], alternativ: [0, 0],
+});
+
+export async function aggregateForMot(sesjonIds, komite = "") {
+  const pairs = new Map();
+  const antall = { innstilling: 0, forslag: 0, annet: 0, alternativ: 0 };
+  for (const id of sesjonIds) {
+    const d = await fetchJSON(
+      komite ? `/data/for_mot_komite/${id}.json` : `/data/for_mot/${id}.json`
+    );
+    const n = komite ? d.antall[komite] : d.antall;
+    if (n) for (const t of Object.keys(antall)) antall[t] += n[t] || 0;
+    for (const row of d.pairs) {
+      if (komite && row.komite !== komite) continue;
+      const acc = pairs.get(row.pair) || TOM_FOR_MOT();
+      for (const t of Object.keys(acc)) row[t].forEach((v, i) => { acc[t][i] += v; });
+      pairs.set(row.pair, acc);
+    }
+  }
+  return { pairs, antall };
+}
+
+// Which vote types each «utvalg» covers for the for/mot readings.
+const RETNINGSTYPER = {
+  alle: ["innstilling", "forslag", "annet"],
+  innstilling: ["innstilling"],
+  forslag: ["forslag"],
+};
+
+// One reading of the breakdown as a pair → {agree, total} map, the same shape
+// aggregateMatrix returns, so the matrix and party ranking show it unchanged.
+//   maaling "likt": begge for + begge mot, of all votes where both took a stance
+//   maaling "for":  begge for, of the votes where at least one voted for
+//   maaling "mot":  begge mot, of the votes where at least one voted against
+// Alternative voteringer count only in «likt» over all votes: there the
+// chamber chooses between two alternatives, so both sides vote FOR something
+// and the API's «for» side is arbitrary.
+export function forMotMatrix(pairs, maaling, utvalg) {
+  const out = new Map();
+  for (const [pair, c] of pairs) {
+    let bf = 0, bm = 0, u = 0;
+    for (const t of RETNINGSTYPER[utvalg]) {
+      bf += c[t][0]; bm += c[t][1]; u += c[t][2];
+    }
+    let agree, total;
+    if (maaling === "for") { agree = bf; total = bf + u; }
+    else if (maaling === "mot") { agree = bm; total = bm + u; }
+    else {
+      agree = bf + bm; total = bf + bm + u;
+      if (utvalg === "alle") {
+        agree += c.alternativ[0];
+        total += c.alternativ[0] + c.alternativ[1];
+      }
+    }
+    if (total > 0) out.set(pair, { agree, total });
+  }
+  return out;
+}
+
+// Number of counted votes in an «utvalg».
+export function antallIUtvalg(antall, utvalg) {
+  return utvalg === "alle"
+    ? Object.values(antall).reduce((a, b) => a + b, 0)
+    : antall[utvalg];
+}
+
+// One pair's breakdown per session, oldest first (pair page).
+export async function pairForMot(index, aId, bId) {
+  const key = pairKey(aId, bId);
+  const out = [];
+  for (const s of index) {
+    const d = await fetchJSON(`/data/for_mot/${s.sesjon}.json`);
+    const hit = d.pairs.find((r) => r.pair === key);
+    out.push({ sesjon: s.sesjon, ...(hit || TOM_FOR_MOT()) });
+  }
+  return out;
+}
+
+// Vote id → type («innstilling», «forslag», «annet», «alternativ») for one
+// session, as classified by the pipeline.
+export async function voteTypes(sesjon) {
+  const d = await fetchJSON(`/data/for_mot/${sesjon}.json`);
+  const out = new Map();
+  for (const [t, vids] of Object.entries(d.typer || {})) {
+    for (const vid of vids) out.set(vid, t);
+  }
+  return out;
+}
+
 // A pair's agreement per government constellation, with the pair's role.
 export function pairEras(eras, aId, bId) {
   const key = pairKey(aId, bId);
@@ -145,11 +241,17 @@ export const personerData = () => fetchJSON("/data/personer.json");
 
 export const gjennomslagData = () => fetchJSON("/data/gjennomslag.json");
 
-// Sum per-party proposal counts (fremmet/vedtatt) over a set of sessions.
-export function aggregateGjennomslag(data, sesjonIds) {
+export const gjennomslagKomiteData = () => fetchJSON("/data/gjennomslag_komite.json");
+
+export const gjennomslagVedtattData = () => fetchJSON("/data/gjennomslag_vedtatt.json");
+
+// Sum per-party proposal counts (fremmet/vedtatt) over a set of sessions —
+// from gjennomslag.json, or for one committee from gjennomslag_komite.json.
+export function aggregateGjennomslag(data, sesjonIds, komite = "") {
   const out = new Map();
   for (const id of sesjonIds) {
-    for (const [parti, v] of Object.entries(data[id] || {})) {
+    const perParti = komite ? data[id]?.[komite] : data[id];
+    for (const [parti, v] of Object.entries(perParti || {})) {
       const acc = out.get(parti) || { fremmet: 0, vedtatt: 0 };
       acc.fremmet += v.fremmet;
       acc.vedtatt += v.vedtatt;

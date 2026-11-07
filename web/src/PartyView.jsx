@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback, cellColor } from "./parties.js";
-import { aggregateMatrix, pairKey, formatN } from "./lib.js";
+import { aggregateMatrix, aggregateForMot, forMotMatrix, antallIUtvalg, pairKey, formatN } from "./lib.js";
+import MaalingVelger from "./ForMot.jsx";
+import { beskrivPar, maalingOrd, utvalgEtikett } from "./maaling.js";
 import { useTweenedMatrix } from "./useTweenedMatrix.js";
 import { downloadCsv } from "./csv.js";
 import { useTimeSelection } from "./useTimeSelection.js";
@@ -22,18 +24,35 @@ export default function PartyView({ index, party }) {
   const { periods, selection, setSelection, selectedSessions, label, totalVotes } =
     useTimeSelection(index);
   const [matrix, setMatrix] = useState(null);
+  const [antall, setAntall] = useState(null);
   const [tip, setTip] = useState(null);
+  const [maaling, setMaaling] = useState("likt");
+  const [utvalg, setUtvalg] = useState("alle");
+  const standard = maaling === "likt" && utvalg === "alle";
 
   useEffect(() => {
     if (!selectedSessions.length) return;
     let live = true;
+    const ids = selectedSessions.map((s) => s.sesjon);
     // Keep the previous ranking on screen while the new selection loads,
     // so bars and numbers roll to their new values instead of reloading.
-    aggregateMatrix(selectedSessions.map((s) => s.sesjon))
-      .then((m) => { if (live) setMatrix(m); })
+    // The default reading uses the verified matrix files directly.
+    const load = standard
+      ? aggregateMatrix(ids).then((m) => [m, null])
+      : aggregateForMot(ids).then((d) => [
+          forMotMatrix(d.pairs, maaling, utvalg),
+          maaling === "likt"
+            ? antallIUtvalg(d.antall, utvalg)
+            : utvalg === "alle"
+              ? d.antall.innstilling + d.antall.forslag + d.antall.annet
+              : d.antall[utvalg],
+        ]);
+    load
+      .then(([m, n]) => { if (live) { setMatrix(m); setAntall(n); } })
       .catch(() => { if (live) setMatrix(new Map()); });
     return () => { live = false; };
-  }, [selectedSessions]);
+  }, [selectedSessions, maaling, utvalg, standard]);
+  const fullLabel = `${label}${utvalgEtikett(utvalg)}`;
 
   const shown = useTweenedMatrix(matrix);
 
@@ -68,20 +87,23 @@ export default function PartyView({ index, party }) {
         <Logo party={party} />
         <h2>Hvem stemmer {party.navn} med?</h2>
         <p>
-          Partiene rangert etter hvor stor andel av voteringene de og{" "}
-          {party.kort} stemte likt – regnet av voteringene der begge deltok.
-          Trykk på et parti for hele historien: utviklingen over tid og de
-          konkrete sakene de var enige og uenige om.
+          Partiene rangert etter hvor ofte de og {party.kort} stemte likt –
+          regnet av voteringene der begge deltok. Å stemme likt kan bety at
+          begge stemte for, eller at begge stemte mot. Bryterne under skiller
+          de to. Trykk på et parti for hele historien: utviklingen over tid og
+          de konkrete sakene der de stemte likt og ulikt.
         </p>
       </div>
 
       <PeriodPicker index={index} periods={periods} selection={selection} onChange={setSelection} />
 
+      <MaalingVelger maaling={maaling} utvalg={utvalg} onMaaling={setMaaling} onUtvalg={setUtvalg} />
+
       {!matrix ? (
         <div className="loading">Beregner …</div>
       ) : ranking.length === 0 ? (
         <p className="empty-note">
-          {party.navn} hadde ingen registrerte voteringer {label}.
+          {party.navn} hadde ingen registrerte voteringer {fullLabel}.
         </p>
       ) : (
         <ol className="ranking">
@@ -112,8 +134,11 @@ export default function PartyView({ index, party }) {
       )}
 
       <p className="count-note">
-        Andel av {formatN(totalVotes)} voteringer {label} der partiene stemte
-        likt. Trykk på et parti for detaljene.
+        {maaling === "likt"
+          ? "Andelen av voteringene der begge partiene tok standpunkt, der de stemte likt."
+          : `Av voteringene der minst ett av partiene stemte ${maaling}, andelen der begge stemte ${maaling}.`}{" "}
+        Grunnlaget er opptil {formatN(standard ? totalVotes : antall ?? 0)} voteringer {fullLabel}.
+        Trykk på et parti for detaljene.
         {ranking.length > 0 && (
           <>
             {" · "}
@@ -121,11 +146,12 @@ export default function PartyView({ index, party }) {
               className="dl"
               onClick={() =>
                 downloadCsv(
-                  `${party.kort.toLowerCase()}-enighet-${selection.id}.csv`,
-                  ["parti", "enige", "felles_voteringer", "enighet_prosent", "tidsrom"],
+                  `${party.kort.toLowerCase()}-stemte-${maalingOrd(maaling).replaceAll(" ", "-")}-${selection.id}${utvalg !== "alle" ? "-" + utvalg : ""}.csv`,
+                  ["parti", "antall", "av_voteringer", "andel_prosent", "maaling", "voteringer", "tidsrom"],
                   ranking.map((r) => [
                     r.other.kort, r.agree, r.total,
-                    r.pct.toFixed(1).replace(".", ","), selection.id,
+                    r.pct.toFixed(1).replace(".", ","),
+                    `stemte ${maalingOrd(maaling)}`, utvalg, selection.id,
                   ])
                 )
               }
@@ -143,8 +169,7 @@ export default function PartyView({ index, party }) {
         >
           <div className="pct">{tip.pct.toFixed(1).replace(".", ",")} %</div>
           <div>
-            {party.navn} og {tip.other.navn} stemte likt i {formatN(tip.agree)} av{" "}
-            {formatN(tip.total)} voteringer {label}.
+            {beskrivPar(maaling, party.navn, tip.other.navn, tip.agree, tip.total, fullLabel, formatN)}
           </div>
         </div>
       )}

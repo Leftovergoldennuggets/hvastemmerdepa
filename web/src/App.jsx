@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Matrix from "./Matrix.jsx";
 import PairView from "./PairView.jsx";
 import PartyView from "./PartyView.jsx";
 import MethodPage from "./MethodPage.jsx";
 import SplitsPage from "./SplitsPage.jsx";
 import PeoplePage from "./PeoplePage.jsx";
-import GjennomslagPage from "./GjennomslagPage.jsx";
+import GjennomslagPage, { GjennomslagRanking, GjTemaVelger } from "./GjennomslagPage.jsx";
+import { useGjennomslag } from "./useGjennomslag.js";
+import MaalingVelger from "./ForMot.jsx";
+import { utvalgEtikett } from "./maaling.js";
 import ForstaPage from "./ForstaPage.jsx";
 import OmPage from "./OmPage.jsx";
 import DataPage from "./DataPage.jsx";
@@ -14,7 +17,7 @@ import { PARTIES, partyOrFallback } from "./parties.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
 import { medHistorikk } from "./komiteer.js";
-import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, gjennomslagData, aggregateGjennomslag, fetchJSON } from "./lib.js";
+import { sessionsIndex, siteMeta, aggregateMatrix, aggregateKomite, komiteerData, formatN, formatDate, personerData, fetchJSON, aggregateForMot, forMotMatrix, antallIUtvalg } from "./lib.js";
 import { useTimeSelection } from "./useTimeSelection.js";
 import { parsePath, pathFromLegacyHash, seo, SITE } from "./routes.js";
 
@@ -124,8 +127,8 @@ function HomeSplits() {
       <p>
         Hovedregelen på Stortinget er at partiene stemmer samlet. Men av og
         til – for eksempel i samvittighetsspørsmål – sprekker et parti. Her er
-        de ferskeste voteringene der minst to representanter brøt med sitt
-        eget parti:
+        de ferskeste voteringene der minst to representanter stemte mot
+        flertallet i sitt eget parti:
       </p>
       <ol className="home-splits-list">
         {splits.slice(0, 3).map((s) => {
@@ -193,65 +196,33 @@ function HomeOm() {
   );
 }
 
-function HomeGjennomslag({ sessions, label }) {
-  const [data, setData] = useState(null);
-  useEffect(() => { gjennomslagData().then(setData).catch(() => {}); }, []);
-  if (!data || !sessions.length) return null;
-
-  const agg = aggregateGjennomslag(data, sessions.map((s) => s.sesjon));
-  // Ranked by adopted-proposal COUNT, not share — same reasoning as on the
-  // gjennomslag page: the count says more about real influence.
-  const ranking = [...agg.entries()]
-    .filter(([, v]) => v.fremmet > 0)
-    .map(([id, v]) => ({
-      party: partyOrFallback(id),
-      ...v,
-      pct: (100 * v.vedtatt) / v.fremmet,
-    }))
-    .sort((a, b) => b.vedtatt - a.vedtatt || b.pct - a.pct);
-  if (!ranking.length) return null;
-  const maxVedtatt = Math.max(1, ...ranking.map((r) => r.vedtatt));
+function HomeGjennomslag({ sessions, label, komiteNavn }) {
+  const [tema, setTema] = useState("");
+  const { ranking, komiteValg } = useGjennomslag(sessions, tema);
+  if (!ranking) return null;
+  const temaTekst = tema ? ` i saker fra ${komiteNavn[tema] || tema}` : "";
 
   return (
     <section className="party-chips home-gj">
       <h2>Hvem får gjennomslag?</h2>
       <p>
         Partier som ikke får viljen sin i komiteen, fremmer egne forslag i
-        salen. Her kan du se hvor mange forslag hvert parti faktisk fikk
-        vedtatt {label}. Det viktige tallet er antallet forslag som går
-        gjennom, ikke andelen av stilte forslag, siden partier i opposisjon
-        fremmer mange forslag de vet vil falle.
+        salen. Her kan du se hvor mange av disse voteringene som endte med
+        vedtak for hvert parti {label}{temaTekst}. Rangeringen går etter
+        antallet, ikke andelen, siden partier i opposisjon fremmer mange
+        forslag de vet vil falle. Regjeringspartienes politikk ligger stort
+        sett i komiteens innstilling og telles ikke her.
       </p>
-      <ol className="ranking gj-ranking">
-        {ranking.map((r) => (
-          <li key={r.party.id}>
-            <a className="gj-row" href="/gjennomslag">
-              <span className="gj-label">
-                <span className="logo-tile" style={{ width: 26, height: 26 }}>
-                  {r.party.logo ? (
-                    <img src={r.party.logo} alt="" loading="lazy" />
-                  ) : (
-                    <span style={{ width: "55%", height: "55%", borderRadius: "50%", background: r.party.farge }} />
-                  )}
-                </span>
-                <span>
-                  <strong>{r.party.kort}</strong>
-                  <em>av {formatN(r.fremmet)} fremmet · {r.pct.toFixed(1).replace(".", ",")} %</em>
-                </span>
-              </span>
-              <span className="rank-track">
-                <span
-                  className="rank-bar"
-                  style={{ width: `${(100 * r.vedtatt) / maxVedtatt}%`, background: "#35886C" }}
-                />
-              </span>
-              <span className="rank-pct">{formatN(r.vedtatt)}</span>
-            </a>
-          </li>
-        ))}
-      </ol>
+      <GjTemaVelger komiteValg={komiteValg} komiteNavn={komiteNavn} tema={tema} onChange={setTema} />
+      {ranking.length ? (
+        <GjennomslagRanking ranking={ranking} lenke={() => "/gjennomslag"} />
+      ) : (
+        <p className="empty-note" style={{ textAlign: "center" }}>
+          Ingen partiforslag til votering {label}{temaTekst}.
+        </p>
+      )}
       <p className="see-also">
-        <a href="/gjennomslag">Hele bildet – og hvorfor tallene er så lave ›</a>
+        <a href="/gjennomslag">Hele bildet – og forslagene som ble vedtatt ›</a>
       </p>
     </section>
   );
@@ -280,6 +251,13 @@ export default function App() {
   const [tema, setTema] = useState("");
   const [komiteAgg, setKomiteAgg] = useState(null);
   const [komiteNavn, setKomiteNavn] = useState({});
+  // «Stemte likt / for det samme / mot det samme» × «alle / innstilling /
+  // forslag». The default reading uses the verified matrix files directly;
+  // the others come from the for/mot breakdown (same sums, checked nightly).
+  const [maaling, setMaaling] = useState("likt");
+  const [utvalg, setUtvalg] = useState("alle");
+  const [forMot, setForMot] = useState(null);
+  const sisteVist = useRef(null);
 
   const [indexError, setIndexError] = useState(false);
   const loadIndex = () => {
@@ -332,8 +310,39 @@ export default function App() {
     return () => { live = false; };
   }, [selectedSessions]);
 
-  const shownMatrix = tema && komiteAgg ? komiteAgg.byKomite.get(tema) : matrix;
-  const temaVotes = tema && komiteAgg ? komiteAgg.counts.get(tema) : null;
+  const standard = maaling === "likt" && utvalg === "alle";
+  const forMotKey = `${selectedSessions.map((s) => s.sesjon).join(",")}|${tema}`;
+  useEffect(() => {
+    if (standard || !selectedSessions.length) return;
+    let live = true;
+    const ids = selectedSessions.map((s) => s.sesjon);
+    aggregateForMot(ids, tema)
+      .then((d) => { if (live) setForMot({ key: forMotKey, ...d }); })
+      .catch(() => { if (live) setLoadError(true); });
+    return () => { live = false; };
+  }, [forMotKey, standard]); // eslint-disable-line
+
+  const forMotKlar = forMot && forMot.key === forMotKey;
+  let shownMatrix;
+  let antallVist = null;
+  if (standard) {
+    shownMatrix = tema && komiteAgg ? komiteAgg.byKomite.get(tema) : matrix;
+    antallVist = tema && komiteAgg ? komiteAgg.counts.get(tema) : totalVotes;
+  } else if (forMotKlar) {
+    shownMatrix = forMotMatrix(forMot.pairs, maaling, utvalg);
+    // for/mot leave alternative votes out (both sides vote FOR something)
+    antallVist = maaling === "likt"
+      ? antallIUtvalg(forMot.antall, utvalg)
+      : utvalg === "alle"
+        ? forMot.antall.innstilling + forMot.antall.forslag + forMot.antall.annet
+        : forMot.antall[utvalg];
+  } else {
+    // Still loading: keep the last matrix on screen so the switch animates.
+    shownMatrix = sisteVist.current;
+  }
+  if (shownMatrix && (standard || forMotKlar)) sisteVist.current = shownMatrix;
+  const temaTekst = tema ? ` (${komiteNavn[tema] || tema})` : "";
+  const matrixLabel = `${label}${temaTekst}${utvalgEtikett(utvalg)}`;
 
   return (
     <div className="shell">
@@ -396,7 +405,12 @@ export default function App() {
           <p className="matrix-intro">
             Lurer du på hvor ofte Arbeiderpartiet og Høyre er på samme side?
             Eller Rødt og FrP? Matrisen under viser andelen voteringer der to
-            partier stemte likt – grønt betyr ofte, rødt sjelden. Tallene er
+            partier stemte likt – grønt betyr ofte, rødt sjelden. Men å stemme
+            likt kan bety to ting: at begge stemte for, eller at begge stemte
+            mot. Nesten tre av fire voteringer gjelder forslag som partier
+            fremmer i salen, oftest fra mindretallet, og dem stemmer de største
+            partiene ofte ned sammen. Med bryterne under kan du derfor også se
+            hvor ofte partiene stemte <em>for</em> det samme. Tallene er
             hentet fra Stortingets egne voteringsdata og oppdateres daglig.
             De inkluderer bare voteringer der Stortinget delte seg, siden
             enstemmige vedtak ikke registreres i voteringsanlegget.{" "}
@@ -421,6 +435,13 @@ export default function App() {
             </div>
           )}
 
+          <MaalingVelger
+            maaling={maaling}
+            utvalg={utvalg}
+            onMaaling={setMaaling}
+            onUtvalg={setUtvalg}
+          />
+
           <p className="tap-hint">
             Trykk på en rute for å sammenligne to partier – prøv f.eks.{" "}
             <a href="/par/R/FrP">Rødt × FrP</a> eller{" "}
@@ -430,7 +451,8 @@ export default function App() {
           {shownMatrix ? (
             <Matrix
               matrix={shownMatrix}
-              label={tema ? `${label} (${komiteNavn[tema] || tema})` : label}
+              label={matrixLabel}
+              maaling={maaling}
               onSelect={(a, b) => navigate(`/par/${a.id}/${b.id}`)}
             />
           ) : loadError ? (
@@ -445,35 +467,30 @@ export default function App() {
           )}
 
           <p className="count-note">
-            {tema ? (
-              <>
-                Hver rute: andel av <strong>{formatN(temaVotes || 0)}</strong>{" "}
-                voteringer behandlet i {komiteNavn[tema] || tema} {label} der de
-                to partiene stemte likt.
-              </>
-            ) : (
-              <>
-                Hver rute: andel av <strong>{formatN(totalVotes)}</strong>{" "}
-                voteringer {label} der de to partiene stemte likt.
-              </>
-            )}
+            {maaling === "likt"
+              ? "Hver rute: andelen av voteringene der begge partiene tok standpunkt, der de stemte likt."
+              : `Hver rute: av voteringene der minst ett av de to partiene stemte ${maaling}, andelen der begge stemte ${maaling}.`}{" "}
+            Grunnlaget er opptil <strong>{antallVist == null ? "…" : formatN(antallVist)}</strong>{" "}
+            voteringer {matrixLabel}
+            {maaling !== "likt" && " – hold pekeren over en rute for tallene for hvert par"}.
             {shownMatrix && (
               <>
                 {" · "}
                 <button
                   className="dl"
                   onClick={() => {
+                    const maalingNavn = { likt: "stemte_likt", for: "stemte_for_det_samme", mot: "stemte_mot_det_samme" }[maaling];
                     const rows = [...shownMatrix.entries()].map(([key, c]) => {
                       const [pa, pb] = key.split("|");
                       return [
                         partyOrFallback(pa).kort, partyOrFallback(pb).kort,
                         c.agree, c.total, ((100 * c.agree) / c.total).toFixed(1).replace(".", ","),
-                        selection.id, tema ? (komiteNavn[tema] || tema) : "alle",
+                        maalingNavn, utvalg, selection.id, tema ? (komiteNavn[tema] || tema) : "alle",
                       ];
                     });
                     downloadCsv(
-                      `enighet-${selection.id}${tema ? "-" + tema : ""}.csv`,
-                      ["parti_a", "parti_b", "enige", "felles_voteringer", "enighet_prosent", "tidsrom", "tema"],
+                      `${maalingNavn.replaceAll("_", "-")}-${selection.id}${utvalg !== "alle" ? "-" + utvalg : ""}${tema ? "-" + tema : ""}.csv`,
+                      ["parti_a", "parti_b", "antall", "av_voteringer", "andel_prosent", "maaling", "voteringer", "tidsrom", "tema"],
                       rows
                     );
                   }}
@@ -486,7 +503,7 @@ export default function App() {
 
           <HomeSalkart />
 
-          <HomeGjennomslag sessions={selectedSessions} label={label} />
+          <HomeGjennomslag sessions={selectedSessions} label={label} komiteNavn={komiteNavn} />
 
           <HomeSplits />
 
@@ -497,7 +514,7 @@ export default function App() {
             <p>
               Nysgjerrig på hvordan partiet ditt stemmer? Trykk på partiene
               nedenfor for å se hvordan de stemmer i konkrete saker, og ikke
-              minst hvem de er mest enige og uenige med.
+              minst hvem de oftest og sjeldnest stemmer likt med.
             </p>
             <div className="chips-row">
               {PARTIES.filter((p) =>

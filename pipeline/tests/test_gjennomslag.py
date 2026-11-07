@@ -15,10 +15,12 @@ To deler:
 
 Kjør:  python3 -m unittest discover -s pipeline/tests -v
 """
+import io
 import json
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -53,6 +55,37 @@ RAD_24893 = {"vid": 24893, "alt": None, "sak": 103093,
              "partier": {"A": [0, 28], "FrP": [0, 12], "H": [0, 22], "KrF": [0, 2],
                          "MDG": [1, 0], "R": [5, 0], "SV": [8, 0], "Sp": [0, 17],
                          "V": [0, 5]}}
+
+# Kopiert uendret fra data/computed/positions/ — to alternative voteringer
+# der forslagsstillerne står med «på vegne av». Fasit i testen nedenfor.
+RAD_25700 = {"vid": 25700, "alt": 25701, "sak": 103154,
+             "tittel": "Representantforslag om å setja fredsarbeid i sentrum av norsk utanrikspolitikk",
+             "komite": "UFK", "dato": "2025-06-06",
+             "tema": "Alternativ votering mellom innstillingen og forslagene 1 -  4 på vegne av SV, R, V, og KrF.",
+             "vedtatt": True, "fri": False, "for": 80, "mot": 23, "verified": True,
+             "excluded": None,
+             "partier": {"A": [29, 0], "FrP": [12, 0], "H": [21, 1], "KrF": [0, 2],
+                         "MDG": [0, 2], "R": [0, 5], "SV": [0, 8], "Sp": [17, 0],
+                         "Uav": [1, 0], "V": [0, 5]}}
+RAD_17718 = {"vid": 17718, "alt": 17719, "sak": 86275,
+             "tittel": "Endringer i statsbudsjettet 2021 under Arbeids- og sosialdepartementet",
+             "komite": None, "dato": "2021-10-28",
+             "tema": "Alternativ votering mellom Prop 7 LS, stor bokstav B, romertall I,  kapittel 2541 post 70 og Forslag 1 på vegne av H og V.",
+             "vedtatt": True, "fri": True, "for": 69, "mot": 28, "verified": True,
+             "excluded": None,
+             "partier": {"A": [27, 0], "FrP": [13, 0], "H": [0, 21], "KrF": [0, 1],
+                         "MDG": [2, 0], "PF": [0, 1], "R": [4, 0], "SV": [8, 0],
+                         "Sp": [15, 1], "V": [0, 4]}}
+# Kopiert uendret fra data/computed/positions/2026-2027.json — vedtatt
+# partiforslag i trontaledebatten (sak 200414, ingen fagkomité).
+RAD_28553 = {"vid": 28553, "alt": None, "sak": 200414, "tittel": "Trontaledebatt",
+             "komite": None, "dato": "2026-10-06",
+             "tema": "Forslag nr. 13 på vegne av H.",
+             "vedtatt": True, "fri": False, "for": 95, "mot": 6, "verified": True,
+             "excluded": None,
+             "partier": {"A": [31, 1], "FrP": [29, 0], "H": [14, 0], "KrF": [4, 0],
+                         "MDG": [5, 0], "R": [5, 0], "SV": [0, 5], "Sp": [5, 0],
+                         "V": [2, 0]}}
 
 
 class TestForslagsstillerParsing(unittest.TestCase):
@@ -116,6 +149,24 @@ class TestVedtattLogikkMotHandverifiserteVoteringer(unittest.TestCase):
         resultat = self.kjor([RAD_3541, speil])
         self.assertEqual(resultat["FrP"]["fremmet"], 1)
 
+    def test_alternativ_votering_med_paa_vegne_av_bruker_forslagsstillernes_side(self):
+        """Feil funnet november 2026: Alternative voteringer der
+        forslagsstillerne står med «på vegne av» (ikke «fra») ble lest rett
+        av vedtatt-flagget og talt som vedtatt, selv om forslaget falt.
+        Fasit fra stortinget.no:
+          25700 (sak 103154): «Representantforslaget ble ikke vedtatt» —
+            innstillingen vant 80–23 over forslagene fra SV, R, V og KrF.
+          17718 (sak 86275): referatet 28.10.2021: «forslaget i
+            proposisjonen bifalt med 69 mot 28 stemmer» over forslaget fra
+            Høyre og Venstre.
+        Fasit: fremmet 1, vedtatt 0 for hver forslagsstiller."""
+        resultat = self.kjor([RAD_25700])
+        for parti in ("SV", "R", "V", "KrF"):
+            self.assertEqual(resultat[parti], {"fremmet": 1, "vedtatt": 0}, parti)
+        resultat = self.kjor([RAD_17718])
+        for parti in ("H", "V"):
+            self.assertEqual(resultat[parti], {"fremmet": 1, "vedtatt": 0}, parti)
+
     def test_ordinaert_partiforslag_teller_for_alle_forslagsstillerne(self):
         """Votering 24893: «Forslag nr. 12 på vegne av SV, R og MDG» falt
         14–86. Fasit: fremmet=1 for SV, R og MDG; vedtatt=0; ingen andre
@@ -124,6 +175,44 @@ class TestVedtattLogikkMotHandverifiserteVoteringer(unittest.TestCase):
         for parti in ("SV", "R", "MDG"):
             self.assertEqual(resultat[parti], {"fremmet": 1, "vedtatt": 0})
         self.assertNotIn("A", resultat)
+
+
+class TestTemaOgVedtatteForslag(unittest.TestCase):
+    """De nye filene (november 2026): gjennomslag per fagkomité og listen over
+    vedtatte forslag. Tre ekte rader:
+      24893 (NÆRING)  SV, R og MDG — falt 14–86
+      3541  (KOMMFORV) FrP — falt (innstillingen vant), se over
+      28553 (ingen komité, trontaledebatten 2026) «Forslag nr. 13 på vegne
+            av H.» — vedtatt 95–6
+    Fasit: bare 28553 står i listen over vedtatte. Komitéfilen har NÆRING og
+    KOMMFORV med vedtatt 0, og ingenting for H, fordi trontaledebatten ikke
+    har noen fagkomité (den telles bare under «alle temaer»)."""
+
+    def kjor(self, rader):
+        original = gj.COMPUTED
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                gj.COMPUTED = Path(tmp)
+                (gj.COMPUTED / "positions").mkdir()
+                (gj.COMPUTED / "positions" / "test.json").write_text(
+                    json.dumps(rader, ensure_ascii=False))
+                with redirect_stdout(io.StringIO()):
+                    gj.main()
+                les = lambda navn: json.loads((gj.COMPUTED / navn).read_text())
+                return (les("gjennomslag.json")["test"],
+                        les("gjennomslag_komite.json")["test"],
+                        les("gjennomslag_vedtatt.json"))
+        finally:
+            gj.COMPUTED = original
+
+    def test_komite_og_liste(self):
+        totalt, komite, vedtatte = self.kjor([RAD_24893, RAD_3541, RAD_28553])
+        self.assertEqual([r["vid"] for r in vedtatte], [28553])
+        self.assertEqual(vedtatte[0]["partier"], ["H"])
+        self.assertEqual(set(komite), {"NÆRING", "KOMMFORV"})
+        self.assertEqual(komite["NÆRING"]["SV"], {"fremmet": 1, "vedtatt": 0})
+        self.assertEqual(komite["KOMMFORV"]["FrP"], {"fremmet": 1, "vedtatt": 0})
+        self.assertEqual(totalt["H"], {"fremmet": 1, "vedtatt": 1})
 
 
 if __name__ == "__main__":

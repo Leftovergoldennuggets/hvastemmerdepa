@@ -75,6 +75,24 @@ def main():
                    errors, may_be_empty=era.get("voteringer", 0) == 0)
     if not json.loads((COMPUTED / "gjennomslag.json").read_text()):
         errors.append("gjennomslag.json: empty")
+    # Added Nov 2026 (reader feedback): per-committee gjennomslag, the list
+    # of adopted proposals and the for/mot breakdown. analyse_for_mot.py
+    # already proves its sums equal the matrix; here we only guard that
+    # every file exists, parses and is non-empty for sessions with votes.
+    gk = json.loads((COMPUTED / "gjennomslag_komite.json").read_text())
+    if set(gk) != set(json.loads((COMPUTED / "gjennomslag.json").read_text())):
+        errors.append("gjennomslag_komite.json: sessions differ from gjennomslag.json")
+    if not json.loads((COMPUTED / "gjennomslag_vedtatt.json").read_text()):
+        errors.append("gjennomslag_vedtatt.json: empty")
+    for sesjon, s in new.items():
+        for folder in ("for_mot", "for_mot_komite"):
+            p = COMPUTED / folder / f"{sesjon}.json"
+            if not p.exists():
+                errors.append(f"{sesjon}: {folder} file missing")
+                continue
+            d = json.loads(p.read_text())
+            if s.get("counted", 0) > 0 and not d.get("pairs"):
+                errors.append(f"{folder}/{sesjon}: empty")
     if not json.loads((COMPUTED / "personer.json").read_text()):
         errors.append("personer.json: empty")
 

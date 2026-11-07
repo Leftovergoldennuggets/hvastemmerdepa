@@ -7,7 +7,8 @@ export default function OmPage() {
         som gjør Stortingets voteringsdata tilgjengelige for alle.
       </p>
       <p>
-        Alt som vedtas i Norge, vedtas gjennom voteringer på Stortinget. Dataene
+        Alle lover og hele statsbudsjettet vedtas gjennom voteringer på
+        Stortinget. Dataene
         om hvem som stemte hva er offentlige, men vanskelige å få oversikt over.
         Dette nettstedet samler alle registrerte voteringer siden 2011 og viser
         mønstrene: hvem stemmer sammen, hvem står mot hverandre, og hvordan

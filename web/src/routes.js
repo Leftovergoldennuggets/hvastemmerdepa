@@ -52,7 +52,7 @@ export function seo(route) {
         path: "/splittelser",
         title: t("Når partiene sprekker – splittelser på Stortinget"),
         description:
-          "Alle voteringer på Stortinget der minst to representanter brøt med sitt eget parti, fra 2011 til i dag – med dato, sak og stemmetall.",
+          "Alle voteringer på Stortinget der minst to representanter stemte mot flertallet i sitt eget parti, fra 2011 til i dag – med dato, sak og stemmetall.",
       };
     case "gjennomslag":
       return {
@@ -87,7 +87,7 @@ export function seo(route) {
         path: "/apne-data",
         title: t("Åpne data – last ned voteringstallene"),
         description:
-          "Alle tallene bak Hva stemmer de? som åpne JSON-filer: enighet mellom partiene, splittelser, gjennomslag og representanter. Fritt til bruk mot kreditering.",
+          "Alle tallene bak Hva stemmer de? som åpne JSON-filer: hvor ofte partiene stemmer likt, for og mot, splittelser, gjennomslag og representanter. Fritt til bruk mot kreditering.",
       };
     case "om":
       return {
@@ -115,7 +115,7 @@ export function seo(route) {
         path: "/",
         title: `${SITE_NAME} – slik stemmer partiene på Stortinget`,
         description:
-          "Hvor ofte stemmer partiene på Stortinget likt – og med hvem? Alle voteringer siden 2011, parti for parti. Åpne data fra Stortinget, oppdatert daglig.",
+          "Hvor ofte stemmer partiene på Stortinget likt – og med hvem? Alle registrerte voteringer siden 2011, parti for parti. Åpne data fra Stortinget, oppdatert daglig.",
       };
   }
 }
