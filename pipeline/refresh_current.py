@@ -13,6 +13,8 @@ so late-September votes are never missed across the session rollover):
   partier/<sesjon>.json.gz, saker/<sesjon>.json.gz
   voteringer/<sakid>.json.gz for every sak in the session's (old) saker list
   representanter/<inneværende periode>.json.gz  (new vara can appear)
+  dagensrepresentanter.json.gz                  (who meets today; changes
+                                                 when ministers come and go)
 
 Usage:  python3 pipeline/refresh_current.py            # delete
         python3 pipeline/refresh_current.py --dry-run  # only print
@@ -48,6 +50,7 @@ def main():
     today = datetime.date.today()
 
     targets = [RAW / "sesjoner.json.gz", RAW / "stortingsperioder.json.gz",
+               RAW / "dagensrepresentanter.json.gz",
                RAW / "representanter" / f"{current_period(today)}.json.gz"]
     for sesjon in current_sessions(today):
         saker_file = RAW / "saker" / f"{sesjon}.json.gz"

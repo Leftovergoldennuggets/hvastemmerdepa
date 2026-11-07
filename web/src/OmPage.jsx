@@ -79,17 +79,27 @@ export default function OmPage() {
       <h3>Bruk av KI</h3>
       <p>
         Koden er skrevet med KI-assistanse (Claude). For å sikre at tallene
-        er riktige, har jeg bygd inn flere kontrollmekanismer. Tallene
-        verifiseres mot Stortingets offisielle stemmetall, og datagrunnlaget
-        er kryssjekket mot det uavhengige Voteringsarkivet hos Sikt. Metoden
-        er sjekket opp mot Holder de ords åpne kildekode. I koden ligger en
-        testsuite der fasiten kommer fra stortinget.no og fra fiktive
-        eksempler som kan regnes for hånd, og den kjøres før hver eneste
-        publisering. I tillegg har en uavhengig utvikler kjørt hele
-        beregningen på nytt fra Stortingets rådata, uten min medvirkning, og
-        fått nøyaktig de samme tallene som nettstedet viser; rapporten ligger
-        åpent i kodearkivet. To andre utviklere har gått gjennom koden og
-        gitt innspill som er fulgt opp, blant annet forslaget om testsuiten.
+        er riktige, har jeg bygd inn flere kontroller – og det er verdt å vite
+        hva hver av dem dekker. For hver votering sjekkes det at
+        enkeltstemmene summerer til Stortingets offisielle stemmetall; det
+        viser at dataene er hentet og lest riktig, men ikke at resten av
+        beregningen er det. I juli 2026 ble stemmetallene og utfallet for
+        17 815 voteringer sammenlignet med Voteringsarkivet hos Sikt, og de
+        var like i 99,94 prosent av tilfellene (avvikene er forklart i
+        kodearkivet). Sikts nyere data bygger også på Stortingets egne
+        registreringer, så sammenligningen er ingen helt uavhengig kilde, og
+        den gjaldt stemmetallene, ikke prosentene på nettstedet. Metoden er
+        sammenlignet med Holder de ords åpne kildekode, og forskjellene er
+        forklart på metodesiden. I koden ligger en testsuite der fasiten
+        kommer fra stortinget.no og fra fiktive eksempler som kan regnes for
+        hånd, og den kjøres før hver eneste publisering. I august 2026 kjørte
+        en uavhengig utvikler hele beregningen på nytt fra Stortingets
+        rådata, uten min medvirkning, og fikk nøyaktig de samme tallene som
+        nettstedet da viste; rapporten ligger åpent i kodearkivet. Det som er
+        kommet til senere – blant annet for/mot-tallene fra november 2026 –
+        er ikke gjennomgått på samme måte ennå, men har egne kontroller og
+        tester. To andre utviklere har gått gjennom koden og gitt innspill
+        som er fulgt opp, blant annet forslaget om testsuiten.
         Oppdager du likevel noe som ser feil ut, ta gjerne kontakt. Jeg
         ønsker at koden skal være riktig.
       </p>
@@ -100,8 +110,8 @@ export default function OmPage() {
         <a href="https://github.com/holderdeord">Holder de ord</a>, den
         frivillige organisasjonen som i mange år gjorde Stortingets voteringer
         tilgjengelige for offentligheten. Nettstedet deres er lagt ned, men
-        kildekoden deres er fortsatt åpen – og både metoden og tallene her er
-        kvalitetssjekket mot den, i tillegg til mot{" "}
+        kildekoden deres er fortsatt åpen, og metoden her er sammenlignet med
+        den. Stemmetallene er i tillegg kryssjekket mot{" "}
         <a href="https://polsys.sikt.no/storting/voteringsarkiv">
           Voteringsarkivet hos Sikt
         </a>{" "}

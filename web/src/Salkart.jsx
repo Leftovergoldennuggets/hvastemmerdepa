@@ -191,6 +191,9 @@ export default function Salkart({ representanter, interactive = true }) {
               {valgtParty.navn}
               {valgt.fylke ? ` · ${valgt.fylke}` : ""}
             </span>
+            {valgt.moter_for && (
+              <span>Vararepresentant, møter fast for {valgt.moter_for.navn}</span>
+            )}
             <span>
               {valgt.alder != null && `${Math.floor(valgt.alder)} år`}
               {valgt.fartstid != null &&

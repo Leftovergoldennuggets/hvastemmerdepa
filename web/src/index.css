@@ -1205,3 +1205,14 @@ button.party-chip { font: inherit; background: none; cursor: pointer; }
 @media (max-width: 480px) {
   .tema-row select { max-width: calc(100vw - 110px); }
 }
+
+/* «Hvem er de?»: forklaring av hvem som vises (salen nå / valgte) */
+.sammensetning-note {
+  max-width: 640px;
+  margin: -18px auto 22px;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-secondary);
+}
+.sammensetning-note strong { color: var(--ink); }

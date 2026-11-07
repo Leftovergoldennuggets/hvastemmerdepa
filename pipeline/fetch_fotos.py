@@ -24,6 +24,12 @@ def main():
     for p in sorted((RAW / "representanter").glob("*.json.gz")):
         reps = json.loads(gzip.decompress(p.read_bytes()))["representanter_liste"]
         person_ids.update(r["id"] for r in reps if not r.get("vara_representant"))
+    # Permanent substitutes who meet today (e.g. for ministers) are shown in
+    # the current period's seat chart, so they need a portrait too.
+    dagens = RAW / "dagensrepresentanter.json.gz"
+    if dagens.exists():
+        liste = json.loads(gzip.decompress(dagens.read_bytes())).get("dagensrepresentanter_liste") or []
+        person_ids.update(r["id"] for r in liste if r.get("fast_vara_for"))
 
     out_dir = RAW / "fotos"
     out_dir.mkdir(parents=True, exist_ok=True)

@@ -18,7 +18,7 @@ const FILES = [
   ["gjennomslag.json", "Voteringer over partiforslag og hvor mange som endte med vedtak, per parti per sesjon"],
   ["gjennomslag_komite.json", "Samme tall per fagkomité (tema)"],
   ["gjennomslag_vedtatt.json", "Hver votering der et partiforslag ble vedtatt: dato, sak, beskrivelse, forslagsstillere"],
-  ["personer.json", "Representantene per stortingsperiode: parti, kjønn, alder, fylke, komiteer, CV"],
+  ["personer.json", "Representantene per stortingsperiode: parti, kjønn, alder, tid på Stortinget, fylke, komiteer, CV. Inneværende periode: salen slik den er i dag, med faste vararepresentanter for statsrådene (feltet moter_for og sammensetning)"],
   ["komiteer.json", "Komité-id → offisielt navn"],
 ];
 

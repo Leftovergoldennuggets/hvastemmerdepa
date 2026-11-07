@@ -1,6 +1,12 @@
 """Download representatives per stortingsperiode plus each person's coded
 biography (education, occupation, parliamentary history — kodetbiografi).
 
+Also downloads «dagensrepresentanter»: who actually meets in the chamber
+today. Ministers (and others on long leave) do not meet; a permanent
+substitute (fast vararepresentant) meets instead. analyse_personer.py uses
+this to show the current period as the chamber really is. The file is
+mutable, so it is always refetched (refresh_current.py also deletes it).
+
 Reuses fetch.py's paced, resumable download machinery; ~600 calls total,
 well within the ordinary API limit. Resumable like everything else:
 a file on disk means done.
@@ -28,6 +34,14 @@ def main():
         reps = json.loads(raw)["representanter_liste"]
         person_ids.update(r["id"] for r in reps)
         print(f"[{periode}] {len(reps)} representanter", flush=True)
+
+    dagens_fil = RAW / "dagensrepresentanter.json.gz"
+    dagens_fil.unlink(missing_ok=True)
+    dagens = json.loads(fetch_to(dagens_fil, f"{BASE}/dagensrepresentanter?format=json"))
+    dagens = dagens.get("dagensrepresentanter_liste") or []
+    vara = [r for r in dagens if r.get("fast_vara_for")]
+    person_ids.update(r["id"] for r in vara)
+    print(f"[i dag] {len(dagens)} møter, {len(vara)} faste vararepresentanter", flush=True)
 
     for i, pid in enumerate(sorted(person_ids)):
         fetch_to(RAW / "biografi" / f"{pid}.json.gz",

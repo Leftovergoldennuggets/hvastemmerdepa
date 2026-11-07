@@ -228,11 +228,28 @@ export default function MethodPage() {
       <h3>Hvem er de?</h3>
       <p>
         Opplysningene om representantene – kjønn, fødselsdato, valgdistrikt,
-        komitémedlemskap og når de først ble innvalgt – hentes fra Stortingets
-        biografidata. Vi teller de innvalgte representantene ved hver
-        periodestart; vararepresentanter er ikke med. Alder beregnes ved
-        periodestart, og «tid på Stortinget» er tiden siden representanten
-        første gang ble innvalgt som fast representant.
+        komitémedlemskap og tid på Stortinget – hentes fra Stortingets
+        biografidata. For tidligere perioder teller vi de innvalgte
+        representantene ved periodestart. For inneværende periode viser vi
+        salen slik den er i dag: Statsråder kan ikke møte på Stortinget mens
+        de sitter i regjeringen, og representanter med lengre permisjon møter
+        heller ikke. For dem møter en fast vararepresentant, og det er
+        vararepresentanten som telles. Hvem som møter fast for hvem, hentes
+        hver morgen fra Stortingets oversikt over dagens representanter, så
+        en regjeringsendring kommer med dagen etter.
+      </p>
+      <p>
+        Alder beregnes ved periodestart. «Tid på Stortinget» er årene
+        representanten har vært på Stortinget før perioden startet, slik
+        Stortinget selv regner ansiennitet: tid som innvalgt – også perioder
+        med permisjon som statsråd – pluss tid som møtende vararepresentant.
+        Hull i karrieren telles ikke. For inneværende periode brukes
+        Stortingets eget ansiennitetstall, regnet tilbake til periodestart.
+        For tidligere perioder settes tallet sammen av periodene og
+        permisjonene i biografiene. Korte vararepresentasjoner står ikke
+        alltid der, så for enkelte kan tallet bli noe lavere enn Stortingets
+        eget. Målt mot Stortingets tall for 452 personer lå 400 innenfor to
+        måneder.
       </p>
       <p>
         Utdanning og yrke vises ordrett slik Stortinget selv har registrert
@@ -313,17 +330,27 @@ export default function MethodPage() {
       <h3>Bruk av KI</h3>
       <p>
         Koden er skrevet med KI-assistanse (Claude). For å sikre at tallene
-        er riktige, har jeg bygd inn flere kontrollmekanismer. Tallene
-        verifiseres mot Stortingets offisielle stemmetall, og datagrunnlaget
-        er kryssjekket mot det uavhengige Voteringsarkivet hos Sikt. Metoden
-        er sjekket opp mot Holder de ords åpne kildekode. I koden ligger en
-        testsuite der fasiten kommer fra stortinget.no og fra fiktive
-        eksempler som kan regnes for hånd, og den kjøres før hver eneste
-        publisering. I tillegg har en uavhengig utvikler kjørt hele
-        beregningen på nytt fra Stortingets rådata, uten min medvirkning, og
-        fått nøyaktig de samme tallene som nettstedet viser; rapporten ligger
-        åpent i kodearkivet. To andre utviklere har gått gjennom koden og
-        gitt innspill som er fulgt opp, blant annet forslaget om testsuiten.
+        er riktige, har jeg bygd inn flere kontroller – og det er verdt å vite
+        hva hver av dem dekker. For hver votering sjekkes det at
+        enkeltstemmene summerer til Stortingets offisielle stemmetall; det
+        viser at dataene er hentet og lest riktig, men ikke at resten av
+        beregningen er det. I juli 2026 ble stemmetallene og utfallet for
+        17 815 voteringer sammenlignet med Voteringsarkivet hos Sikt, og de
+        var like i 99,94 prosent av tilfellene (avvikene er forklart i
+        kodearkivet). Sikts nyere data bygger også på Stortingets egne
+        registreringer, så sammenligningen er ingen helt uavhengig kilde, og
+        den gjaldt stemmetallene, ikke prosentene på nettstedet. Metoden er
+        sammenlignet med Holder de ords åpne kildekode, og forskjellene er
+        forklart på metodesiden. I koden ligger en testsuite der fasiten
+        kommer fra stortinget.no og fra fiktive eksempler som kan regnes for
+        hånd, og den kjøres før hver eneste publisering. I august 2026 kjørte
+        en uavhengig utvikler hele beregningen på nytt fra Stortingets
+        rådata, uten min medvirkning, og fikk nøyaktig de samme tallene som
+        nettstedet da viste; rapporten ligger åpent i kodearkivet. Det som er
+        kommet til senere – blant annet for/mot-tallene fra november 2026 –
+        er ikke gjennomgått på samme måte ennå, men har egne kontroller og
+        tester. To andre utviklere har gått gjennom koden og gitt innspill
+        som er fulgt opp, blant annet forslaget om testsuiten.
         Oppdager du likevel noe som ser feil ut, ta gjerne kontakt (se{" "}
         <a href="/om">Om prosjektet</a>). Jeg ønsker at koden skal være riktig.
       </p>

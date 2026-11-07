@@ -87,12 +87,14 @@ function Menu({ inline = false }) {
 function HomeSalkart() {
   const [reps, setReps] = useState(null);
   const [periode, setPeriode] = useState(null);
+  const [sammensetning, setSammensetning] = useState(null);
 
   useEffect(() => {
     personerData().then((d) => {
       const latest = Object.keys(d).sort().pop();
       setPeriode(latest);
       setReps(d[latest].representanter);
+      setSammensetning(d[latest].sammensetning || null);
     }).catch(() => {});
   }, []);
 
@@ -100,13 +102,24 @@ function HomeSalkart() {
   return (
     <section className="party-chips">
       <h2>Hvem sitter i salen?</h2>
-      <p>
-        Stortinget består av folkevalgte. Her er alle {reps.length}{" "}
-        representantene{periode && ` valgt for ${periode.replace("-", "–")}`} –
-        én prikk per person, farget etter parti. Trykk deg inn for å se salen
-        fordelt på kjønn, alder og erfaring, og hvor i landet representantene
-        kommer fra.
-      </p>
+      {sammensetning?.type === "i_dag" ? (
+        <p>
+          Her er de {reps.length} representantene som sitter i salen nå – én
+          prikk per person, farget etter parti. Statsråder kan ikke møte på
+          Stortinget mens de sitter i regjeringen, så for dem møter en
+          vararepresentant i stedet. Trykk deg inn for å se salen fordelt
+          på kjønn, alder og erfaring, og hvor i landet representantene
+          kommer fra.
+        </p>
+      ) : (
+        <p>
+          Stortinget består av folkevalgte. Her er alle {reps.length}{" "}
+          representantene{periode && ` valgt for ${periode.replace("-", "–")}`} –
+          én prikk per person, farget etter parti. Trykk deg inn for å se salen
+          fordelt på kjønn, alder og erfaring, og hvor i landet representantene
+          kommer fra.
+        </p>
+      )}
       <a className="home-salkart" href="/hvem" aria-label="Se hvem representantene er">
         <Salkart representanter={reps} interactive={false} />
       </a>

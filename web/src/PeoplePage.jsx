@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { partyOrFallback } from "./parties.js";
-import { personerData, personPhoto, personUrl } from "./lib.js";
+import { personerData, personPhoto, personUrl, formatDate } from "./lib.js";
 import { downloadCsv } from "./csv.js";
 import Salkart from "./Salkart.jsx";
 import NorgesKart from "./NorgesKart.jsx";
@@ -34,6 +34,8 @@ export default function PeoplePage() {
 
   const partier = data[periode]?.partier || {};
   const representanter = data[periode]?.representanter || [];
+  const sammensetning = data[periode]?.sammensetning || { type: "valgt" };
+  const iDag = sammensetning.type === "i_dag";
   const rows = Object.entries(partier).filter(([id]) => id !== "Uav");
   const total = Object.values(partier).reduce(
     (acc, v) => ({
@@ -52,8 +54,8 @@ export default function PeoplePage() {
       <div className="pair-head">
         <h2>Hvem er de?</h2>
         <p>
-          De {total.seter} innvalgte representantene i hver stortingsperiode –
-          én prikk per person. Fargelegg salen etter parti, kjønn, alder eller
+          De {total.seter} representantene i hver stortingsperiode – én prikk
+          per person. Fargelegg salen etter parti, kjønn, alder eller
           erfaring.
         </p>
       </div>
@@ -69,6 +71,31 @@ export default function PeoplePage() {
           </button>
         ))}
       </nav>
+
+      {iDag ? (
+        <p className="sammensetning-note">
+          <strong>Salen slik den er nå.</strong> Statsråder kan ikke møte på
+          Stortinget mens de sitter i regjeringen, og det samme gjelder
+          representanter med lengre permisjon. Da møter en fast
+          vararepresentant fra samme parti og valgdistrikt i stedet, og det er
+          vararepresentanten som vises her. Nå gjelder det{" "}
+          {sammensetning.erstattet.length} av de 169 som ble valgt:{" "}
+          {sammensetning.erstattet.map((e, i) => (
+            <span key={e.id}>
+              {i > 0 && ", "}
+              {e.navn} (vara: {e.vara_navn})
+            </span>
+          ))}
+          . Sammensetningen sjekkes hver morgen mot Stortingets oversikt over
+          hvem som møter, og ble sist oppdatert{" "}
+          {formatDate(sammensetning.oppdatert)}.
+        </p>
+      ) : (
+        <p className="sammensetning-note">
+          Representantene som ble valgt for perioden, slik de var ved
+          periodens start.
+        </p>
+      )}
 
       <Salkart representanter={representanter} />
 
@@ -123,22 +150,27 @@ export default function PeoplePage() {
       </div>
 
       <p className="count-note">
-        Innvalgte representanter ved periodens start (vararepresentanter ikke
-        medregnet). Alder ved periodestart, regnet nøyaktig med desimaler –
-        ikke i fylte år. Medier som regner snitt av fylte år (slik NTB gjorde
-        høsten 2025) får derfor tall som ligger om lag et halvt år lavere.
-        «Tid på Stortinget» er tid siden representanten først ble innvalgt. Streken i kvinneandel-søylen
-        markerer 50 %.{" · "}
+        {iDag
+          ? "Representantene som sitter i salen nå, med faste vararepresentanter i stedet for statsrådene. "
+          : "Innvalgte representanter ved periodens start (vararepresentanter ikke medregnet). "}
+        Alder ved periodestart, regnet nøyaktig med desimaler – ikke i fylte
+        år. Medier som regner snitt av fylte år (slik NTB gjorde høsten 2025)
+        får derfor tall som ligger om lag et halvt år lavere. «Tid på
+        Stortinget» er årene representanten har vært på Stortinget før
+        perioden startet: tid som innvalgt (også med permisjon som statsråd)
+        pluss tid som møtende vararepresentant, slik Stortinget selv regner
+        ansiennitet. Hull i karrieren telles ikke. Streken i
+        kvinneandel-søylen markerer 50 %.{" · "}
         <button
           className="dl"
           onClick={() =>
             downloadCsv(
               `representanter-${periode}.csv`,
-              ["navn", "parti", "kjoenn", "fylke", "alder", "aar_paa_stortinget", "periode"],
+              ["navn", "parti", "kjoenn", "fylke", "alder", "aar_paa_stortinget", "moter_fast_for", "periode"],
               representanter.map((r) => [
                 r.navn, partyOrFallback(r.parti).kort,
                 r.kjoenn === 1 ? "kvinne" : "mann", r.fylke ?? "",
-                r.alder ?? "", r.fartstid ?? "", periode,
+                r.alder ?? "", r.fartstid ?? "", r.moter_for?.navn ?? "", periode,
               ])
             )
           }
@@ -204,6 +236,7 @@ export default function PeoplePage() {
                     <figcaption>
                       <strong>{r.navn}</strong>
                       <span>{r.fylke || ""}</span>
+                      {r.moter_for && <span>Møter for {r.moter_for.navn}</span>}
                       <span>
                         {r.alder != null && `${Math.floor(r.alder)} år`}
                         {r.fartstid != null &&

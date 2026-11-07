@@ -3,6 +3,48 @@
 Alle metodiske endringer, feilrettinger og kvalitetskontroller dokumenteres
 her, nyeste øverst.
 
+## 2026-11-07 — «Tid på Stortinget», salen slik den er i dag, og KI-avsnittet
+
+- **Rettet (analyse_personer.py) – «tid på Stortinget»:** Tallet var tiden
+  siden representanten første gang ble innvalgt, så hull i karrieren talte
+  med. Tor Mikkel Wara (innvalgt 1989–93 og fra 2025) sto for eksempel med
+  36 år. Nå følger tallet regelen bak Stortingets egen ansiennitet: tid som
+  innvalgt (også med permisjon som statsråd) pluss tid som møtende
+  vararepresentant. Wara har nå 4,0 år, Erna Solberg 36 og Jorunn Gleditsch
+  Lossius 2,9 (inkludert tiden hun møtte for Kjell Ingolf Ropstad).
+  - **Inneværende periode:** Stortingets offisielle ansiennitet, regnet
+    tilbake til periodestart.
+  - **Tidligere perioder:** satt sammen av biografienes perioder og
+    permisjoner. Overlapp telles én gang, og vara-tid som bare står med
+    navn i en annens biografi hentes inn når navnet er entydig. Målt mot
+    Stortingets tall for 452 personer lå 400 innenfor 60 dager og 6 mer enn
+    ett år lavere (korte vararepresentasjoner er ikke alltid registrert).
+  - Snittet for 2025–2029 gikk fra 4,8 til 4,4 år. I tidligere perioder
+    endret 19–28 personer seg med minst ett år.
+- **Endret (fetch_personer.py, analyse_personer.py) – salen slik den er i
+  dag:** For inneværende periode erstattes hver valgt representant som har
+  en fast vararepresentant, med varaen. Det gjelder i praksis statsrådene,
+  som ikke kan møte på Stortinget. Kilden er Stortingets oversikt over
+  dagens representanter, som hentes hver morgen, så regjeringsendringer
+  kommer med automatisk. Per 7.11.2026 gjelder det 11 Ap-representanter, og
+  alle har permisjon fordi de sitter i regjering. Tidligere perioder viser
+  fortsatt de valgte ved periodestart. Hvis dagens liste ikke passer
+  perioden (for eksempel rett etter et valg), vises de valgte, og siden
+  sier det.
+- **Rettet (kun tekst) – KI-avsnittet på Om-siden og metodesiden:** Det
+  står nå hva hver kontroll dekker:
+  - Summekontrollen viser at dataene er lest riktig.
+  - Sikt-sammenligningen (juli 2026) gjaldt stemmetallene, ikke prosentene,
+    og Sikts nyere data bygger også på Stortingets registreringer.
+  - Den uavhengige omregningen er datert august 2026, og det som er kommet
+    til senere, er ikke gjennomgått på samme måte.
+
+  «Tallene er kvalitetssjekket mot Holder de ords kildekode» er endret til
+  at metoden er sammenlignet med den.
+- **Tester:** 48 (før 42), med fiktive biografier der fasiten kan regnes
+  for hånd.
+- **Ikke uavhengig verifisert ennå.**
+
 ## 2026-11-07 — For eller mot: «stemte likt» brutt ned, gjennomslag per tema og tre rettelser
 
 Etter å ha mottatt innspill fra lesere har jeg oppdatert nettstedet slik:
