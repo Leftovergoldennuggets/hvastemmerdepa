@@ -277,6 +277,10 @@ footer.credit a { color: inherit; }
   stroke-width: 2;
 }
 .chart .endlabel { fill: var(--ink); font-size: 13px; font-weight: 600; }
+/* Pågående sesjon: hult punkt, stiplet linje og «foreløpig»-lapp */
+.chart .dataline.prelim { stroke-dasharray: 4 4; stroke-width: 1.5; }
+.chart .datapoint.prelim { fill: var(--bg); stroke: var(--ink); stroke-width: 2; }
+.chart .prelim-label { fill: var(--ink-muted); font-size: 11.5px; font-style: italic; }
 
 /* Collapsible detail sections (pair pages): overview first, depth on demand */
 .fold {

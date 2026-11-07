@@ -114,7 +114,19 @@ function TimeSeries({ series, a, b }) {
     setHover(best ? { ...best, cx: e.clientX, cy: e.clientY } : null);
   };
 
-  const last = pts[pts.length - 1];
+  // The newest session is still running and has few votes so far, so its
+  // value can swing a lot. Draw it hollow with a dashed link and a
+  // «foreløpig» tag, and put the big end label on the last COMPLETE
+  // session instead. A session runs 1 Oct – 30 Sep.
+  const iDag = new Date().toISOString().slice(0, 10);
+  const pagar = (sesjon) => iDag <= `${Number(sesjon.slice(0, 4)) + 1}-09-30`;
+  const siste = pts[pts.length - 1];
+  const forelopig = siste && pagar(siste.sesjon) ? siste : null;
+  const last = forelopig ? pts[pts.length - 2] : siste;
+  // The tag sits above the hollow point; if the end label would collide
+  // with it (points at nearly the same height), the end label goes below.
+  const kollisjon = forelopig && last && Math.abs(forelopig.y - last.y) < 18
+    && forelopig.x - last.x < 90;
 
   return (
     <div className="chart" ref={wrapRef}>
@@ -164,14 +176,32 @@ function TimeSeries({ series, a, b }) {
           <line x1={hover.x} x2={hover.x} y1={T} y2={H - B} className="crosshair" />
         )}
         {segments.map(([p1, p2], k) => (
-          <line key={k} x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y} className="dataline" />
+          <line
+            key={k}
+            x1={p1.x} y1={p1.y} x2={p2.x} y2={p2.y}
+            className={`dataline${p2 === forelopig ? " prelim" : ""}`}
+          />
         ))}
         {pts.map((p) => (
-          <circle key={p.sesjon} cx={p.x} cy={p.y} r="4.5" className="datapoint" />
+          <circle
+            key={p.sesjon}
+            cx={p.x} cy={p.y} r="4.5"
+            className={`datapoint${p === forelopig ? " prelim" : ""}`}
+          />
         ))}
         {last && (
-          <text x={last.x} y={last.y - 12} className="endlabel" textAnchor="middle">
+          <text
+            x={last.x}
+            y={kollisjon ? last.y + 22 : last.y - 12}
+            className="endlabel"
+            textAnchor="middle"
+          >
             {Math.round(last.pct)} %
+          </text>
+        )}
+        {forelopig && (
+          <text x={forelopig.x + 10} y={forelopig.y - 12} className="prelim-label" textAnchor="end">
+            foreløpig
           </text>
         )}
       </svg>
@@ -185,6 +215,11 @@ function TimeSeries({ series, a, b }) {
             Stemte likt i {formatN(hover.agree)} av {formatN(hover.total)} voteringer
             i sesjonen {hover.sesjon}.
           </div>
+          {pagar(hover.sesjon) && (
+            <div className="muted">
+              Sesjonen pågår – foreløpig tall, som kan endre seg mye.
+            </div>
+          )}
         </div>
       )}
       {bands.length > 0 && (
@@ -194,6 +229,12 @@ function TimeSeries({ series, a, b }) {
           <span className="band-key band-blue" /> borgerlig. Stiplede linjer
           er regjeringsskifter – hold pekeren over et felt for
           konstellasjonen.
+          {forelopig && (
+            <>
+              {" "}Det hule punktet er sesjonen som pågår: foreløpig tall,
+              bygd på {formatN(forelopig.total)} voteringer så langt.
+            </>
+          )}
         </p>
       )}
     </div>
